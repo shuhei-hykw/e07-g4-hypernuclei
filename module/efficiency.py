@@ -23,7 +23,9 @@ For a candidate with a z range two depth conventions are reported:
              extends to one side of its vertex, so the vertex lies at an
              end of the range)
   inclusive  zero inside the range, distance to the nearer end outside
-Point candidates use the plain distance in both.
+  best       the candidate's z_best column as a point depth (stage z of
+             the slice where most tracks cross), when present
+Point candidates use the plain distance in all.
 
 Matching: per event and tolerance, pairs within the tolerance are taken
 closest first (greedy one-to-one). The optimal assignment (most matches,
@@ -58,7 +60,7 @@ VERTEX_TYPES = ["capture", "HypernucleusDecay", "hBertiniCaptureAtRest",
                 "Decay"]
 LL_PREFIX = "LL"
 N_LENGTH_BINS = 5
-METRICS = ("edge", "inclusive")
+METRICS = ("edge", "inclusive", "best")
 DEFAULT_SIZE_PX = 2048
 
 
@@ -84,6 +86,8 @@ def load_candidates(path):
         z = float(row["z_mean"])
         c["z"] = (z, z)
       c["score"] = float(row.get("n_tracks_max") or 0.)
+      if row.get("z_best") not in (None, ""):
+        c["z_best"] = float(row["z_best"])
       event = row.get("event") or Path(row["view_id"]).parent.name
       out.setdefault(event, []).append(c)
   return out
@@ -111,8 +115,12 @@ def distances(truth, verts, cands, space):
                        np.abs(vz[:, None] - hi[None, :]))
   inside = (vz[:, None] >= lo[None, :]) & (vz[:, None] <= hi[None, :])
   incl_mm = np.where(inside, 0., edge_mm)
+  gaps = [("edge", edge_mm), ("inclusive", incl_mm)]
+  if all("z_best" in c for c in cands):
+    zb = np.array([c["z_best"] for c in cands])
+    gaps.append(("best", np.abs(vz[:, None] - zb[None, :])))
   out = {}
-  for metric, gap_mm in (("edge", edge_mm), ("inclusive", incl_mm)):
+  for metric, gap_mm in gaps:
     out[metric] = np.hypot(dxy_px * pix, gap_mm / sdz * dz_um)
   out["fullscan"] = (dxy_px <= FULLSCAN_XY_PX) \
     & (incl_mm * UM_PER_MM <= FULLSCAN_Z_UM)
@@ -210,13 +218,15 @@ def nearest_components(events, cands, shifts, space):
         j = int(np.argmin(dxy))
         z = stage_z(truth, v["slice"])
         gap = min(abs(z - lo[j]), abs(z - hi[j])) / sdz * dz_um
-        out[label].setdefault(v["type"], []).append((dxy[j], gap))
+        zb = cs[j].get("z_best")
+        gap_best = abs(z - zb) / sdz * dz_um if zb is not None else np.nan
+        out[label].setdefault(v["type"], []).append((dxy[j], gap, gap_best))
   return out
 
 
 def print_nearest(near):
-  print("nearest candidate in XY: median XY distance / median edge z gap "
-        "(um), fraction within 6 / 12 um in XY")
+  print("nearest candidate in XY: median XY distance / median z gap to "
+        "the range edge / to z_best (um), fraction within 6 / 12 um in XY")
   for vtype in VERTEX_TYPES:
     cells = []
     for label in ("true", "control"):
@@ -225,7 +235,8 @@ def print_nearest(near):
         cells.append(f"{label}: -")
         continue
       cells.append(f"{label}: {np.median(vals[:, 0]):6.1f} / "
-                   f"{np.median(vals[:, 1]):6.1f}  "
+                   f"{np.median(vals[:, 1]):6.1f} / "
+                   f"{np.nanmedian(vals[:, 2]) if np.isfinite(vals[:, 2]).any() else float('nan'):6.1f}  "
                    f"({np.mean(vals[:, 0] < 6):.0%}, "
                    f"{np.mean(vals[:, 0] < 12):.0%})  n={len(vals)}")
     print(f"  {vtype:<22} " + "   ".join(cells))
@@ -250,10 +261,11 @@ def evaluate(events, cands, tolerances, shifts, space):
         d = distances(truth, vs, cs, space)
       else:
         empty = np.full((len(vs), 0), np.inf)
-        d = {"edge": empty, "inclusive": empty,
+        d = {"edge": empty, "inclusive": empty, "best": empty,
              "fullscan": np.zeros((len(vs), 0), dtype=bool)}
+      metrics = [m for m in METRICS if m in d]
       matched = {(m, t): match_greedy(d[m], t)
-                 for m in METRICS for t in tolerances}
+                 for m in metrics for t in tolerances}
       if label == "true":
         for t in tolerances:
           g = matched[("edge", t)]
@@ -267,7 +279,7 @@ def evaluate(events, cands, tolerances, shifts, space):
                "n_cand": len(cs),
                "nearest_edge_um": float(d["edge"][i].min()) if cs else None,
                "fullscan": bool(d["fullscan"][i].any()) if cs else False}
-        for m in METRICS:
+        for m in metrics:
           for t in tolerances:
             j = matched[(m, t)].get(i)
             row[f"found_{m}_{t:g}"] = j is not None
@@ -296,18 +308,21 @@ def _ll_events(rows, control, tolerances):
     if not cap or not dec:
       continue
     row = {"fullscan": cap[0]["fullscan"] and dec[0]["fullscan"]}
-    for m in METRICS:
-      for t in tolerances:
-        k = f"found_{m}_{t:g}"
+    for k in cap[0]:
+      if k.startswith("found_") and k in dec[0]:
         row[k] = cap[0][k] and dec[0][k]
     out.append(row)
   return out
 
 
 def summarize(rows, extra, tolerances):
-  cols = [f"edge<{t:g}" for t in tolerances] \
-    + [f"incl<{t:g}" for t in tolerances] \
-    + [f"ctrl<{t:g}" for t in tolerances] + ["fullscan"]
+  has_best = any(k.startswith("found_best_") for k in rows[0])
+  metrics = ["edge", "inclusive"] + (["best"] if has_best else [])
+  cols = [f"{m[:4]}<{t:g}" for m in metrics for t in tolerances] \
+    + [f"c.{m[:4]}<{t:g}" for m in metrics for t in tolerances] \
+    + ["fullscan"]
+  print("columns: efficiency per depth convention, then the control "
+        "(c.) from shifted truths")
   print(f"{'type':<22} {'n':>4} " + " ".join(f"{c:>9}" for c in cols))
   for vtype in VERTEX_TYPES + ["LL event"]:
     if vtype == "LL event":
@@ -317,12 +332,10 @@ def summarize(rows, extra, tolerances):
       sel, ctrl = _select(rows, vtype, False), _select(rows, vtype, True)
     if not sel:
       continue
-    vals = [np.mean([r[f"found_edge_{t:g}"] for r in sel])
-            for t in tolerances]
-    vals += [np.mean([r[f"found_inclusive_{t:g}"] for r in sel])
-             for t in tolerances]
-    vals += [np.mean([r[f"found_edge_{t:g}"] for r in ctrl]) if ctrl
-             else float("nan") for t in tolerances]
+    vals = [np.mean([r[f"found_{m}_{t:g}"] for r in sel])
+            for m in metrics for t in tolerances]
+    vals += [np.mean([r[f"found_{m}_{t:g}"] for r in ctrl]) if ctrl
+             else float("nan") for m in metrics for t in tolerances]
     vals.append(np.mean([r["fullscan"] for r in sel]))
     print(f"{vtype:<22} {len(sel):>4} "
           + " ".join(f"{v:9.1%}" for v in vals))

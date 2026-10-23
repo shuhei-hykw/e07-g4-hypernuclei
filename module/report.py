@@ -25,7 +25,7 @@ NAME_RE = re.compile(r"^(?P<dataset>.+?)_(?P<method>method[^_]+|bprime)"
                      r"(?:_(?P<cuts>[^.]+))?\.csv$")
 
 
-def rates(rows, extra, tolerances):
+def rates(rows, extra, tolerances, metric):
   out = {}
   for label, vtype in (("capture", "capture"),
                        ("LL decay", "HypernucleusDecay")):
@@ -34,16 +34,16 @@ def rates(rows, extra, tolerances):
     ctrl = [r for r in eff._select(rows, vtype, True)
             if vtype == "capture" or r["parent"].startswith(eff.LL_PREFIX)]
     out[label] = (len(sel),
-                  [np.mean([r[f"found_edge_{t:g}"] for r in sel])
+                  [np.mean([r[f"found_{metric}_{t:g}"] for r in sel])
                    if sel else np.nan for t in tolerances],
-                  [np.mean([r[f"found_edge_{t:g}"] for r in ctrl])
+                  [np.mean([r[f"found_{metric}_{t:g}"] for r in ctrl])
                    if ctrl else np.nan for t in tolerances])
   ll = eff._ll_events(rows, False, tolerances)
   llc = eff._ll_events(rows, True, tolerances)
   out["LL event"] = (len(ll),
-                     [np.mean([r[f"found_edge_{t:g}"] for r in ll])
+                     [np.mean([r[f"found_{metric}_{t:g}"] for r in ll])
                       if ll else np.nan for t in tolerances],
-                     [np.mean([r[f"found_edge_{t:g}"] for r in llc])
+                     [np.mean([r[f"found_{metric}_{t:g}"] for r in llc])
                       if llc else np.nan for t in tolerances])
   return out
 
@@ -55,6 +55,9 @@ def main():
   parser.add_argument("--pattern", default="*",
                       help="glob on candidate file names")
   parser.add_argument("--tolerances", default=eff.DEFAULT_TOLERANCES)
+  parser.add_argument("--metric", default="edge",
+                      choices=["edge", "inclusive", "best"],
+                      help="depth convention (best needs z_best)")
   parser.add_argument("-o", "--output",
                       default=str(config.OUTPUT_DIR / "efficiency_report.md"))
   args = parser.parse_args()
@@ -65,7 +68,8 @@ def main():
                              np.random.default_rng(0))
   head = " | ".join(f"<{t:g} um (ctrl)" for t in tolerances)
   lines = ["# Vertex-finding efficiency on simulated events", "",
-           "Edge convention, one-to-one greedy matching in the developed "
+           f"Depth convention: {args.metric}; one-to-one greedy matching "
+           "in the developed "
            "emulsion; chance level (ctrl) from 10 random shifts of the "
            "truths (module/efficiency.py).", "",
            f"| dataset | method | cuts | vertex | n | {head} | "
@@ -83,7 +87,10 @@ def main():
     rows, extra = eff.evaluate(events, eff.load_candidates(path),
                                tolerances, shifts, "developed")
     per_event = extra["n_candidates"] / max(len(events), 1)
-    for label, (n, vals, ctrl) in rates(rows, extra, tolerances).items():
+    if not any(k.startswith(f"found_{args.metric}_") for k in rows[0]):
+      continue
+    for label, (n, vals, ctrl) in rates(rows, extra, tolerances,
+                                        args.metric).items():
       if n == 0:
         continue
       lines.append(
