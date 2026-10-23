@@ -388,6 +388,9 @@ specification, agreed with the e07-fullscan analysis:
 - Full-scan criterion (200 px XY, depth within 30 um of the z range) as
   a loose recovery measure; "LL event" = capture and double-Lambda decay
   vertex both found; rank by `n_tracks_max`.
+- `./run.py zbias <dataset> <csv> --sim <root>`: offset z_best - z_true
+  of the XY-nearest candidate, split by layer / stack position, daughter
+  z asymmetry and n_tracks_max.
 - `--nearest`: XY distance to the nearest candidate in XY and the edge
   z gap of that candidate, true vs control (separates XY accuracy from
   the depth convention).

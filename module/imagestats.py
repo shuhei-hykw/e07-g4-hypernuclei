@@ -31,6 +31,9 @@ N_SPECTRUM_BINS = 40
 HIST_BINS = 64
 MAX_LAG = 2
 DEFAULT_CROP_PX = 1024
+# Elongated components (track segments): elongation and minimum area
+ELONG_MIN = 5.
+ELONG_MIN_AREA = 30
 
 
 def decode_png(data):
@@ -189,6 +192,7 @@ def stack_stats(stack, crop, offsets=None):
   thr = otsu(d)
   fg = d > thr
   area, elong = component_stats(fg)
+  n_elong = int(((elong > ELONG_MIN) & (area >= ELONG_MIN_AREA)).sum())
   dark = mid <= np.quantile(mid, DARK_FRACTION)
   dark_area, _ = component_stats(dark)
   contrast = blob_contrast(mid, dark)
@@ -206,6 +210,7 @@ def stack_stats(stack, crop, offsets=None):
     "cc_area_median": float(np.median(area)),
     "cc_area_p90": float(np.percentile(area, 90)),
     "cc_elong_p90": float(np.percentile(elong, 90)),
+    "n_elong_per_mpx": n_elong / (mid.size / 1e6),
     "dark_blobs_per_mpx": len(dark_area) / mpx,
     "dark_blob_area_median": float(np.median(dark_area)),
     "dark_contrast_median": float(np.median(contrast)),

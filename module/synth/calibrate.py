@@ -40,7 +40,7 @@ TARGETS = {
   "dark_contrast_median": (5., False), "dark_contrast_p90": (5., False),
   "corr1": (3., False),
   "corr2": (3., False), "corr5": (3., False), "corr13": (3., False),
-  "fg_fraction": (3., False),
+  "fg_fraction": (3., False), "n_elong_per_mpx": (2., True),
 }
 # Parameter -> (object, field, low, high, log scale)
 PARAMS = {
@@ -58,7 +58,9 @@ PARAMS = {
   "fog_per_um3": ("emulsion", "fog_per_um3", 5e-4, 4e-2, True),
   "grain_spread": ("emulsion", "grain_spread", 0.0, 1.0, False),
   "beam_per_mm2": ("background", "beam_per_mm2", 100., 5e4, True),
-  "random_per_mm2": ("background", "random_per_mm2", 10., 3e3, True),
+  "random_per_mm2": ("background", "random_per_mm2", 10., 1e4, True),
+  "random_ion_max": ("background", "random_track_ionization", 1.5, 20.,
+                     True),
   "blobs_per_mm2": ("background", "blobs_per_mm2", 1., 3e3, True),
 }
 MOTTLE_SCALES_UM = (25., 6.)
@@ -98,7 +100,9 @@ def apply_values(values, optics, emulsion, background):
   objs = {"optics": optics, "emulsion": emulsion, "background": background}
   for name, v in values.items():
     obj, field, *_ = PARAMS[name]
-    if not name.startswith("mottle"):
+    if name == "random_ion_max":
+      objs[obj] = replace(objs[obj], random_track_ionization=(1., v))
+    elif not name.startswith("mottle"):
       objs[obj] = replace(objs[obj], **{field: v})
   objs["background"] = replace(objs["background"], mottle=(
     (values["mottle_large"], MOTTLE_SCALES_UM[0]),
@@ -184,6 +188,7 @@ def current_defaults():
           "beam_slope_max": b.beam_slope_max,
           "beam_spread": b.beam_spread,
           "random_per_mm2": b.random_per_mm2,
+          "random_ion_max": b.random_track_ionization[1],
           "blobs_per_mm2": b.blobs_per_mm2}
 
 

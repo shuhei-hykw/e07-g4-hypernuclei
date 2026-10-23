@@ -20,6 +20,7 @@ Commands:
   flatfield    illumination profile of real views -> output/flatfield.npy
   efficiency   vertex-finding efficiency of candidates vs truth
   report       efficiency table over datasets and methods
+  zbias        depth bias of candidate z_best vs truth
   setup        channels + decays + build
 
 Typical:
@@ -51,6 +52,7 @@ COMMANDS: dict[str, str] = {
   "flatfield":   "module.synth.flatfield",
   "efficiency":  "module.efficiency",
   "report":      "module.report",
+  "zbias":       "module.zbias",
 }
 SEQUENCES: dict[str, list[str]] = {
   "setup": ["channels", "decays", "build"],
