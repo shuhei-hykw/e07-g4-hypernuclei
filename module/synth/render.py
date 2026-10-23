@@ -208,6 +208,7 @@ def track_grains(points, edep, emulsion, rng):
 # the view widened by half of it, so that the grain density inside the
 # view does not depend on the view size
 STRAIGHT_TRACK_UM = 1000.
+DEPTH_REF_UM = 100.  # depth unit of the flat / isotropic track densities
 
 
 def view_count(view, per_mm2, rng, margin_um=0.):
@@ -219,16 +220,21 @@ def view_count(view, per_mm2, rng, margin_um=0.):
 
 
 def straight_grains(view, emulsion, vertex_z, per_mm2, direction_fn,
-                    density_fn, rng):
+                    density_fn, rng, per_depth=False):
   """Grains of straight tracks of fixed length around the view (original
-  um) and the index of the track each grain belongs to."""
+  um) and the index of the track each grain belongs to.
+
+  per_mm2 counts tracks per mm2 of view area; with per_depth it is per
+  mm2 and per DEPTH_REF_UM of (undeveloped) depth, for tracks spread in
+  depth (flat, isotropic) rather than crossing the whole stack (beam)."""
   o = view.optics
   half = o.size_px * o.pixel_um / 2.
   lo, hi = view.zdev_range()
   span = (hi - lo) * o.shrink  # original-z extent of the view, generous
   length = max(STRAIGHT_TRACK_UM, 1.2 * span)
   margin = length / 2.
-  n_tracks = view_count(view, per_mm2, rng, margin)
+  scale = span / DEPTH_REF_UM if per_depth else 1.
+  n_tracks = view_count(view, per_mm2 * scale, rng, margin)
   grains, owners = [], []
   for i in range(n_tracks):
     mid = np.array([view.cx + rng.uniform(-half - margin, half + margin),
@@ -271,7 +277,8 @@ def random_track_grains(view, background, emulsion, vertex_z, rng):
   lo, hi = background.random_track_ionization
   return straight_grains(
     view, emulsion, vertex_z, background.random_per_mm2, direction,
-    lambda: emulsion.grains_mip_per_um * rng.uniform(lo, hi), rng)
+    lambda: emulsion.grains_mip_per_um * rng.uniform(lo, hi), rng,
+    per_depth=True)
 
 
 def flat_track_grains(view, background, emulsion, vertex_z, rng):
@@ -284,7 +291,8 @@ def flat_track_grains(view, background, emulsion, vertex_z, rng):
   lo, hi = background.flat_ionization
   return straight_grains(
     view, emulsion, vertex_z, background.flat_per_mm2, direction,
-    lambda: emulsion.grains_mip_per_um * rng.uniform(lo, hi), rng)
+    lambda: emulsion.grains_mip_per_um * rng.uniform(lo, hi), rng,
+    per_depth=True)
 
 
 def blob_grains(view, background, rng):
