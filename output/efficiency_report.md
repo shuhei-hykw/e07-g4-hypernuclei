@@ -66,6 +66,12 @@ B' candidates are points (all depth conventions coincide); multiplicity cuts on 
 | 3.0 | B' mult >= 4 | LL decay | 0% (5%) | 25% (18%) | 4866 |
 | 1.5 | A production | capture | 60% (8%) | 60% (32%) | 771 |
 | 1.5 | A production | LL decay | 25% (8%) | 25% (22%) | 771 |
+| 1.5 | B' all | capture | 60% (46%) | 100% (82%) | 30369 |
+| 1.5 | B' all | LL decay | 25% (35%) | 100% (80%) | 30369 |
+| 1.5 | B' mult >= 3 | capture | 40% (38%) | 80% (62%) | 10949 |
+| 1.5 | B' mult >= 3 | LL decay | 25% (20%) | 100% (62%) | 10949 |
+| 1.5 | B' mult >= 4 | capture | 0% (24%) | 60% (48%) | 4784 |
+| 1.5 | B' mult >= 4 | LL decay | 25% (5%) | 50% (45%) | 4784 |
 
 
 ## 5. Other channels (method A production, dz 3.0)
@@ -78,6 +84,12 @@ B' candidates are points (all depth conventions coincide); multiplicity cuts on 
 | Xi- + 14N -> L10Be + L5He (twin) | hypernuclear decays | 82 | 30% (14%) | 68% (42%) | 5% (1%) | 29% (7%) | 769 |
 | Nagara replay | capture | 20 | 30% (10%) | 45% (21%) | 5% (0%) | 25% (6%) | 769 |
 | Nagara replay | hypernuclear decays | 36 | 44% (8%) | 72% (30%) | 11% (0%) | 14% (4%) | 769 |
+| Ibuki replay | capture | 20 | 20% (13%) | 65% (30%) | 0% (1%) | 20% (4%) | 770 |
+| Ibuki replay | hypernuclear decays | 38 | 24% (12%) | 53% (37%) | 5% (1%) | 13% (6%) | 770 |
+| Nagara replay, synthetic | capture | 20 | 20% (0%) | 25% (0%) | 15% (0%) | 30% (0%) | 42 |
+| Nagara replay, synthetic | hypernuclear decays | 38 | 26% (0%) | 29% (0%) | 5% (0%) | 16% (0%) | 42 |
+| Ibuki replay, synthetic | capture | 20 | 30% (0%) | 35% (0%) | 20% (0%) | 35% (0%) | 44 |
+| Ibuki replay, synthetic | hypernuclear decays | 40 | 8% (0%) | 15% (0%) | 5% (0%) | 10% (0%) | 44 |
 
 ## Reading the tables
 
