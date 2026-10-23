@@ -12,6 +12,7 @@ namespace {
 
 // Lighter particles (e+-, gamma, neutrinos) are not recorded
 constexpr double kMinRecordedMass = 100. * MeV;
+const std::string kDecayProcess = "HypernucleusDecay";
 
 }  // namespace
 
@@ -21,6 +22,10 @@ void EventAction::Book(TTree* tree)
   tree->Branch("event", &fEventId);
   tree->Branch("channel", &fChannel);
   tree->Branch("q", &fQValue);
+  tree->Branch("vx", &fVx);
+  tree->Branch("vy", &fVy);
+  tree->Branch("vz", &fVz);
+  tree->Branch("contained", &fContained);
   tree->Branch("id", &fTrackId);
   tree->Branch("parent", &fParentId);
   tree->Branch("process", &fProcess);
@@ -28,6 +33,7 @@ void EventAction::Book(TTree* tree)
   tree->Branch("z", &fZ);
   tree->Branch("a", &fA);
   tree->Branch("nl", &fNLambda);
+  tree->Branch("escaped", &fEscaped);
   tree->Branch("ke", &fKE);
   tree->Branch("px", &fPx);
   tree->Branch("py", &fPy);
@@ -45,7 +51,9 @@ void EventAction::BeginOfEventAction(const G4Event* event)
   fEventId = event->GetEventID();
   fIndex.clear();
   for (auto* v : {&fName, &fProcess}) v->clear();
-  for (auto* v : {&fTrackId, &fParentId, &fZ, &fA, &fNLambda}) v->clear();
+  for (auto* v : {&fTrackId, &fParentId, &fZ, &fA, &fNLambda, &fEscaped}) {
+    v->clear();
+  }
   for (auto* v : {&fKE, &fPx, &fPy, &fPz, &fRange, &fLength}) v->clear();
   for (auto* v : {&fX, &fY, &fZpos, &fEdep}) v->clear();
 }
@@ -70,6 +78,7 @@ void EventAction::RecordStep(const G4Step* step)
     fZ.push_back(static_cast<int>(def->GetPDGCharge() / eplus));
     fA.push_back(def->GetBaryonNumber());
     fNLambda.push_back(def->GetNumberOfLambdasInHypernucleus());
+    fEscaped.push_back(0);
     fKE.push_back(pre->GetKineticEnergy() / MeV);
     fPx.push_back(mom.x() / MeV);
     fPy.push_back(mom.y() / MeV);
@@ -94,11 +103,25 @@ void EventAction::RecordStep(const G4Step* step)
   fRange[i] = (pos - start).mag() / um;
 }
 
+void EventAction::MarkEscaped(int trackId)
+{
+  auto it = fIndex.find(trackId);
+  if (it != fIndex.end()) fEscaped[it->second] = 1;
+}
+
 void EventAction::EndOfEventAction(const G4Event*)
 {
   const auto* gen = static_cast<const PrimaryGeneratorAction*>(
     G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
   fChannel = gen->Target() + " -> " + gen->Channel();
   fQValue = gen->QValue();
+  fVx = gen->Vertex().x() / um;
+  fVy = gen->Vertex().y() / um;
+  fVz = gen->Vertex().z() / um;
+  fContained = true;
+  for (std::size_t i = 0; i < fName.size(); ++i) {
+    const bool chain = fParentId[i] == 0 || fProcess[i] == kDecayProcess;
+    if (chain && fZ[i] != 0 && fEscaped[i]) fContained = false;
+  }
   if (fTree) fTree->Fill();
 }

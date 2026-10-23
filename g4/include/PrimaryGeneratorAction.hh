@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "G4GenericMessenger.hh"
+#include "G4ThreeVector.hh"
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "SpeciesTable.hh"
 
@@ -18,6 +19,7 @@ public:
   const std::string& Channel() const { return fChannel; }
   const std::string& Target() const { return fTarget; }
   double QValue() const { return fQValue; }
+  const G4ThreeVector& Vertex() const { return fVertex; }
 
 private:
   void Initialize();
@@ -28,6 +30,8 @@ private:
   std::string fTarget;
   std::string fChannel;  // comma separated, e.g. "LL6He,4He,t"
   int fSeed;
+  std::string fVertexMode;  // "random" or "fixed"
+  G4ThreeVector fVertex;
 
   bool fInitialized = false;
   std::vector<SpeciesInfo> fProducts;

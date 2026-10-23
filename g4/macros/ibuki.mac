@@ -4,7 +4,16 @@
 /run/verbose 1
 
 /emul/density 3.53
-/emul/halfSize 20 mm
+# E07 module: thin + 11 thick + thin sheets (nominal thicknesses)
+/emul/sheetX 345 mm
+/emul/sheetY 350 mm
+/emul/thickEmulsion 450 um
+/emul/thickBase 40 um
+/emul/thinEmulsion 100 um
+/emul/thinBase 180 um
+/emul/numThick 11
+/emul/numThinUp 1
+/emul/numThinDown 1
 /emul/minStep 0.1 um
 /emul/maxStep 10 um
 /emul/rangeFraction 0.01
@@ -15,6 +24,8 @@
 /xi/decaysFile ../../output/decays.csv
 /xi/target 14N
 /xi/channel L10Be,L5He
+# capture point uniform in the thick emulsion layers
+/xi/vertexMode random
 /xi/seed 2
 
 /decay/policy uniform

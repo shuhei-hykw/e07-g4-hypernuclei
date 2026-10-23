@@ -1,8 +1,10 @@
 #include "PrimaryGeneratorAction.hh"
 
+#include "DetectorConstruction.hh"
 #include "G4Event.hh"
 #include "G4PrimaryParticle.hh"
 #include "G4PrimaryVertex.hh"
+#include "G4RunManager.hh"
 #include "G4SystemOfUnits.hh"
 #include "PhaseSpace.hh"
 #include "TRandom.h"
@@ -20,7 +22,8 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
     fDecaysFile("../../output/decays.csv"),
     fTarget("12C"),
     fChannel("LL6He,4He,t"),
-    fSeed(kDefaultSeed)
+    fSeed(kDefaultSeed),
+    fVertexMode("random")
 {
   fMessenger = std::make_unique<G4GenericMessenger>(
     this, "/xi/", "Xi- capture at rest");
@@ -31,6 +34,12 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   fMessenger->DeclareProperty("channel", fChannel,
                               "Products separated by commas");
   fMessenger->DeclareProperty("seed", fSeed, "Seed of TGenPhaseSpace");
+  auto& mode = fMessenger->DeclareProperty(
+    "vertexMode", fVertexMode,
+    "random: uniform in thick emulsion layers, fixed: /xi/vertex");
+  mode.SetCandidates("random fixed");
+  fMessenger->DeclarePropertyWithUnit("vertex", "um", fVertex,
+                                      "Capture point for the fixed mode");
 }
 
 void PrimaryGeneratorAction::Initialize()
@@ -71,8 +80,13 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
 {
   if (!fInitialized) Initialize();
 
+  if (fVertexMode == "random") {
+    const auto* detector = static_cast<const DetectorConstruction*>(
+      G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+    fVertex = detector->SampleVertex();
+  }
   const auto momenta = GeneratePhaseSpace(fInitialMass, fProducts);
-  auto* vertex = new G4PrimaryVertex(G4ThreeVector(), 0.);
+  auto* vertex = new G4PrimaryVertex(fVertex, 0.);
   for (std::size_t i = 0; i < fProducts.size(); ++i) {
     auto* particle = new G4PrimaryParticle(
       SpeciesTable::Definition(fProducts[i]));

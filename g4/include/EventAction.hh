@@ -19,6 +19,8 @@ public:
 
   void Book(TTree* tree);
   void RecordStep(const G4Step* step);
+  // Called for a track leaving the module
+  void MarkEscaped(int trackId);
 
 private:
   TTree* fTree = nullptr;
@@ -27,9 +29,12 @@ private:
   int fEventId = 0;
   std::string fChannel;
   double fQValue = 0.;
+  double fVx = 0., fVy = 0., fVz = 0.;  // capture point (um)
+  // No charged capture / decay product left the module
+  bool fContained = true;
   std::vector<int> fTrackId, fParentId;
   std::vector<std::string> fName, fProcess;
-  std::vector<int> fZ, fA, fNLambda;
+  std::vector<int> fZ, fA, fNLambda, fEscaped;
   std::vector<double> fKE, fPx, fPy, fPz;     // MeV, MeV/c
   std::vector<double> fRange, fLength;         // um
   std::vector<std::vector<float>> fX, fY, fZpos, fEdep;  // um, MeV

@@ -79,8 +79,9 @@ hypernuclei (or a free Lambda), which decay in turn.
 
 `emulsim` generates one channel of Xi- capture at rest with
 `TGenPhaseSpace` (isotropic, unweighted n-body phase space, masses from
-`output/species.csv` / `output/targets.csv`) and tracks the products in
-a uniform emulsion block with the capture point at its center. Stopped
+`output/species.csv` / `output/targets.csv`) at a random point in the
+emulsion layers of an E07 emulsion module and tracks the products.
+Stopped
 hypernuclei decay at rest into a channel of `output/decays.csv`, again
 with phase-space kinematics, so that chains such as
 LL6He -> L5He + p + pi-, L5He -> 4He + p + pi- are followed.
@@ -103,13 +104,19 @@ Macro commands:
 | Command | Default | Meaning |
 |---------|---------|---------|
 | `/emul/density` | 3.53 | Emulsion density (g/cm3) |
-| `/emul/halfSize` | 20 mm | Half width of the emulsion block |
+| `/emul/sheetX`, `/emul/sheetY` | 345 mm, 350 mm | Sheet area |
+| `/emul/thickEmulsion`, `/emul/thickBase` | 450 um, 40 um | Thick sheet: emulsion (per side), base |
+| `/emul/thinEmulsion`, `/emul/thinBase` | 100 um, 180 um | Thin sheet: emulsion (per side), base |
+| `/emul/numThick` | 11 | Number of thick sheets |
+| `/emul/numThinUp`, `/emul/numThinDown` | 1, 1 | Thin sheets upstream / downstream |
 | `/emul/minStep`, `/emul/maxStep` | 0.1 um, 10 um | Bounds of the step limit |
 | `/emul/rangeFraction` | 0.01 | Step limit / estimated residual range |
 | `/xi/speciesFile`, `/xi/targetsFile`, `/xi/decaysFile` | `../../output/*.csv` | Tables |
 | `/xi/target` | `12C` | `12C`, `14N` or `16O` |
 | `/xi/channel` | `LL6He,4He,t` | Products, comma separated, names as in `species.csv` |
 | `/xi/seed` | 12345 | Seed of `gRandom` (TGenPhaseSpace) |
+| `/xi/vertexMode` | `random` | `random`: uniform in the thick emulsion layers; `fixed`: `/xi/vertex` |
+| `/xi/vertex` | 0 0 0 um | Capture point for the fixed mode |
 | `/decay/policy` | `simple` | Choice of the decay channel (see below) |
 | `/decay/channel <parent> <products>` | | Fix the channel of one parent, e.g. `LL6He L5He,p,pi-` |
 | `/out/file` | `emulsim.root` | Output file |
@@ -123,6 +130,18 @@ Decay policies (branching ratios are **not** physical):
   (falls back to all modes if no pi- mode is open).
 - `uniform`: any channel of `decays.csv` with equal probability.
 - `uniformPiMinus`: any pi- channel with equal probability.
+
+### Geometry
+
+One E07 emulsion module (nominal thicknesses before development): thin
+sheet + 11 thick sheets + thin sheet stacked along the beam axis z
+without gaps, each sheet being emulsion | polystyrene base | emulsion,
+area 345 x 350 mm2, total thickness 11.1 mm, centered at the origin
+inside an air world. The thin-sheet thicknesses and the emulsion
+thickness at exposure (the measured sheet thickness of about 1.1 mm in
+kinema suggests ~530 um per side) should be confirmed.
+
+A track that leaves the module is flagged (`escaped`) and killed.
 
 ### Physics
 
@@ -144,18 +163,29 @@ Decay policies (branching ratios are **not** physical):
 
 ### Output (`tree`)
 
-One entry per event. All tracks except e+-, gamma and neutrinos are
-stored as vectors: `id`, `parent` (0 for capture products), `process`
-(creator: `primary`, `HypernucleusDecay`, `hBertiniCaptureAtRest`, ...),
-`name`, `z`, `a`, `nl`, `ke` (MeV), `px/py/pz` (MeV/c), `range`
+One entry per event with the capture point `vx/vy/vz` (um) and
+`contained` (no charged capture or hypernuclear decay product left the
+module). All tracks except e+-, gamma and neutrinos are stored as
+vectors: `id`, `parent` (0 for capture products), `process` (creator:
+`primary`, `HypernucleusDecay`, `hBertiniCaptureAtRest`, ...), `name`,
+`z`, `a`, `nl`, `escaped`, `ke` (MeV), `px/py/pz` (MeV/c), `range`
 (start-to-end distance, um), `length` (path length, um), step points
-`x/y/zpos` (um) and `edep` (MeV). About 0.17 MB per event for nagara.mac.
+`x/y/zpos` (um) and `edep` (MeV). About 0.11 MB per event for
+nagara.mac.
+
+The tree `layers` lists the module layers (`sheet`, `emulsion`, `thick`,
+`zmin`, `zmax`, `halfx`, `halfy` in um).
 
 ### Scripts
 
 - `g4/scripts/draw_event.py file.root --event N [--zoom 40] [--neutral]
-  -o ev.png`: XY / XZ projections; capture products thick, decay
-  products medium, other secondaries thin.
+  -o ev.png`: event display relative to the capture point; top row
+  +-zoom um, bottom row the whole capture / decay chain; columns XY
+  (sheet plane), ZX, ZY with base films shaded and the outside of the
+  module hatched. Capture products thick, decay products medium, other
+  secondaries thin; escaping tracks end with an open circle.
+- `g4/scripts/summary.py file.root -o summary.png`: capture-point depth
+  of all / contained events and escape fraction per particle.
 - `g4/scripts/check_range.py file.root --kinema <kinema dir>
   --density 3.53`: compares Geant4 ranges of the capture products with
   the kinema range-energy relation (`rangeenergy.py`) and checks

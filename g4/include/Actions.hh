@@ -19,6 +19,8 @@ public:
   void EndOfRunAction(const G4Run* run) override;
 
 private:
+  void WriteGeometry() const;
+
   EventAction* fEventAction;
   std::string fFileName = "emulsim.root";
   TFile* fFile = nullptr;
