@@ -20,6 +20,10 @@ A candidate z range counts as distance zero for truths inside it. The
 full-scan criterion of tests/specials_gt.json (200 px in XY and the true
 depth inside [z_min - 30 um, z_max + 30 um] of stage z) is also given.
 
+--space undeveloped compares in the emulsion before development instead
+(z distances multiplied by the shrinkage factor Sh); x and y are the
+same in both spaces.
+
 Chance coincidences are estimated by shifting all true vertices by
 --shift-px in x (wrapping inside the view) and matching again.
 """
@@ -74,10 +78,12 @@ def stage_z(truth, slice_index):
   return slice_index * truth["stage_dz_mm"]
 
 
-def distances(truth, verts, cands):
+def distances(truth, verts, cands, space):
   """3-D distance (um) and full-scan criterion for every pair."""
   pix, dz_um, sdz = truth["pixel_um"], truth["physical_dz_um"], \
     truth["stage_dz_mm"]
+  if space == "undeveloped":
+    dz_um *= truth["shrink"]
   n, m = len(verts), len(cands)
   dist = np.full((n, m), np.inf)
   fullscan = np.zeros((n, m), dtype=bool)
@@ -127,7 +133,7 @@ def ll_track_length(truth):
   return None
 
 
-def evaluate(events, cands, tolerances, shift_px):
+def evaluate(events, cands, tolerances, shift_px, space):
   rows = []
   for name, truth in events.items():
     verts = [v for v in truth["vertices"] if v["in_view"]]
@@ -138,7 +144,7 @@ def evaluate(events, cands, tolerances, shift_px):
       if not vs:
         continue
       if cs:
-        dist, fullscan = distances(truth, vs, cs)
+        dist, fullscan = distances(truth, vs, cs, space)
       else:
         dist = np.full((len(vs), 0), np.inf)
         fullscan = np.zeros((len(vs), 0), dtype=bool)
@@ -251,6 +257,9 @@ def main():
   parser.add_argument("--tolerances", default=DEFAULT_TOLERANCES,
                       help="3-D tolerances in um, comma separated")
   parser.add_argument("--shift-px", type=float, default=DEFAULT_SHIFT_PX)
+  parser.add_argument("--space", choices=["developed", "undeveloped"],
+                      default="developed",
+                      help="emulsion space of the 3-D matching")
   parser.add_argument("--details", help="write per-vertex rows to CSV")
   parser.add_argument("-o", "--output", help="efficiency plot (PNG)")
   args = parser.parse_args()
@@ -258,7 +267,10 @@ def main():
   tolerances = [float(t) for t in args.tolerances.split(",")]
   events = load_truth(args.dataset)
   cands = load_candidates(args.candidates)
-  rows = evaluate(events, cands, tolerances, args.shift_px)
+  rows = evaluate(events, cands, tolerances, args.shift_px, args.space)
+  print(f"3-D matching in the {args.space} emulsion "
+        "(x, y unchanged; z = slice x physical_dz_um"
+        + (" x Sh" if args.space == "undeveloped" else "") + ")")
   summarize(rows, tolerances)
   if args.details:
     with open(args.details, "w", newline="") as f:

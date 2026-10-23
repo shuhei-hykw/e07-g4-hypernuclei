@@ -265,7 +265,7 @@ Files per event:
 |------|---------|
 | `0000.png` ... | 8-bit grayscale slices |
 | `image.json` | full-scan JSON (`SpngReader`): `AffineP2S` in mm, stage z per slice (`--stage-dz`, default -0.003 mm as tohoku-v1), `Sh` |
-| `truth.json` | vertices (`capture`, `HypernucleusDecay`, `hBertiniCaptureAtRest`, `Decay`) with col / row / slice and `in_view`; charged tracks with origin, start / end, `vertex_start` / `vertex_end`, 3-D `polyline` (2 um steps); dataset parameters |
+| `truth.json` | col / row / slice and `polyline` are image (developed) coordinates, `um` the Geant4 (undeveloped) position; vertices (`capture`, `HypernucleusDecay`, `hBertiniCaptureAtRest`, `Decay`) with col / row / slice and `in_view`; charged tracks with origin, start / end, `vertex_start` / `vertex_end`, 3-D `polyline` (2 um steps); dataset parameters |
 | `labels.npz` | per slice: `labels` class of in-focus grains (1 capture, 2 decay, 3 other secondary, 4 background track, 5 junk) and `instance` (track id; negative for background tracks and junk) |
 | `preview.png` | minimum projection: crop around the capture point and the whole view |
 
@@ -284,7 +284,9 @@ method (columns `event`, `vx_px`, `vy_px`, `z_min`/`z_max` or `z_mean`
 in stage mm, optional `n_tracks_max`). True and candidate vertices are
 matched one-to-one in 3-D distance in the developed emulsion for each
 tolerance; the full-scan criterion (200 px XY, depth within the
-candidate z range +- 30 um) is also reported. A control sample shifts
+candidate z range +- 30 um) is also reported. The matching space is
+printed: `--space developed` (default, image space) or `undeveloped`
+(z distances x Sh, the Geant4 space). A control sample shifts
 the true vertices by 600 px to estimate chance matches. The summary
 gives the efficiency per vertex type and for "LL event" (capture and
 double-Lambda decay vertex both found); the plot shows efficiency vs
