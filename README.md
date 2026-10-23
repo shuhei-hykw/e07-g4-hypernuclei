@@ -33,6 +33,7 @@ Everything is driven by `./run.py` (`./run.py --help`, `./run.py <command>
 | `compare` | `module/imagestats.py` | image statistics of real vs synthetic stacks |
 | `calibrate` | `module/synth/calibrate.py` | `output/image_model.json` tuned image model |
 | `flatfield` | `module/synth/flatfield.py` | `output/flatfield.npy` illumination profile |
+| `validate` | `module/synth/validate.py` | `output/realism.md` realism on held-out real views |
 | `efficiency` | `module/efficiency.py` | vertex-finding efficiency vs truth |
 | `setup` | | `channels` + `decays` + `build` |
 
@@ -360,23 +361,32 @@ faint as real MIP tracks. The tuned model (v3) puts the beam density at
 about 1e4 tracks / mm2 nearly perpendicular to the sheets (slope ~0.01),
 consistent with the long-range slice correlation.
 
-Image model v4 (`output/image_model.json`, the default): besides the
-statistics above, the calibration matches the elongated components
-(track segments) of single slices, the raw power spectrum in three
-frequency bands (clouds and lines), the shape of the background-
-subtracted intensity distribution (skewness, kurtosis, interquartile
-range, which set the binarized foreground fraction), the fraction of
-near-saturated pixels and the minimum projection over the used slices.
-Full-size v4 images against two real views: foreground fraction 0.38
-(real 0.32-0.34), elongated components 14 / Mpx (13-25), skewness /
-kurtosis 0.93 / 5.5 (0.95-1.05 / 5.1-5.4), near-saturated 1.1 % (1-4 %),
-minimum-projection detail 14.3 (12.1-12.7), power bands within ~0.3
-dex; the remaining differences are the slice correlation at 13 slices
-(0.33 vs 0.19) and flat lines that look more beaded than the smooth
-real ones. Heavy signal tracks (Ibuki replay): depth 0.11-0.22 and
-width 3-4 px on minimum projections (real Ibuki heavy track 0.22 / 4
-px). Model v3 (`data/image_model_v3.json`) was used for the v3_*
-evaluation datasets.
+Image model v11 (`output/image_model.json`, the default) adds to the
+model flat tracks nearly in the sheet plane, mottle that decorrelates in
+depth (`mottle_z_um`), a static fine texture and an optics / camera blur
+of the transmitted image (0.5 px); straight background tracks have a
+fixed length (1 mm) and flat / isotropic ones a density per volume, so
+that the grain density does not depend on the view size or stack depth.
+The calibration matches, besides the statistics above, elongated
+components, the raw power spectrum in three bands, the shape of the
+background-subtracted intensity distribution, the near-saturated
+fraction and the minimum projection; its loss is the mean squared z
+score in units of the real view-to-view spread, with patch statistics
+averaged over three seeds.
+
+`./run.py validate data/images/<dataset>` compares a synthetic dataset
+with 20 real views not used in the calibration (`output/realism.md`).
+For v11 19 of 23 statistics are within 3 spreads of the real views
+(intensity percentiles, binarized foreground fraction, distribution
+shape, elongated components, slice correlation at 1-5 slices, dark
+blobs); the remaining deviations are the high-frequency power (+0.07
+dex), the 90 % component area (36 vs 28 px), the slice correlation at
+13 slices (0.14 vs 0.18) and the minimum-projection detail (+5 %).
+With synthetic v4 images method A of e07-fullscan finds ~795
+candidates per view, as on real views (~770; v3: ~40). Heavy signal
+tracks have depth 0.11-0.22 and width 3-4 px on minimum projections
+(real Ibuki heavy track 0.22 / 4 px). The v3_* evaluation datasets were
+made with model v3 (`data/image_model_v3.json`).
 
 `./run.py flatfield` stores the median middle slice of 20 real views
 (smoothed, normalized to 1 at the center) in `output/flatfield.npy`:
