@@ -14,6 +14,7 @@ Commands:
   summary      containment summary plot (PNG)
   check-range  compare Geant4 ranges with the kinema range-energy relation
   images       render microscope image stacks  -> data/images/<name>/
+  efficiency   vertex-finding efficiency of candidates vs truth
   setup        channels + decays + build
 
 Typical:
@@ -39,6 +40,7 @@ COMMANDS: dict[str, str] = {
   "summary":     "module.summary",
   "check-range": "module.check_range",
   "images":      "module.synth.cli",
+  "efficiency":  "module.efficiency",
 }
 SEQUENCES: dict[str, list[str]] = {
   "setup": ["channels", "decays", "build"],

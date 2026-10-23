@@ -28,6 +28,8 @@ Everything is driven by `./run.py` (`./run.py --help`, `./run.py <command>
 | `draw` | `module/draw_event.py` | event display PNG |
 | `summary` | `module/summary.py` | containment summary PNG |
 | `check-range` | `module/check_range.py` | range comparison with kinema |
+| `images` | `module/synth/` | `data/images/<name>/ev<NNNN>/` microscope stacks |
+| `efficiency` | `module/efficiency.py` | vertex-finding efficiency vs truth |
 | `setup` | | `channels` + `decays` + `build` |
 
 Layout: `module/` Python package, `g4/` Geant4 application (C++),
@@ -226,3 +228,64 @@ With the default emulsion model the Geant4 ranges of t and alpha are
 about 5 % shorter than the kinema relation at the same density; the
 density / composition should be calibrated (e.g. with 8.78 MeV alpha
 from ThC') before quantitative use.
+
+## Synthetic microscope images (`./run.py images`)
+
+```
+./run.py images data/sim/nagara.root --events 0-99 -j 20 --name nagara_dz3.0
+./run.py images data/sim/nagara.root --events 0-99 -j 20 --dz 1.5 \
+  --name nagara_dz1.5
+```
+
+Each simulated event becomes one view of the E07 full scan
+(`module/synth/render.py` holds all model parameters):
+
+- Geometry: 2048 x 2048 px at 0.289 um/px, 60 slices. `--dz` is the
+  physical focal step per slice in the developed emulsion (default 3.0
+  um; 1.5 um is the alternative under discussion); emulsion layers
+  shrink along z by `--shrink` (1.9) on development, base films do not.
+  The capture point is placed at a random x, y in the view (100 px from
+  the edges) and the stack at a random depth inside its emulsion layer
+  (`--centered` puts it in the middle).
+- Grains: along each charged track, Poisson with a linear density
+  saturating in dE/dx (14.8 grains / 100 um for a MIP, 2.5 / um at
+  saturation), only inside emulsion layers; fog 6e-3 grains / um3;
+  lognormal grain darkness.
+- Optics: a grain at defocus dz is a Gaussian of width
+  sqrt(s0^2 + (k dz)^2) (s0 = 0.35 um, k = 0.35) with constant
+  integrated density; I = B (t_min + (1 - t_min) exp(-sum D)) with a
+  mottled brightness B (two scales), t_min = 0.4 and pixel noise.
+- Background: 100 nearly parallel beam MIP tracks (axis within 0.1 of
+  z, 0.01 spread), 15 isotropic straight tracks of 1-4 x MIP ionization,
+  20 large junk clusters and 200 dead pixels per view.
+
+Files per event:
+
+| File | Content |
+|------|---------|
+| `0000.png` ... | 8-bit grayscale slices |
+| `image.json` | full-scan JSON (`SpngReader`): `AffineP2S` in mm, stage z per slice (`--stage-dz`, default -0.003 mm as tohoku-v1), `Sh` |
+| `truth.json` | vertices (`capture`, `HypernucleusDecay`, `hBertiniCaptureAtRest`, `Decay`) with col / row / slice and `in_view`; charged tracks with origin, start / end, `vertex_start` / `vertex_end`, 3-D `polyline` (2 um steps); dataset parameters |
+| `labels.npz` | per slice: `labels` class of in-focus grains (1 capture, 2 decay, 3 other secondary, 4 background track, 5 junk) and `instance` (track id; negative for background tracks and junk) |
+| `preview.png` | minimum projection: crop around the capture point and the whole view |
+
+Rendering takes about 70 s and 170 MB per event (`-j` renders events in
+parallel).
+
+## Vertex-finding efficiency (`./run.py efficiency`)
+
+```
+./run.py efficiency data/images/nagara_dz3.0 candidates.csv \
+  --tolerances 6,12,30 --details eff.csv -o eff.png
+```
+
+`candidates.csv` holds the merged vertex candidates of a full-scan
+method (columns `event`, `vx_px`, `vy_px`, `z_min`/`z_max` or `z_mean`
+in stage mm, optional `n_tracks_max`). True and candidate vertices are
+matched one-to-one in 3-D distance in the developed emulsion for each
+tolerance; the full-scan criterion (200 px XY, depth within the
+candidate z range +- 30 um) is also reported. A control sample shifts
+the true vertices by 600 px to estimate chance matches. The summary
+gives the efficiency per vertex type and for "LL event" (capture and
+double-Lambda decay vertex both found); the plot shows efficiency vs
+tolerance and vs the range of the double-Lambda hypernucleus.
