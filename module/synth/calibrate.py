@@ -115,9 +115,12 @@ def load_model(path):
   return json.loads(open(path).read())["params"]
 
 
+DZ_UM = render.Optics.dz_um  # physical focal step (set by --dz)
+
+
 def make_models(values):
   optics = replace(render.Optics(), size_px=CROP_PX,
-                   n_slices=2 * max(OFFSETS) + 1)
+                   n_slices=2 * max(OFFSETS) + 1, dz_um=DZ_UM)
   background = replace(render.Background(), n_dead_pixels=0)
   return apply_values(values, optics, render.Emulsion(), background)
 
@@ -214,7 +217,14 @@ def main():
   parser.add_argument("--views", type=int, default=6)
   parser.add_argument("--iterations", type=int, default=120)
   parser.add_argument("--seed", type=int, default=0)
+  parser.add_argument("--dz", type=float, default=render.Optics.dz_um,
+                      help="physical focal step per slice (um)")
+  parser.add_argument("--output", default=str(config.OUTPUT_DIR
+                                              / MODEL_FILE),
+                      help="model file (also the start point if present)")
   args = parser.parse_args()
+  global DZ_UM
+  DZ_UM = args.dz
 
   target_file = config.OUTPUT_DIR / "real_image_stats.json"
   targets, views = real_targets(args.views, args.seed)
@@ -223,7 +233,7 @@ def main():
   print("targets:", {k: round(v, 3) for k, v in targets.items()})
 
   rng = np.random.default_rng(args.seed)
-  best = start_values(config.OUTPUT_DIR / MODEL_FILE)
+  best = start_values(Path(args.output))
   best_stats = flatten(st.stack_stats(render_patch(best, 1), CROP_PX,
                                       OFFSETS))
   best_loss = loss(best_stats, targets)
@@ -240,10 +250,10 @@ def main():
   print("final stats vs targets:")
   for k in TARGETS:
     print(f"  {k:22s} {best_stats[k]:10.4g} {targets[k]:10.4g}")
-  (config.OUTPUT_DIR / MODEL_FILE).write_text(json.dumps(
+  Path(args.output).write_text(json.dumps(
     {"params": best, "loss": best_loss, "stats": best_stats,
-     "targets": targets}, indent=1))
-  print(f"-> {config.OUTPUT_DIR / MODEL_FILE}")
+     "targets": targets, "dz_um": DZ_UM}, indent=1))
+  print(f"-> {args.output}")
 
 
 if __name__ == "__main__":

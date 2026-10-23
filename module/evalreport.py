@@ -163,28 +163,66 @@ def main():
   out += zb_rows + [""]
 
   # 3. B' vs method A
-  out += ["## 4. Method B' vs method A (dz 3.0, 5 events)", "",
+  out += ["## 4. Method B' vs method A (5 events per dz)", "",
           "B' candidates are points (all depth conventions coincide); "
-          "multiplicity cuts on the branch-point multiplicity.", "",
-          "| method | vertex | <6 um | <12 um | cand/event |",
-          "|---|---|---|---|---|"]
-  pairs = [("A production (inclusive)",
-            "v3_embed_nagara5_dz3.0_methodA_production.csv", None,
-            "inclusive"),
-           ("B' all", "v3_embed_nagara5_dz3.0_bprime.csv", None, "edge"),
-           ("B' mult >= 3", "v3_embed_nagara5_dz3.0_bprime.csv", 3, "edge"),
-           ("B' mult >= 4", "v3_embed_nagara5_dz3.0_bprime.csv", 4, "edge")]
-  for label, name, min_score, metric in pairs:
-    path = cdir / name
+          "multiplicity cuts on the branch-point multiplicity. Method A "
+          "uses the inclusive convention (these files have no z_best).",
+          "", "| dz | method | vertex | <6 um | <12 um | cand/event |",
+          "|---|---|---|---|---|---|"]
+  for dz in ("3.0", "1.5"):
+    ds = f"v3_embed_nagara5_dz{dz}"
+    pairs = [("A production", f"{ds}_methodA_production.csv", None,
+              "inclusive"),
+             ("B' all", f"{ds}_bprime.csv", None, "edge"),
+             ("B' mult >= 3", f"{ds}_bprime.csv", 3, "edge"),
+             ("B' mult >= 4", f"{ds}_bprime.csv", 4, "edge")]
+    for label, name, min_score, metric in pairs:
+      path = cdir / name
+      if not path.exists():
+        continue
+      events, cands, rows, extra = efficiency_rows(ds, path, min_score)
+      per_event = extra["n_candidates"] / len(events)
+      for vlabel, vtype in VERTICES:
+        out.append(f"| {dz} | {label} | {vlabel} | "
+                   + " | ".join(cell(rows, vtype, metric, t) for t in TOLS)
+                   + f" | {per_event:.0f} |")
+  out.append("")
+
+  # 5. other channels with method A
+  others = [("v3_embed_ll11be_dz3.0", "Xi- + 14N -> LL11Be + 4He"),
+            ("v3_embed_ibuki_dz3.0", "Xi- + 14N -> L10Be + L5He (twin)"),
+            ("v3_embed_nagara_replay_dz3.0", "Nagara replay"),
+            ("v3_embed_ibuki_replay_dz3.0", "Ibuki replay"),
+            ("v3_synth_nagara_replay_dz3.0", "Nagara replay, synthetic"),
+            ("v3_synth_ibuki_replay_dz3.0", "Ibuki replay, synthetic")]
+  lines = []
+  for ds, label in others:
+    path = cdir / f"{ds}_methodA_production.csv"
     if not path.exists():
       continue
-    events, cands, rows, extra = efficiency_rows("v3_embed_nagara5_dz3.0",
-                                                 path, min_score)
+    events, cands, rows, extra = efficiency_rows(ds, path)
     per_event = extra["n_candidates"] / len(events)
-    for vlabel, vtype in VERTICES:
-      out.append(f"| {label} | {vlabel} | "
-                 + " | ".join(cell(rows, vtype, metric, t) for t in TOLS)
-                 + f" | {per_event:.0f} |")
+    for vlabel, vtype in (("capture", "capture"),
+                          ("hypernuclear decays", "HypernucleusDecay")):
+      sel = eff._select(rows, vtype, False)
+      ctrl = eff._select(rows, vtype, True)
+      if not sel:
+        continue
+      cells = []
+      for m in ("inclusive", "best"):
+        for t in TOLS:
+          k = f"found_{m}_{t:g}"
+          cells.append(f"{np.mean([r[k] for r in sel]):.0%} "
+                       f"({np.mean([r[k] for r in ctrl]):.0%})"
+                       if k in sel[0] else "-")
+      lines.append(f"| {label} | {vlabel} | {len(sel)} | "
+                   + " | ".join(cells) + f" | {per_event:.0f} |")
+  if lines:
+    out += ["", "## 5. Other channels (method A production, dz 3.0)", "",
+            "| dataset | vertices | n | inclusive <6 um | inclusive <12 um "
+            "| best <6 um | best <12 um | cand/event |",
+            "|---|---|---|---|---|---|---|---|"] + lines
+
   out += ["", "## Reading the tables", "",
           "- Only the excess over the chance level measures vertex finding: "
           "with ~800 method-A candidates per real view a 30 um tolerance "

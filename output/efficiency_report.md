@@ -50,20 +50,36 @@ z_best - z_true (developed um; + = larger slice index = smaller tohoku stage z) 
 | dz 1.5 capture | 95 | +1.6 | -26/+19 | +18.6 | -4.4 | -9.7 |
 | dz 1.5 LL decay | 171 | -1.8 | -24/+13 | +12.0 | -6.0 | -10.5 |
 
-## 4. Method B' vs method A (dz 3.0, 5 events)
+## 4. Method B' vs method A (5 events per dz)
 
-B' candidates are points (all depth conventions coincide); multiplicity cuts on the branch-point multiplicity.
+B' candidates are points (all depth conventions coincide); multiplicity cuts on the branch-point multiplicity. Method A uses the inclusive convention (these files have no z_best).
 
-| method | vertex | <6 um | <12 um | cand/event |
-|---|---|---|---|---|
-| A production (inclusive) | capture | 40% (16%) | 40% (52%) | 777 |
-| A production (inclusive) | LL decay | 25% (12%) | 25% (42%) | 777 |
-| B' all | capture | 20% (22%) | 80% (58%) | 30462 |
-| B' all | LL decay | 25% (18%) | 100% (55%) | 30462 |
-| B' mult >= 3 | capture | 20% (12%) | 60% (36%) | 11030 |
-| B' mult >= 3 | LL decay | 25% (8%) | 50% (32%) | 11030 |
-| B' mult >= 4 | capture | 20% (6%) | 40% (22%) | 4866 |
-| B' mult >= 4 | LL decay | 0% (5%) | 25% (18%) | 4866 |
+| dz | method | vertex | <6 um | <12 um | cand/event |
+|---|---|---|---|---|---|
+| 3.0 | A production | capture | 40% (16%) | 40% (52%) | 777 |
+| 3.0 | A production | LL decay | 25% (12%) | 25% (42%) | 777 |
+| 3.0 | B' all | capture | 20% (22%) | 80% (58%) | 30462 |
+| 3.0 | B' all | LL decay | 25% (18%) | 100% (55%) | 30462 |
+| 3.0 | B' mult >= 3 | capture | 20% (12%) | 60% (36%) | 11030 |
+| 3.0 | B' mult >= 3 | LL decay | 25% (8%) | 50% (32%) | 11030 |
+| 3.0 | B' mult >= 4 | capture | 20% (6%) | 40% (22%) | 4866 |
+| 3.0 | B' mult >= 4 | LL decay | 0% (5%) | 25% (18%) | 4866 |
+| 1.5 | A production | capture | 60% (8%) | 60% (32%) | 771 |
+| 1.5 | A production | LL decay | 25% (8%) | 25% (22%) | 771 |
+| 1.5 | B' all | capture | 0% (2%) | 20% (10%) | 6006 |
+| 1.5 | B' all | LL decay | 0% (0%) | 0% (0%) | 6006 |
+| 1.5 | B' mult >= 3 | capture | 0% (2%) | 20% (10%) | 2168 |
+| 1.5 | B' mult >= 3 | LL decay | 0% (0%) | 0% (0%) | 2168 |
+| 1.5 | B' mult >= 4 | capture | 0% (2%) | 0% (8%) | 936 |
+| 1.5 | B' mult >= 4 | LL decay | 0% (0%) | 0% (0%) | 936 |
+
+
+## 5. Other channels (method A production, dz 3.0)
+
+| dataset | vertices | n | inclusive <6 um | inclusive <12 um | best <6 um | best <12 um | cand/event |
+|---|---|---|---|---|---|---|---|
+| Xi- + 14N -> LL11Be + 4He | capture | 50 | 26% (10%) | 48% (34%) | 6% (1%) | 18% (4%) | 770 |
+| Xi- + 14N -> LL11Be + 4He | hypernuclear decays | 80 | 40% (7%) | 55% (21%) | 9% (1%) | 21% (3%) | 770 |
 
 ## Reading the tables
 
