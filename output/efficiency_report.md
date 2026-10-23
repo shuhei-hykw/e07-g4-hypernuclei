@@ -159,7 +159,7 @@ Best rank of a branch point matching the clicked vertex divided by the number of
 
 
 
-## 5. Other channels (dz 3.0)
+## 5. Other channels (dz 3.0 unless noted)
 
 Method A production with the inclusive and z_best conventions; B' rows (point candidates, multiplicity >= 3) repeat the point distance in both column pairs. The B' replay runs cover the first 10 events (ev0000-0009) of each replay dataset.
 
@@ -187,12 +187,10 @@ Method A production with the inclusive and z_best conventions; B' rows (point ca
 | Nagara replay, synthetic v4 | hypernuclear decays | 20 | 25% (16%) | 70% (50%) | 5% (2%) | 15% (5%) | 794 |
 | Ibuki replay, synthetic v4 | capture | 10 | 30% (23%) | 40% (66%) | 0% (1%) | 10% (6%) | 794 |
 | Ibuki replay, synthetic v4 | hypernuclear decays | 20 | 20% (24%) | 65% (62%) | 5% (1%) | 15% (7%) | 794 |
-| Nagara, synthetic v11 | capture | 10 | 20% (15%) | 50% (53%) | 0% (3%) | 0% (5%) | 906 |
-| Nagara, synthetic v11 | hypernuclear decays | 18 | 17% (20%) | 50% (52%) | 0% (1%) | 6% (10%) | 906 |
-| Nagara replay, synthetic v11 | capture | 10 | 20% (20%) | 60% (38%) | 0% (0%) | 10% (3%) | 905 |
-| Nagara replay, synthetic v11 | hypernuclear decays | 20 | 25% (16%) | 60% (52%) | 0% (0%) | 5% (4%) | 905 |
-| Ibuki replay, synthetic v11 | capture | 10 | 50% (23%) | 70% (67%) | 0% (1%) | 0% (3%) | 909 |
-| Ibuki replay, synthetic v11 | hypernuclear decays | 20 | 25% (20%) | 85% (66%) | 0% (0%) | 25% (8%) | 909 |
+| Nagara replay, synthetic v14 (dz 1.5) | capture | 10 | 20% (17%) | 50% (45%) | 10% (1%) | 30% (7%) | 871 |
+| Nagara replay, synthetic v14 (dz 1.5) | hypernuclear decays | 20 | 20% (18%) | 70% (56%) | 10% (1%) | 25% (12%) | 871 |
+| Ibuki replay, synthetic v14 (dz 1.5) | capture | 10 | 60% (21%) | 80% (61%) | 20% (5%) | 30% (12%) | 883 |
+| Ibuki replay, synthetic v14 (dz 1.5) | hypernuclear decays | 20 | 40% (26%) | 80% (75%) | 0% (3%) | 35% (18%) | 883 |
 
 ## Reading the tables
 
@@ -200,6 +198,6 @@ Method A production with the inclusive and z_best conventions; B' rows (point ca
 - The dz comparison shows how method A performs if the physical focal step is 3.0 or 1.5 um per slice; it does not measure the step itself. Calibrating the image model under either step could not distinguish them (output/dz_comparison.md).
 - z_best is pulled towards the middle of the image stack for vertices near its ends (section 3); a correction or a normalization of the crossing counts near the stack ends would sharpen it.
 - Section 4 (5 events per dz) is indicative only; the 20-event comparison is the basis for B' vs A: B' (all branch points) has a larger excess over chance at 6 um than method A but ~40 times more candidates per view, and cuts on the branch multiplicity remove the signal faster than the background.
-- Synthetic v3 images give ~40 method-A candidates per view, synthetic v4 ~795 and v11 ~905, close to the ~770 of real views: these backgrounds reproduce the candidate rate of real data, so their efficiencies can be compared with the embedded ones.
+- Synthetic v3 images give ~40 method-A candidates per view, synthetic v4 ~795, v11 ~905 and v14 ~875, close to the ~770 of real views: these backgrounds reproduce the candidate rate of real data, so their efficiencies can be compared with the embedded ones.
 - The physical step is discussed in output/dz_comparison.md: grains counted along perpendicular beam tracks favour ~1.5 um per slice, given the MIP grain density and Sh = 1.9.
 

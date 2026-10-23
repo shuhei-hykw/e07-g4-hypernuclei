@@ -300,6 +300,8 @@ def main():
                     ("edge", "edge")))
   for ds, label, name, min_score, metrics in sources:
     path = cdir / name
+    if not (config.IMAGE_DIR / ds).exists():
+      continue  # dataset removed (superseded image model)
     if not path.exists() or ("bprime" in name
                              and not path.with_suffix(".done").exists()):
       continue
