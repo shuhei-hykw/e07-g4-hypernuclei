@@ -89,3 +89,17 @@ emulsion. The grain density and the shrinkage enter as a product; if it
 were off by a factor of two the conclusion would change, so an
 independent value (nominal emulsion sensitivity or a measurement) is
 needed to settle the step.
+
+## Attempt at an in-plane MIP grain density (`./run.py mipdensity`)
+
+Sh = 1.9 is recorded by the experiment in the image JSON of the special
+events. For the MIP grain density, peaks were counted along long straight
+components of single slices (flat tracks in focus, exact pixel scale,
+independent of the step). The estimator does not work at this
+resolution: doubling the MIP grain density of the synthetic images
+leaves the counted density unchanged (median 0.84 vs 0.78 per um, the
+counts saturate on the fine texture along the lines), so the real /
+synthetic ratio (1.09) carries no information. The MIP grain density, and
+with it the final decision on the step, still needs an independent value
+(nominal sensitivity of the emulsion batch or a dedicated measurement,
+e.g. grain counting on flat MIP tracks at higher magnification).
