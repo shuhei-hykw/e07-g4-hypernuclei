@@ -53,6 +53,8 @@ PARAMS = {
   "mottle_small": ("background", "mottle", 0.0, 0.3, False),
   "mottle_small_um": ("background", "mottle", 1.5, 15., True),
   "mottle_z_um": ("background", "mottle_z_um", 2., 200., True),
+  "mottle_long_rel": ("background", "mottle_long", 0.0, 0.2, False),
+  "mottle_long_z_um": ("background", "mottle_long", 10., 200., True),
   "min_transmission": ("background", "min_transmission", 0.0, 0.7, False),
   "noise_sigma": ("background", "noise_sigma", 0.3, 6., True),
   "fixed_noise_sigma": ("background", "fixed_noise_sigma", 0.0, 2., False),
@@ -126,12 +128,17 @@ def apply_values(values, optics, emulsion, background):
       objs[obj] = replace(objs[obj], random_track_ionization=(1., v))
     elif name == "flat_ion_max":
       objs[obj] = replace(objs[obj], flat_ionization=(1., v))
+    elif name in ("mottle_long_rel", "mottle_long_z_um"):
+      continue
     elif name == "mottle_z_um" or not name.startswith("mottle"):
       objs[obj] = replace(objs[obj], **{field: v})
   objs["background"] = replace(objs["background"], mottle=(
     (values["mottle_large"], MOTTLE_SCALES_UM[0]),
     (values["mottle_small"],
-     values.get("mottle_small_um", MOTTLE_SCALES_UM[1]))))
+     values.get("mottle_small_um", MOTTLE_SCALES_UM[1]))),
+    mottle_long=(values.get("mottle_long_rel", 0.),
+                 values.get("mottle_small_um", MOTTLE_SCALES_UM[1]),
+                 values.get("mottle_long_z_um", 40.)))
   return objs["optics"], objs["emulsion"], objs["background"]
 
 
@@ -230,6 +237,8 @@ def current_defaults():
           "mottle_small": b.mottle[1][0],
           "mottle_small_um": b.mottle[1][1],
           "mottle_z_um": b.mottle_z_um if b.mottle_z_um > 0 else 30.,
+          "mottle_long_rel": b.mottle_long[0],
+          "mottle_long_z_um": b.mottle_long[2],
           "min_transmission": b.min_transmission,
           "noise_sigma": b.noise_sigma,
           "fixed_noise_sigma": b.fixed_noise_sigma,

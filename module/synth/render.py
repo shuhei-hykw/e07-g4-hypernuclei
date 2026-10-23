@@ -15,7 +15,7 @@ transmission keeps the darkest pixels at the level seen in real images:
   I = B (t_min + (1 - t_min) exp(-sum D)).
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 
@@ -74,6 +74,9 @@ class Background:
   mottle: tuple = ((0.08, 25.), (0.06, 6.))
   # Depth correlation length of the mottle (developed um, 0: static)
   mottle_z_um: float = 0.
+  # Second fine mottle with a long depth correlation: (relative rms,
+  # lateral scale um, depth correlation length um)
+  mottle_long: tuple = (0., 3., 40.)
   min_transmission: float = 0.2     # darkest level relative to B
   noise_sigma: float = 2.           # temporal pixel noise (per slice)
   fixed_noise_sigma: float = 3.     # fixed-pattern noise (all slices)
@@ -371,6 +374,12 @@ class MottleVolume:
 
   def __init__(self, optics, background, rng, zdev_min, zdev_max):
     self.b = background
+    rel, scale, lz2 = background.mottle_long
+    self.long = None
+    if rel > 0.:
+      long_bg = replace(background, mottle=((rel, scale),), mottle_z_um=lz2,
+                        mottle_long=(0., scale, lz2), brightness=1.)
+      self.long = MottleVolume(optics, long_bg, rng, zdev_min, zdev_max)
     self.lz = background.mottle_z_um
     if self.lz <= 0.:
       self.static = mottle_field(optics, background, rng)
@@ -382,14 +391,19 @@ class MottleVolume:
 
   def at(self, zdev):
     if self.lz <= 0.:
-      return self.static
-    t = (zdev - self.z0) / self.lz
-    i = int(np.clip(np.floor(t), 0, len(self.layers) - 2))
-    f = t - i
-    w0, w1 = 1. - f, f
-    norm = np.hypot(w0, w1)
-    rel = (w0 * self.layers[i] + w1 * self.layers[i + 1]) / norm
-    return self.b.brightness * (1. + rel)
+      out = self.static
+    else:
+      t = (zdev - self.z0) / self.lz
+      i = int(np.clip(np.floor(t), 0, len(self.layers) - 2))
+      f = t - i
+      w0, w1 = 1. - f, f
+      norm = np.hypot(w0, w1)
+      rel = (w0 * self.layers[i] + w1 * self.layers[i + 1]) / norm
+      out = self.b.brightness * (1. + rel)
+    if self.long is not None:
+      # Relative modulation by the long-correlated component
+      out = out * self.long.at(zdev)
+    return out
 
 
 def fixed_pattern(optics, background, rng):

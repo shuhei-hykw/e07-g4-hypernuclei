@@ -1,0 +1,32 @@
+{
+ "params": {
+  "brightness": 230.58860800387913,
+  "mottle_large": 0.0,
+  "mottle_small": 0.07531190482071055,
+  "mottle_small_um": 3.112728024346324,
+  "mottle_z_um": 6.127225679791335,
+  "mottle_long_rel": 0.06,
+  "mottle_long_z_um": 60.0,
+  "min_transmission": 0.0,
+  "noise_sigma": 2.4326703761216786,
+  "fixed_noise_sigma": 1.8650447871317404,
+  "grain_sigma_um": 0.28222341698521963,
+  "image_blur_px": 0.5984275066031067,
+  "defocus_slope": 0.1112878013787418,
+  "grain_density": 0.10755568595693933,
+  "fog_per_um3": 0.001067900682857824,
+  "grain_spread": 0.6681741913625759,
+  "beam_per_mm2": 100.0,
+  "beam_slope_max": 0.3,
+  "beam_spread": 0.001,
+  "random_per_mm2": 10.0,
+  "random_ion_max": 12.791325620015149,
+  "blobs_per_mm2": 1.1134579591711389,
+  "flat_per_mm2": 3136.302695554087,
+  "flat_dip_max": 0.016603067394508588,
+  "flat_ion_max": 15.803524751939241,
+  "speckle_rel": 0.0,
+  "speckle_scale_px": 2.2382989076051247
+ },
+ "loss": null
+}
