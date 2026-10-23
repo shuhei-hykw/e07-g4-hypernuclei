@@ -185,6 +185,52 @@ def random_shifts(n, lo, hi, rng):
   return np.column_stack([r * np.cos(a), r * np.sin(a)])
 
 
+def nearest_components(events, cands, shifts, space):
+  """For every truth (true and shifted) the XY distance (um) to the
+  nearest candidate in XY and that candidate's edge z gap (um)."""
+  out = {"true": {}, "control": {}}
+  for name, truth in events.items():
+    verts = [v for v in truth["vertices"] if v["in_view"]]
+    cs = cands.get(name, [])
+    if not verts or not cs:
+      continue
+    pix, dz_um = truth["pixel_um"], truth["physical_dz_um"]
+    if space == "undeveloped":
+      dz_um *= truth["shrink"]
+    sdz = abs(truth["stage_dz_mm"])
+    size = truth.get("size_px", DEFAULT_SIZE_PX)
+    cc = np.array([[c["col"], c["row"]] for c in cs])
+    lo = np.array([c["z"][0] for c in cs])
+    hi = np.array([c["z"][1] for c in cs])
+    samples = [("true", verts)] + [("control", shifted(verts, s, size))
+                                   for s in shifts]
+    for label, vs in samples:
+      for v in vs:
+        dxy = np.hypot(cc[:, 0] - v["col"], cc[:, 1] - v["row"]) * pix
+        j = int(np.argmin(dxy))
+        z = stage_z(truth, v["slice"])
+        gap = min(abs(z - lo[j]), abs(z - hi[j])) / sdz * dz_um
+        out[label].setdefault(v["type"], []).append((dxy[j], gap))
+  return out
+
+
+def print_nearest(near):
+  print("nearest candidate in XY: median XY distance / median edge z gap "
+        "(um), fraction within 6 / 12 um in XY")
+  for vtype in VERTEX_TYPES:
+    cells = []
+    for label in ("true", "control"):
+      vals = np.array(near[label].get(vtype, []))
+      if len(vals) == 0:
+        cells.append(f"{label}: -")
+        continue
+      cells.append(f"{label}: {np.median(vals[:, 0]):6.1f} / "
+                   f"{np.median(vals[:, 1]):6.1f}  "
+                   f"({np.mean(vals[:, 0] < 6):.0%}, "
+                   f"{np.mean(vals[:, 0] < 12):.0%})  n={len(vals)}")
+    print(f"  {vtype:<22} " + "   ".join(cells))
+
+
 def evaluate(events, cands, tolerances, shifts, space):
   rows = []
   extra = {"duplicates": {t: 0 for t in tolerances},
@@ -356,6 +402,9 @@ def main():
                       default=DEFAULT_SHIFT_MAX_PX)
   parser.add_argument("--seed", type=int, default=0)
   parser.add_argument("--details", help="write per-vertex rows to CSV")
+  parser.add_argument("--nearest", action="store_true",
+                      help="XY distance and z gap of the nearest "
+                      "candidate, true vs control")
   parser.add_argument("-o", "--output", help="efficiency plot (PNG)")
   args = parser.parse_args()
 
@@ -372,6 +421,8 @@ def main():
         f"control = mean of {args.n_shifts} random shifts "
         f"({args.shift_min:g}-{args.shift_max:g} px)")
   summarize(rows, extra, tolerances)
+  if args.nearest:
+    print_nearest(nearest_components(events, cands, shifts, args.space))
   if args.details:
     with open(args.details, "w", newline="") as f:
       w = csv.DictWriter(f, fieldnames=list(rows[0]))

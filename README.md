@@ -388,6 +388,9 @@ specification, agreed with the e07-fullscan analysis:
 - Full-scan criterion (200 px XY, depth within 30 um of the z range) as
   a loose recovery measure; "LL event" = capture and double-Lambda decay
   vertex both found; rank by `n_tracks_max`.
+- `--nearest`: XY distance to the nearest candidate in XY and the edge
+  z gap of that candidate, true vs control (separates XY accuracy from
+  the depth convention).
 
 `./run.py report [--pattern 'v3_*']` evaluates every candidate file
 `<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis
