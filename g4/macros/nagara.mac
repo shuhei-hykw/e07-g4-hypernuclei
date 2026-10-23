@@ -1,0 +1,16 @@
+# Xi- + 12C -> LL6He + 4He + t (Nagara-like topology)
+/control/verbose 1
+/run/verbose 1
+
+/emul/density 3.53
+/emul/maxStep 0.1 um
+/run/initialize
+
+/xi/speciesFile ../../output/species.csv
+/xi/targetsFile ../../output/targets.csv
+/xi/target 12C
+/xi/channel LL6He,4He,t
+/xi/seed 1
+/out/file nagara.root
+
+/run/beamOn 1000

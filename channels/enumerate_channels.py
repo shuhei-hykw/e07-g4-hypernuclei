@@ -78,9 +78,14 @@ def two_body_momentum(m0, m1, m2):
   return math.sqrt(max(arg, 0.0)) / (2.0 * m0)
 
 
-def enumerate_target(key, pool, max_bodies):
+def initial_mass(key):
   a, z, b_xi = TARGETS[key]
-  m_init = sp.nuclear_mass(a, z) + sp.M_XI_MINUS - b_xi
+  return sp.nuclear_mass(a, z) + sp.M_XI_MINUS - b_xi
+
+
+def enumerate_target(key, pool, max_bodies):
+  a, z, _ = TARGETS[key]
+  m_init = initial_mass(key)
   rows = []
   for final in partitions(pool, a + 1, z - 1, 2, m_init, max_bodies):
     q = m_init - sum(s.mass for s in final)
@@ -128,6 +133,13 @@ def main():
     for s in sorted(pool, key=lambda x: (x.n_lambda, x.z, x.a)):
       w.writerow([s.name, s.a, s.z, s.n_lambda, f"{s.mass:.3f}",
                   int(s.estimated)])
+
+  with open(os.path.join(args.outdir, "targets.csv"), "w",
+            newline="") as f:
+    w = csv.writer(f)
+    w.writerow(["name", "A", "Z", "b_xi_mev", "m_init_mev"])
+    for key, (a, z, b_xi) in TARGETS.items():
+      w.writerow([key, a, z, b_xi, f"{initial_mass(key):.3f}"])
 
   for key in TARGETS:
     rows = enumerate_target(key, pool, args.max_bodies)
