@@ -33,6 +33,11 @@ then smallest summed distance) is computed too and the difference is
 reported. Candidates within the tolerance of a truth but left unmatched
 are counted as duplicates, separately from fakes.
 
+Background control (--background-candidates): candidates found by the
+same method on the original real views before embedding, keyed by the
+same event names; the true positions are matched against them, which
+measures chance matches with exactly the same background.
+
 Control: the truths are shifted --n-shifts times by a random vector of
 length --shift-min..--shift-max px (wrapping inside the view) and
 matched again; the mean efficiency estimates chance coincidences.
@@ -244,7 +249,7 @@ def print_nearest(near):
     print(f"  {vtype:<22} " + "   ".join(cells))
 
 
-def evaluate(events, cands, tolerances, shifts, space):
+def evaluate(events, cands, tolerances, shifts, space, bg_cands=None):
   rows = []
   extra = {"duplicates": {t: 0 for t in tolerances},
            "optimal_minus_greedy": {t: 0 for t in tolerances},
@@ -254,9 +259,12 @@ def evaluate(events, cands, tolerances, shifts, space):
     cs = sorted(cands.get(name, []), key=lambda c: -c["score"])
     extra["n_candidates"] += len(cs)
     size = truth.get("size_px", DEFAULT_SIZE_PX)
-    samples = [("true", verts)] + [
-      (f"shift{k}", shifted(verts, s, size)) for k, s in enumerate(shifts)]
-    for label, vs in samples:
+    samples = [("true", verts, cs)] + [
+      (f"shift{k}", shifted(verts, s, size), cs)
+      for k, s in enumerate(shifts)]
+    if bg_cands is not None:
+      samples.append(("background", verts, bg_cands.get(name, [])))
+    for label, vs, cs in samples:
       if not vs:
         continue
       if cs:
@@ -292,6 +300,9 @@ def evaluate(events, cands, tolerances, shifts, space):
 
 
 def _select(rows, vtype, control):
+  if control == "background":
+    return [r for r in rows if r["type"] == vtype
+            and r["sample"] == "background"]
   if control:
     return [r for r in rows if r["type"] == vtype
             and r["sample"].startswith("shift")]
@@ -320,11 +331,13 @@ def _ll_events(rows, control, tolerances):
 def summarize(rows, extra, tolerances):
   has_best = any(k.startswith("found_best_") for k in rows[0])
   metrics = ["edge", "inclusive"] + (["best"] if has_best else [])
+  has_bg = any(r["sample"] == "background" for r in rows)
   cols = [f"{m[:4]}<{t:g}" for m in metrics for t in tolerances] \
     + [f"c.{m[:4]}<{t:g}" for m in metrics for t in tolerances] \
-    + ["fullscan"]
-  print("columns: efficiency per depth convention, then the control "
-        "(c.) from shifted truths")
+    + ([f"b.{m[:4]}<{t:g}" for m in metrics for t in tolerances]
+       if has_bg else []) + ["fullscan"]
+  print("columns: efficiency per depth convention, the control (c.) from "
+        "shifted truths and, if given, the background control (b.)")
   print(f"{'type':<22} {'n':>4} " + " ".join(f"{c:>9}" for c in cols))
   for vtype in VERTEX_TYPES + ["LL event"]:
     if vtype == "LL event":
@@ -338,6 +351,10 @@ def summarize(rows, extra, tolerances):
             for m in metrics for t in tolerances]
     vals += [np.mean([r[f"found_{m}_{t:g}"] for r in ctrl]) if ctrl
              else float("nan") for m in metrics for t in tolerances]
+    bg = _select(rows, vtype, "background") if vtype != "LL event" else []
+    if bg:
+      vals += [np.mean([r[f"found_{m}_{t:g}"] for r in bg])
+               for m in metrics for t in tolerances]
     vals.append(np.mean([r["fullscan"] for r in sel]))
     print(f"{vtype:<22} {len(sel):>4} "
           + " ".join(f"{v:9.1%}" for v in vals))
@@ -418,6 +435,9 @@ def main():
   parser.add_argument("--seed", type=int, default=0)
   parser.add_argument("--min-score", type=float,
                       help="keep candidates with n_tracks_max >= this")
+  parser.add_argument("--background-candidates",
+                      help="candidates on the original real views (same "
+                      "event names) for the background control")
   parser.add_argument("--details", help="write per-vertex rows to CSV")
   parser.add_argument("--nearest", action="store_true",
                       help="XY distance and z gap of the nearest "
@@ -430,7 +450,9 @@ def main():
   cands = load_candidates(args.candidates, args.min_score)
   shifts = random_shifts(args.n_shifts, args.shift_min, args.shift_max,
                          np.random.default_rng(args.seed))
-  rows, extra = evaluate(events, cands, tolerances, shifts, args.space)
+  bg = load_candidates(args.background_candidates, args.min_score) \
+    if args.background_candidates else None
+  rows, extra = evaluate(events, cands, tolerances, shifts, args.space, bg)
   print(f"3-D matching in the {args.space} emulsion "
         "(x, y unchanged; z = slice x physical_dz_um"
         + (" x Sh" if args.space == "undeveloped" else "") + "); "

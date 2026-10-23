@@ -391,6 +391,8 @@ specification, agreed with the e07-fullscan analysis:
 - `./run.py zbias <dataset> <csv> --sim <root>`: offset z_best - z_true
   of the XY-nearest candidate, split by layer / stack position, daughter
   z asymmetry and n_tracks_max.
+- `--background-candidates <csv>`: background control with the method
+  run on the original real views (lists in `output/background_views_*`).
 - `--nearest`: XY distance to the nearest candidate in XY and the edge
   z gap of that candidate, true vs control (separates XY accuracy from
   the depth convention).

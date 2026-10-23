@@ -236,13 +236,18 @@ def main():
             "|---|---|---|---|---|---|---|---|"] + lines
 
   out += ["", "## Reading the tables", "",
-          "- Only the excess over the chance level measures vertex finding: "
-          "with ~800 method-A candidates per real view a 30 um tolerance "
-          "is reached by chance in most cases, hence 6 and 12 um here.",
+          "- The excess over the shifted-truth chance level is a measure "
+          "of association, not an efficiency by itself; with ~800 method-A "
+          "candidates per real view a 30 um tolerance is reached by chance "
+          "in most cases, hence 6 and 12 um here. A stronger control is the "
+          "method run on the same real views before embedding "
+          "(`./run.py efficiency --background-candidates`, view lists in "
+          "output/background_views_*.csv).",
           "- The dz comparison shows how method A performs if the "
           "physical focal step is 3.0 or 1.5 um per slice; it does not "
-          "measure the step itself (the image model was tuned to real "
-          "views at 3.0 um).",
+          "measure the step itself. Calibrating the image model under "
+          "either step could not distinguish them "
+          "(output/dz_comparison.md).",
           "- z_best is pulled towards the middle of the image stack for "
           "vertices near its ends (section 3); a correction or a "
           "normalization of the crossing counts near the stack ends would "

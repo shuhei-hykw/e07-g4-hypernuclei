@@ -40,4 +40,12 @@ Same target statistics (6 real tohoku-v1 views, central 1024 px, slices at offse
 | random_ion_max | 3.273 | 4 | 1.22 |
 | blobs_per_mm2 | 3.963 | 3.835 | 0.97 |
 
-Both assumptions reproduce the real statistics, including the decay of the slice correlation: the image statistics constrain only products of the step with the beam angular spread and the defocus blur, so they do not determine the step. Parameter plausibility (beam density per mm2, defocus blur vs objective NA, beam divergence) is the remaining handle.
+Result: the current search could not distinguish the two assumptions.
+Both reach similar losses (0.163 / 0.143) and match the slice
+correlation at offsets 1-13, but both leave large residuals in the same
+places, notably the foreground fraction after binarization (real 0.336,
+both ~0.18) and the intensity percentiles; the model is therefore not
+complete enough for a decision. In addition the slice statistics
+constrain mainly products of the step with the beam angular spread and
+the defocus blur. Independent inputs (beam density per mm2, objective NA,
+beam divergence, measured layer thickness and shrinkage) are needed.
