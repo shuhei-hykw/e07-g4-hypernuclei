@@ -267,7 +267,10 @@ def main():
             ("v3_synth_ibuki_replay_dz3.0", "Ibuki replay, synthetic"),
             ("v4_synth_nagara5_dz3.0", "Nagara, synthetic v4"),
             ("v4_synth_nagara_replay_dz3.0", "Nagara replay, synthetic v4"),
-            ("v4_synth_ibuki_replay_dz3.0", "Ibuki replay, synthetic v4")]
+            ("v4_synth_ibuki_replay_dz3.0", "Ibuki replay, synthetic v4"),
+            ("v11_synth_nagara10_dz3.0", "Nagara, synthetic v11"),
+            ("v11_synth_nagara_replay_dz3.0", "Nagara replay, synthetic v11"),
+            ("v11_synth_ibuki_replay_dz3.0", "Ibuki replay, synthetic v11")]
   lines = []
   sources = []
   for ds, label in others:
@@ -331,9 +334,13 @@ def main():
           "more candidates per view, and cuts on the branch multiplicity "
           "remove the signal faster than the background.",
           "- Synthetic v3 images give ~40 method-A candidates per view, "
-          "synthetic v4 ~795, close to the ~770 of real views: the v4 "
-          "background reproduces the candidate rate of real data, so its "
-          "efficiencies can be compared with the embedded ones."]
+          "synthetic v4 ~795 and v11 ~905, close to the ~770 of real "
+          "views: these backgrounds reproduce the candidate rate of real "
+          "data, so their efficiencies can be compared with the embedded "
+          "ones.",
+          "- The physical step is discussed in output/dz_comparison.md: "
+          "grains counted along perpendicular beam tracks favour ~1.5 um "
+          "per slice, given the MIP grain density and Sh = 1.9."]
   out.append("")
   Path(args.output).write_text("\n".join(out) + "\n")
   print("\n".join(out))

@@ -49,3 +49,31 @@ complete enough for a decision. In addition the slice statistics
 constrain mainly products of the step with the beam angular spread and
 the defocus blur. Independent inputs (beam density per mm2, objective NA,
 beam divergence, measured layer thickness and shrinkage) are needed.
+
+## Grains along perpendicular beam tracks (`./run.py beamgrains`)
+
+A handle that is not degenerate with the beam divergence and the defocus
+blur: a MIP track has a fixed grain density along its length (14.8 /
+100 um undeveloped, e07-fullscan STATUS), i.e. 0.148 x Sh = 0.28 grains
+per developed um along z for a track perpendicular to the sheets, so the
+number of grains seen per slice scales with the physical step. Persistent
+dark dots (perpendicular beam tracks, 150 per view) are found in the
+background-subtracted stack and peaks are counted along their depth
+profile. The same procedure is applied to 4 real views and to synthetic
+views rendered with image model v11 at dz 3.0 and 1.5 um (3 each):
+
+| peak prominence (gray) | real | synthetic dz 3.0 | synthetic dz 1.5 |
+|---|---|---|---|
+| 4 | 0.063 | 0.089 | 0.074 |
+| 6 | 0.032 | 0.064 | 0.033 |
+| 9 | 0.010 | 0.041 | 0.008 |
+| 12 | 0.003 | 0.029 | 0.002 |
+
+Peaks per slice (mean over all dots); the four real views agree within
+0.003. For every threshold the real views match the 1.5 um rendering and
+not the 3.0 um one (the two synthetic sets differ by the expected factor
+of about two). Under the assumptions of the MIP grain density (14.8 /
+100 um) and Sh = 1.9, the data therefore favour a physical step of about
+1.5 um per slice in the developed emulsion; if either assumption were
+off by a factor of two the conclusion would change, so these inputs
+should be confirmed.

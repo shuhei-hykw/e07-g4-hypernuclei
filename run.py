@@ -19,6 +19,7 @@ Commands:
   calibrate    tune the image model to real views -> output/image_model.json
   flatfield    illumination profile of real views -> output/flatfield.npy
   validate     realism of synthetic stacks on held-out real views
+  beamgrains   grains per slice on perpendicular beam tracks (step)
   efficiency   vertex-finding efficiency of candidates vs truth
   report       efficiency table over datasets and methods
   zbias        depth bias of candidate z_best vs truth
@@ -53,6 +54,7 @@ COMMANDS: dict[str, str] = {
   "calibrate":   "module.synth.calibrate",
   "flatfield":   "module.synth.flatfield",
   "validate":    "module.synth.validate",
+  "beamgrains":  "module.beamgrains",
   "efficiency":  "module.efficiency",
   "report":      "module.report",
   "zbias":       "module.zbias",
