@@ -6,7 +6,8 @@
 `candidates.csv` holds the merged vertex candidates of one method, one
 row per candidate, with the columns (extra columns are ignored)
 
-  event         event directory name, e.g. ev0003
+  event         event directory name, e.g. ev0003 (or view_id, the path
+                of the event's image.json as written by the full scan)
   vx_px, vy_px  position in pixels (column, row)
   z_min, z_max  stage z range of the contributing slices (mm), or
   z_mean        a single stage z (mm)
@@ -69,7 +70,8 @@ def load_candidates(path):
         z = float(row["z_mean"])
         c["z"] = (z, z)
       c["score"] = float(row.get("n_tracks_max") or 0.)
-      out.setdefault(row["event"], []).append(c)
+      event = row.get("event") or Path(row["view_id"]).parent.name
+      out.setdefault(event, []).append(c)
   return out
 
 
