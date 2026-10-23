@@ -117,6 +117,10 @@ def collect_grains(ev, view, devz, emulsion, background, rng,
                                             ev.vertex[2], rng)
   offset = len(np.unique(owner))
   add(rand, render.LABEL_BEAM, BACKGROUND_ID0 - offset - owner2)
+  flat, owner4 = render.flat_track_grains(view, background, emulsion,
+                                          ev.vertex[2], rng)
+  offset += len(np.unique(owner2))
+  add(flat, render.LABEL_BEAM, BACKGROUND_ID0 - offset - owner4)
   blobs, owner3 = render.blob_grains(view, background, rng)
   grains.append(blobs)
   classes.append(np.full(len(blobs), render.LABEL_JUNK))

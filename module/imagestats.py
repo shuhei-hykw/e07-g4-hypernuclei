@@ -27,10 +27,13 @@ import numpy as np
 
 BG_SIGMA_PX = 8.0      # cv2.GaussianBlur ksize 51 -> sigma ~8 px
 DARK_FRACTION = 0.05
-N_SPECTRUM_BINS = 40
+N_SPECTRUM_BINS = 120
 HIST_BINS = 64
 MAX_LAG = 2
 DEFAULT_CROP_PX = 1024
+# Bands of the raw radial power spectrum (cycles / px)
+SPECTRUM_BANDS = {"pow_low": (0.004, 0.02), "pow_mid": (0.02, 0.08),
+                  "pow_high": (0.08, 0.3)}
 # Elongated components (track segments): elongation and minimum area
 ELONG_MIN = 5.
 ELONG_MIN_AREA = 30
@@ -197,6 +200,12 @@ def stack_stats(stack, crop, offsets=None):
   dark_area, _ = component_stats(dark)
   contrast = blob_contrast(mid, dark)
   k, power = radial_spectrum(d)
+  # Spectrum of the raw image normalized by its mean (keeps the clouds)
+  kr, praw = radial_spectrum(mid / mid.mean())
+  bands = {}
+  for name, (f0, f1) in SPECTRUM_BANDS.items():
+    sel = (kr >= f0) & (kr < f1)
+    bands[name] = float(np.log10(np.mean(praw[sel])))
   corr = {}
   for k, off in enumerate(offsets):
     if off > 0:
@@ -216,6 +225,7 @@ def stack_stats(stack, crop, offsets=None):
     "dark_contrast_median": float(np.median(contrast)),
     "dark_contrast_p90": float(np.percentile(contrast, 90)),
     "slice_corr": corr,
+    **bands,
     "_raw": raw, "_area": area, "_elong": elong, "_k": k,
     "_power": power, "_dark_area": dark_area,
   }

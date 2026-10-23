@@ -1,0 +1,28 @@
+{
+ "params": {
+  "brightness": 242.73183089759243,
+  "mottle_large": 0.11182182248756634,
+  "mottle_small": 0.2,
+  "mottle_small_um": 6.0,
+  "min_transmission": 0.07028900140506375,
+  "noise_sigma": 1.6606820697526279,
+  "fixed_noise_sigma": 1.923872326688923,
+  "grain_sigma_um": 0.2449470932468489,
+  "defocus_slope": 0.06095382850931541,
+  "grain_density": 0.2,
+  "fog_per_um3": 0.027758812045474486,
+  "grain_spread": 0.3485987757732397,
+  "beam_per_mm2": 10000.0,
+  "beam_slope_max": 0.011950139290712827,
+  "beam_spread": 0.007250732431904458,
+  "random_per_mm2": 647.0155151962239,
+  "random_ion_max": 3.273138384590991,
+  "blobs_per_mm2": 3.962591315099532,
+  "flat_per_mm2": 3000.0,
+  "flat_dip_max": 0.05,
+  "flat_ion_max": 15.0,
+  "speckle_rel": 0.0,
+  "speckle_scale_px": 1.5
+ },
+ "loss": null
+}

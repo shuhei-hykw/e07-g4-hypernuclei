@@ -40,13 +40,15 @@ TARGETS = {
   "dark_contrast_median": (5., False), "dark_contrast_p90": (5., False),
   "corr1": (3., False),
   "corr2": (3., False), "corr5": (3., False), "corr13": (3., False),
-  "fg_fraction": (3., False), "n_elong_per_mpx": (2., True),
+  "fg_fraction": (5., False), "n_elong_per_mpx": (3., True),
+  "pow_low": (3., False), "pow_mid": (3., False), "pow_high": (3., False),
 }
 # Parameter -> (object, field, low, high, log scale)
 PARAMS = {
   "brightness": ("background", "brightness", 150., 280., False),
   "mottle_large": ("background", "mottle", 0.0, 0.25, False),
-  "mottle_small": ("background", "mottle", 0.0, 0.2, False),
+  "mottle_small": ("background", "mottle", 0.0, 0.3, False),
+  "mottle_small_um": ("background", "mottle", 1.5, 15., True),
   "min_transmission": ("background", "min_transmission", 0.0, 0.7, False),
   "noise_sigma": ("background", "noise_sigma", 0.3, 6., True),
   "fixed_noise_sigma": ("background", "fixed_noise_sigma", 0.0, 2., False),
@@ -62,12 +64,18 @@ PARAMS = {
   "random_ion_max": ("background", "random_track_ionization", 1.5, 20.,
                      True),
   "blobs_per_mm2": ("background", "blobs_per_mm2", 1., 3e3, True),
+  "flat_per_mm2": ("background", "flat_per_mm2", 1., 2e4, True),
+  "flat_dip_max": ("background", "flat_dip_max", 0.01, 0.5, True),
+  "flat_ion_max": ("background", "flat_ionization", 1.5, 30., True),
+  "speckle_rel": ("background", "speckle_rel", 0.0, 0.15, False),
+  "speckle_scale_px": ("background", "speckle_scale_px", 0.5, 4., True),
 }
 MOTTLE_SCALES_UM = (25., 6.)
 MAX_MOVED = 3
 # Statistics compared by absolute difference (fractions, correlations)
 ABSOLUTE_STATS = ("corr1", "corr2", "corr5", "corr13", "fg_fraction",
-                  "dark_contrast_median", "dark_contrast_p90")
+                  "dark_contrast_median", "dark_contrast_p90",
+                  "pow_low", "pow_mid", "pow_high")
 MODEL_FILE = "image_model.json"
 # Real views labelled by hand for the full-scan CNN: never used here
 EXCLUDED_VIEWS = ("V00000011", "V00000991", "V00001012", "V00001339")
@@ -102,11 +110,14 @@ def apply_values(values, optics, emulsion, background):
     obj, field, *_ = PARAMS[name]
     if name == "random_ion_max":
       objs[obj] = replace(objs[obj], random_track_ionization=(1., v))
+    elif name == "flat_ion_max":
+      objs[obj] = replace(objs[obj], flat_ionization=(1., v))
     elif not name.startswith("mottle"):
       objs[obj] = replace(objs[obj], **{field: v})
   objs["background"] = replace(objs["background"], mottle=(
     (values["mottle_large"], MOTTLE_SCALES_UM[0]),
-    (values["mottle_small"], MOTTLE_SCALES_UM[1])))
+    (values["mottle_small"],
+     values.get("mottle_small_um", MOTTLE_SCALES_UM[1]))))
   return objs["optics"], objs["emulsion"], objs["background"]
 
 
@@ -139,7 +150,8 @@ def render_patch(values, seed):
   view = render.View(0., 0., float(devz.to_dev(np.array([0.]))[0]),
                      devz, optics)
   grains = [render.fog_grains(view, emulsion, rng)]
-  for maker in (render.beam_grains, render.random_track_grains):
+  for maker in (render.beam_grains, render.random_track_grains,
+                render.flat_track_grains):
     g, _ = maker(view, background, emulsion, 0., rng)
     grains.append(view.to_view(g[devz.in_emulsion(g[:, 2])]))
   blobs, _ = render.blob_grains(view, background, rng)
@@ -181,6 +193,7 @@ def current_defaults():
   o, e, b = render.Optics(), render.Emulsion(), render.Background()
   return {"brightness": b.brightness, "mottle_large": b.mottle[0][0],
           "mottle_small": b.mottle[1][0],
+          "mottle_small_um": b.mottle[1][1],
           "min_transmission": b.min_transmission,
           "noise_sigma": b.noise_sigma,
           "fixed_noise_sigma": b.fixed_noise_sigma,
@@ -192,7 +205,11 @@ def current_defaults():
           "beam_spread": b.beam_spread,
           "random_per_mm2": b.random_per_mm2,
           "random_ion_max": b.random_track_ionization[1],
-          "blobs_per_mm2": b.blobs_per_mm2}
+          "blobs_per_mm2": b.blobs_per_mm2,
+          "flat_per_mm2": b.flat_per_mm2, "flat_dip_max": b.flat_dip_max,
+          "flat_ion_max": b.flat_ionization[1],
+          "speckle_rel": b.speckle_rel,
+          "speckle_scale_px": b.speckle_scale_px}
 
 
 def perturb(values, rng, scale):

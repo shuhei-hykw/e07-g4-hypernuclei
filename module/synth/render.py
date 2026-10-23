@@ -80,6 +80,13 @@ class Background:
   beam_spread: float = 0.01         # rms slope around the beam axis
   random_per_mm2: float = 170.      # isotropic straight tracks
   random_track_ionization: tuple = (1., 4.)  # x MIP grain density
+  # Straight tracks nearly in the sheet plane (|dz/dl| < flat_dip_max)
+  flat_per_mm2: float = 50.
+  flat_dip_max: float = 0.15
+  flat_ionization: tuple = (1., 3.)  # x MIP grain density
+  # Static fine texture (gelatin), smoothed noise common to all slices
+  speckle_rel: float = 0.0
+  speckle_scale_px: float = 1.5
   blobs_per_mm2: float = 230.       # large dark grain clusters (junk)
   n_dead_pixels: int = 0            # pixels dark in every slice (the
                                     # tohoku-v1 dead-pixel map is empty)
@@ -255,6 +262,20 @@ def random_track_grains(view, background, emulsion, vertex_z, rng):
     lambda: emulsion.grains_mip_per_um * rng.uniform(lo, hi), rng)
 
 
+def flat_track_grains(view, background, emulsion, vertex_z, rng):
+  """Straight tracks nearly parallel to the sheets, any azimuth."""
+  def direction():
+    a = rng.uniform(0., 2. * np.pi)
+    dip = rng.uniform(-background.flat_dip_max, background.flat_dip_max)
+    d = np.array([np.cos(a), np.sin(a), dip])
+    return d / np.linalg.norm(d)
+  lo, hi = background.flat_ionization
+  return straight_grains(
+    view, emulsion, vertex_z,
+    view_count(view, background.flat_per_mm2, rng), direction,
+    lambda: emulsion.grains_mip_per_um * rng.uniform(lo, hi), rng)
+
+
 def blob_grains(view, background, rng):
   """Large dark clusters of grains (dust, crystals), in view coords, and
   the index of the cluster of each grain."""
@@ -318,9 +339,19 @@ def mottle_field(optics, background, rng):
 
 
 def fixed_pattern(optics, background, rng):
-  """Per-pixel noise common to all slices of a view."""
-  return rng.normal(0., background.fixed_noise_sigma,
-                    (optics.size_px, optics.size_px))
+  """Per-pixel noise common to all slices of a view (additive, gray
+  levels) and the static fine texture (relative, smoothed)."""
+  n = optics.size_px
+  fixed = rng.normal(0., background.fixed_noise_sigma, (n, n))
+  if background.speckle_rel > 0.:
+    fy = np.fft.fftfreq(n)[:, None]
+    fx = np.fft.rfftfreq(n)[None, :]
+    k = np.exp(-2. * np.pi ** 2 * background.speckle_scale_px ** 2
+               * (fx ** 2 + fy ** 2))
+    sp = np.fft.irfft2(np.fft.rfft2(rng.normal(size=(n, n))) * k, s=(n, n))
+    sp *= background.speckle_rel * background.brightness / (sp.std() or 1.)
+    fixed = fixed + sp
+  return fixed
 
 
 def compose(bright, density, background, fixed, rng):
