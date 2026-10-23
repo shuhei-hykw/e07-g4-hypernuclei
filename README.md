@@ -361,7 +361,7 @@ faint as real MIP tracks. The tuned model (v3) puts the beam density at
 about 1e4 tracks / mm2 nearly perpendicular to the sheets (slope ~0.01),
 consistent with the long-range slice correlation.
 
-Image model v13 (`output/image_model.json`, the default, calibrated for
+Image model v14 (`output/image_model.json`, the default, calibrated for
 a physical step of 1.5 um per slice, now the default `--dz`) adds to the
 model flat tracks nearly in the sheet plane, fine mottle of two depth
 correlation lengths (`mottle_z_um`, `mottle_long`), a static fine
@@ -377,10 +377,11 @@ view-to-view spread, with patch statistics averaged over three seeds.
 
 `./run.py validate data/images/<dataset>` compares a synthetic dataset
 with 20 real views not used in the calibration (`output/realism.md`).
-For v13 20 of 23 statistics are within 3 spreads of the real views,
-including the slice correlation at 1-13 slices; the remaining ones are
-the high-frequency power (+0.05 dex, z = 4.4), the minimum-projection
-detail (+7 %, z = 4.3) and the 90 % component area (+18 %, z = 3.1).
+For v14 all 23 statistics are within 3 spreads of the real views
+(largest deviations: slice correlation at 13 slices z = -2.8,
+minimum-projection detail z = +2.6, high-frequency power z = +2.5). v14
+is v13 refined with `--only` on the grain, blur, flat-track, junk,
+texture and fog parameters.
 With synthetic images method A of e07-fullscan finds 800-900
 candidates per view, as on real views (~770; model v3: ~40). Heavy
 signal tracks have depth 0.11-0.22 and width 3-4 px on minimum
