@@ -59,7 +59,8 @@ PARAMS = {
   "beam_slope_max": ("background", "beam_slope_max", 0.005, 0.3, True),
   "beam_spread": ("background", "beam_spread", 0.001, 0.1, True),
   "grain_sigma_um": ("optics", "grain_sigma_um", 0.15, 1.0, True),
-  "image_blur_px": ("optics", "image_blur_px", 0.0, 3.0, False),
+  # Optics / camera MTF: a blur of at least ~0.5 px is physical
+  "image_blur_px": ("optics", "image_blur_px", 0.5, 0.8, False),
   # Lower bound: defocus blur of an objective with NA >= ~0.1
   "defocus_slope": ("optics", "defocus_slope", 0.03, 0.5, True),
   "grain_density": ("optics", "grain_density", 0.03, 4., True),
