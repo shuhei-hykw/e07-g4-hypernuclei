@@ -80,8 +80,8 @@ MAX_MOVED = 3
 PATCH_SEEDS = (1, 2, 3)
 # Minimum spread used for z scores: fraction of the target value (or of
 # Z_FLOOR_ABS for values near zero)
-Z_FLOOR_REL = 0.02
-Z_FLOOR_ABS = 0.05
+Z_FLOOR_REL = 0.001
+Z_FLOOR_ABS = 0.01
 # Statistics compared by absolute difference (fractions, correlations)
 ABSOLUTE_STATS = ("corr1", "corr2", "corr5", "corr13", "fg_fraction",
                   "dark_contrast_median", "dark_contrast_p90",
