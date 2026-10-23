@@ -74,6 +74,10 @@ B' candidates are points (all depth conventions coincide); multiplicity cuts on 
 |---|---|---|---|---|---|---|---|
 | Xi- + 14N -> LL11Be + 4He | capture | 50 | 26% (10%) | 48% (34%) | 6% (1%) | 18% (4%) | 770 |
 | Xi- + 14N -> LL11Be + 4He | hypernuclear decays | 80 | 40% (7%) | 55% (21%) | 9% (1%) | 21% (3%) | 770 |
+| Xi- + 14N -> L10Be + L5He (twin) | capture | 50 | 28% (12%) | 62% (36%) | 10% (1%) | 20% (6%) | 769 |
+| Xi- + 14N -> L10Be + L5He (twin) | hypernuclear decays | 82 | 30% (14%) | 68% (42%) | 5% (1%) | 29% (7%) | 769 |
+| Nagara replay | capture | 20 | 30% (10%) | 45% (21%) | 5% (0%) | 25% (6%) | 769 |
+| Nagara replay | hypernuclear decays | 36 | 44% (8%) | 72% (30%) | 11% (0%) | 14% (4%) | 769 |
 
 ## Reading the tables
 
