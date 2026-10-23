@@ -1,0 +1,88 @@
+target,category,channel,q_mev,n_bodies,n_charged,n_neutral,p_2body_mev,uses_estimate
+16O,double,LL17N + gamma,44.448,1,1,0,,1
+16O,double,LL16C + p,33.900,2,2,0,246.75,1
+16O,double,LL16N + n,33.274,2,1,1,244.58,1
+16O,double,LL13B + 4He,28.676,2,2,0,406.12,1
+16O,double,LL14C + t,25.459,2,2,0,344.36,1
+16O,double,LL15C + d,25.108,2,2,0,289.33,1
+16O,double,LL15C + p + n,22.884,3,2,1,,1
+16O,double,LL15N + n + n,19.881,3,1,2,,1
+16O,double,LL14C + d + n,19.202,3,2,1,,1
+16O,double,LL14C + p + n + n,16.977,4,2,2,,1
+16O,double,LL12Be + 4He + p,15.188,3,3,0,,1
+16O,double,LL12B + 4He + n,14.962,3,2,1,,1
+16O,double,LL6He + 11B,12.176,2,2,0,302.91,0
+16O,double,LL14B + 3He,12.108,2,2,0,237.29,1
+16O,double,LL9Li + 4He + 4He,10.872,3,3,0,,1
+16O,double,LL10Be + 7Li,10.600,2,2,0,287.58,1
+16O,double,LL15B + p + p,10.229,3,3,0,,1
+16O,double,LL11Be + 6Li,9.814,2,2,0,268.28,1
+16O,double,LL13B + t + p,8.863,3,3,0,,1
+16O,double,LL11Be + 4He + d,8.340,3,3,0,,1
+16O,double,LL10Be + 4He + t,8.133,3,3,0,,1
+16O,double,LL13B + 3He + n,8.099,3,2,1,,1
+16O,double,LL14B + d + p,6.615,3,3,0,,1
+16O,double,LL5H + 12C,6.159,2,2,0,206.82,1
+16O,double,LL11Be + 4He + p + n,6.115,4,3,1,,1
+16O,double,LL13C + t + n,4.878,3,2,1,,1
+16O,double,LL13B + d + d,4.830,3,3,0,,1
+16O,double,LL11B + 6He,4.801,2,2,0,187.66,1
+16O,double,LL14B + p + p + n,4.390,4,3,1,,1
+16O,double,LL11B + 4He + n + n,3.825,4,2,2,,1
+16O,double,LL6He + 7Li + 4He,3.512,3,3,0,,0
+16O,double,LL10Be + 6Li + n,3.349,3,2,1,,1
+16O,double,LL8Li + 9Be,2.754,2,2,0,149.33,1
+16O,double,LL13B + d + p + n,2.605,4,3,1,,1
+16O,double,LL7He + 10B,2.107,2,2,0,129.24,1
+16O,double,LL10Be + 4He + d + n,1.875,4,3,1,,1
+16O,double,LL8Li + 4He + 4He + n,1.181,4,3,1,,1
+16O,double,LL7Li + 10Be,1.103,2,2,0,93.48,1
+16O,double,LL6He + 4He + 4He + t,1.045,4,4,0,,0
+16O,double,LL4H + 13C,1.028,2,2,0,79.42,1
+16O,double,LL6He + 10Be + p,0.948,3,3,0,,0
+16O,double,LL6He + 10B + n,0.722,3,2,1,,0
+16O,double,LL10Be + 6He + p,0.626,3,3,0,,1
+16O,double,LL13B + p + p + n + n,0.381,5,3,2,,1
+16O,twin,L12B + L5He,19.756,2,2,0,366.39,0
+16O,twin,L13C + L4H,15.139,2,2,0,300.20,0
+16O,twin,L14C + L3H,12.398,2,2,0,246.10,0
+16O,twin,L9Be + L8Li,10.020,2,2,0,284.54,0
+16O,twin,L11B + L6He,7.497,2,2,0,236.18,0
+16O,twin,L11Be + L5He + p,7.398,3,3,0,,1
+16O,twin,L11B + L5He + n,7.172,3,2,1,,0
+16O,twin,L13C + L3H + n,6.972,3,2,1,,0
+16O,twin,L8Li + L5He + 4He,6.522,3,3,0,,0
+16O,twin,L10Be + L7Li,5.614,2,2,0,210.16,0
+16O,twin,L9Be + L5He + t,3.873,3,3,0,,0
+16O,twin,L5He + L5He + 7Li,2.842,3,3,0,,0
+16O,twin,L9Be + L4H + 4He,2.793,3,3,0,,0
+16O,twin,L13B + L4He,2.138,2,2,0,112.78,1
+16O,twin,L10Be + L5He + d,1.680,3,3,0,,0
+16O,twin,L9Be + L7Li + n,1.549,3,2,1,,0
+16O,twin,L10B + L7He,0.921,2,2,0,85.11,0
+16O,twin,L5He + L5He + 4He + t,0.375,4,4,0,,0
+16O,single+L,L16N + L,30.018,2,1,1,251.18,0
+16O,single+L,L15C + L + p,19.640,3,2,1,,1
+16O,single+L,L15N + L + n,19.014,3,1,2,,0
+16O,single+L,L12B + L + 4He,16.636,3,2,1,,0
+16O,single+L,L13C + L + t,13.099,3,2,1,,0
+16O,single+L,L14C + L + d,12.268,3,2,1,,0
+16O,single+L,L14C + L + p + n,10.044,4,2,2,,0
+16O,single+L,L5He + L + 11B,8.386,3,2,1,,0
+16O,single+L,L14N + L + n + n,7.041,4,1,3,,1
+16O,single+L,L13C + L + d + n,6.842,4,2,2,,0
+16O,single+L,L13C + L + p + n + n,4.617,5,2,3,,0
+16O,single+L,L11Be + L + 4He + p,4.278,4,3,1,,1
+16O,single+L,L11B + L + 4He + n,4.052,4,2,2,,0
+16O,single+L,L4H + L + 12C,3.449,3,2,1,,0
+16O,single+L,L8Li + L + 4He + 4He,3.402,4,3,1,,0
+16O,single+L,L9Be + L + 7Li,3.220,3,2,1,,0
+16O,single+L,L9Be + L + 4He + t,0.753,4,3,1,,0
+16O,single+L,L3H + L + 13C,0.228,3,2,1,,0
+16O,single+L,L10Be + L + 6Li,0.034,3,2,1,,0
+16O,free-LL,L + L + 15N,16.258,3,1,2,,0
+16O,free-LL,L + L + 14C + p,6.050,4,2,2,,0
+16O,free-LL,L + L + 14N + n,5.424,4,1,3,,0
+16O,free-LL,L + L + 11B + 4He,5.266,4,2,2,,0
+16O,free-LL,L + L + 12C + t,1.409,4,2,2,,0
+16O,free-LL,L + L + 13C + d,0.098,4,2,2,,0
