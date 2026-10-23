@@ -27,6 +27,7 @@ private:
   std::string fSpeciesFile;
   std::string fTargetsFile;
   std::string fDecaysFile;
+  std::string fReplayFile;  // fixed kinematics of an observed event
   std::string fTarget;
   std::string fChannel;  // comma separated, e.g. "LL6He,4He,t"
   int fSeed;
@@ -35,6 +36,7 @@ private:
 
   bool fInitialized = false;
   std::vector<SpeciesInfo> fProducts;
+  const FixedVertex* fReplay = nullptr;
   double fInitialMass = 0.;
   double fQValue = 0.;
   std::unique_ptr<G4GenericMessenger> fMessenger;

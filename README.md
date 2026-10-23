@@ -28,6 +28,7 @@ Everything is driven by `./run.py` (`./run.py --help`, `./run.py <command>
 | `draw` | `module/draw_event.py` | event display PNG |
 | `summary` | `module/summary.py` | containment summary PNG |
 | `check-range` | `module/check_range.py` | range comparison with kinema |
+| `replay` | `module/replay.py` | `output/replay/{nagara,ibuki}.csv` fixed kinematics |
 | `images` | `module/synth/` | `data/images/<name>/ev<NNNN>/` microscope stacks |
 | `efficiency` | `module/efficiency.py` | vertex-finding efficiency vs truth |
 | `setup` | | `channels` + `decays` + `build` |
@@ -129,6 +130,9 @@ with the Geant4 environment:
   --set "/emul/thickEmulsion 530 um"
 ```
 
+Presets `nagara_replay` and `ibuki_replay` reproduce the observed events
+with their measured kinematics (see below).
+
 `--set` passes any macro command below (`/emul/*` are placed before
 `/run/initialize` automatically).
 
@@ -147,6 +151,7 @@ Macro commands:
 | `/xi/speciesFile`, `/xi/targetsFile`, `/xi/decaysFile` | `../../output/*.csv` | Tables |
 | `/xi/target` | `12C` | `12C`, `14N` or `16O` |
 | `/xi/channel` | `LL6He,4He,t` | Products, comma separated, names as in `species.csv` |
+| `/xi/replayFile` | | Fixed momenta of the capture and of hypernuclear decays (overrides `/xi/channel` and the decay policy for the listed parents) |
 | `/xi/seed` | 12345 | Seed of `gRandom` (TGenPhaseSpace) |
 | `/xi/vertexMode` | `random` | `random`: uniform in the thick emulsion layers; `fixed`: `/xi/vertex` |
 | `/xi/vertex` | 0 0 0 um | Capture point for the fixed mode |
@@ -228,6 +233,29 @@ With the default emulsion model the Geant4 ranges of t and alpha are
 about 5 % shorter than the kinema relation at the same density; the
 density / composition should be calibrated (e.g. with 8.78 MeV alpha
 from ThC') before quantitative use.
+
+## Observed events with measured kinematics (`./run.py replay`)
+
+`module/replay.py` converts the measured ranges and angles of Nagara
+(kinema `runcard.json`, NagaraA/B/C, density 3.629) and Ibuki (kinema
+`input/twin_mod047pl10/e07twin_mod047pl10_{A,B,C}.json`, density 3.605)
+into momentum vectors with the kinema range-energy relation, and writes
+`output/replay/<event>.csv` (vertex, name, px, py, pz). The capture
+products and the listed hypernuclear decays are then generated with
+exactly these momenta (`./run.py sim --preset nagara_replay`); the
+capture point and the background are random as usual.
+
+| Vertex | Nagara | Ibuki |
+|--------|--------|-------|
+| A (capture) | LL6He + 4He + t | L10Be + L5He |
+| B | LL6He -> L5He + p + pi- (pi- energy from Q) | L10Be -> d + t + t + p + n (kinema best candidate, not unique) |
+| C | L5He -> d + p + n + n (only balancing 2-prong channel) | L5He -> 4He + pi- + p |
+
+Missing neutrons take the missing momentum (one) or share the missing
+four-momentum isotropically (two, `--seed`). The Geant4 ranges of the
+short tracks reproduce the measured ones within a few percent (e.g.
+Nagara t 88.3 / 88.3 um, Ibuki L10Be 9.2 / 9.17 um); long p and pi-
+tracks may end earlier by interactions or by leaving the module.
 
 ## Synthetic microscope images (`./run.py images`)
 

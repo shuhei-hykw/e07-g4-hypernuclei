@@ -30,6 +30,9 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   fMessenger->DeclareProperty("speciesFile", fSpeciesFile);
   fMessenger->DeclareProperty("targetsFile", fTargetsFile);
   fMessenger->DeclareProperty("decaysFile", fDecaysFile);
+  fMessenger->DeclareProperty(
+    "replayFile", fReplayFile,
+    "Fixed momenta of the capture and decays (overrides /xi/channel)");
   fMessenger->DeclareProperty("target", fTarget, "12C, 14N or 16O");
   fMessenger->DeclareProperty("channel", fChannel,
                               "Products separated by commas");
@@ -49,6 +52,18 @@ void PrimaryGeneratorAction::Initialize()
   table.LoadTargets(fTargetsFile);
   table.LoadDecays(fDecaysFile);
   fInitialMass = table.InitialMass(fTarget);
+  if (!fReplayFile.empty()) {
+    table.LoadReplay(fReplayFile);
+    fReplay = table.Replay("capture");
+    if (!fReplay) {
+      G4Exception("PrimaryGeneratorAction", "Gen004", FatalException,
+                  "replay file has no capture vertex");
+    }
+    fChannel.clear();
+    for (const auto& s : fReplay->products) {
+      fChannel += (fChannel.empty() ? "" : ",") + s.name;
+    }
+  }
   fProducts = table.Parse(fChannel);
 
   int aSum = 0, zSum = 0, lSum = 0;
@@ -85,7 +100,8 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
       G4RunManager::GetRunManager()->GetUserDetectorConstruction());
     fVertex = detector->SampleVertex();
   }
-  const auto momenta = GeneratePhaseSpace(fInitialMass, fProducts);
+  const auto momenta = fReplay
+    ? fReplay->momenta : GeneratePhaseSpace(fInitialMass, fProducts);
   auto* vertex = new G4PrimaryVertex(fVertex, 0.);
   for (std::size_t i = 0; i < fProducts.size(); ++i) {
     auto* particle = new G4PrimaryParticle(

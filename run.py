@@ -13,6 +13,7 @@ Commands:
   draw         event display of one event (PNG)
   summary      containment summary plot (PNG)
   check-range  compare Geant4 ranges with the kinema range-energy relation
+  replay       fixed kinematics of Nagara / Ibuki -> output/replay/
   images       render microscope image stacks  -> data/images/<name>/
   efficiency   vertex-finding efficiency of candidates vs truth
   setup        channels + decays + build
@@ -39,6 +40,7 @@ COMMANDS: dict[str, str] = {
   "draw":        "module.draw_event",
   "summary":     "module.summary",
   "check-range": "module.check_range",
+  "replay":      "module.replay",
   "images":      "module.synth.cli",
   "efficiency":  "module.efficiency",
 }

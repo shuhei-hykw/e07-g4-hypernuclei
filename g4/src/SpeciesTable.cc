@@ -98,6 +98,22 @@ void SpeciesTable::LoadDecays(const std::string& path)
   }
 }
 
+void SpeciesTable::LoadReplay(const std::string& path)
+{
+  for (const auto& c : ReadCsv(path)) {
+    auto& v = fReplay[c[0]];
+    v.products.push_back(Species(c[1]));
+    v.momenta.emplace_back(std::stod(c[2]), std::stod(c[3]),
+                           std::stod(c[4]));
+  }
+}
+
+const FixedVertex* SpeciesTable::Replay(const std::string& vertex) const
+{
+  auto it = fReplay.find(vertex);
+  return it == fReplay.end() ? nullptr : &it->second;
+}
+
 const SpeciesInfo& SpeciesTable::Species(const std::string& name) const
 {
   auto it = fSpecies.find(name);

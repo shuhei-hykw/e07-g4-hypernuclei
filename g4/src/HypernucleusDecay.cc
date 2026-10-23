@@ -111,8 +111,10 @@ G4VParticleChange* HypernucleusDecay::AtRestDoIt(const G4Track& track,
   const auto& table = SpeciesTable::Instance();
   const int z = static_cast<int>(def->GetPDGCharge() / eplus + 0.5);
   const auto* parent = table.Find(z, def->GetBaryonNumber(), nLambda);
-  const auto* channel = parent ? fSelector->Select(parent->name) : nullptr;
-  if (!channel) {
+  const auto* fixed = parent ? table.Replay(parent->name) : nullptr;
+  const auto* channel = parent && !fixed
+    ? fSelector->Select(parent->name) : nullptr;
+  if (!fixed && !channel) {
     static std::set<std::string> warned;
     if (warned.insert(def->GetParticleName()).second) {
       G4Exception("HypernucleusDecay", "Decay002", JustWarning,
@@ -122,10 +124,13 @@ G4VParticleChange* HypernucleusDecay::AtRestDoIt(const G4Track& track,
     return &aParticleChange;
   }
 
-  const auto momenta = GeneratePhaseSpace(parent->mass, channel->products);
+  // Fixed momenta of an observed decay, or phase space
+  const auto& products = fixed ? fixed->products : channel->products;
+  const auto momenta = fixed
+    ? fixed->momenta : GeneratePhaseSpace(parent->mass, products);
   aParticleChange.SetNumberOfSecondaries(momenta.size());
   for (std::size_t i = 0; i < momenta.size(); ++i) {
-    const auto& s = channel->products[i];
+    const auto& s = products[i];
     const G4ThreeVector p = momenta[i] * MeV;
     const double m = s.mass * MeV;
     const G4LorentzVector p4(p, std::sqrt(p.mag2() + m * m));
