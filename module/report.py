@@ -55,6 +55,8 @@ def main():
   parser.add_argument("--pattern", default="*",
                       help="glob on candidate file names")
   parser.add_argument("--tolerances", default=eff.DEFAULT_TOLERANCES)
+  parser.add_argument("--min-score", type=float,
+                      help="keep candidates with n_tracks_max >= this")
   parser.add_argument("--metric", default="edge",
                       choices=["edge", "inclusive", "best"],
                       help="depth convention (best needs z_best)")
@@ -84,7 +86,8 @@ def main():
     if not dataset.exists():
       continue
     events = eff.load_truth(dataset)
-    rows, extra = eff.evaluate(events, eff.load_candidates(path),
+    rows, extra = eff.evaluate(events,
+                               eff.load_candidates(path, args.min_score),
                                tolerances, shifts, "developed")
     per_event = extra["n_candidates"] / max(len(events), 1)
     if not any(k.startswith(f"found_{args.metric}_") for k in rows[0]):

@@ -21,6 +21,7 @@ Commands:
   efficiency   vertex-finding efficiency of candidates vs truth
   report       efficiency table over datasets and methods
   zbias        depth bias of candidate z_best vs truth
+  evalreport   markdown summary of the full-scan evaluation
   setup        channels + decays + build
 
 Typical:
@@ -53,6 +54,7 @@ COMMANDS: dict[str, str] = {
   "efficiency":  "module.efficiency",
   "report":      "module.report",
   "zbias":       "module.zbias",
+  "evalreport":  "module.evalreport",
 }
 SEQUENCES: dict[str, list[str]] = {
   "setup": ["channels", "decays", "build"],

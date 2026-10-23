@@ -75,7 +75,7 @@ def load_truth(dataset):
   return events
 
 
-def load_candidates(path):
+def load_candidates(path, min_score=None):
   out = {}
   with open(path, newline="") as f:
     for row in csv.DictReader(f):
@@ -88,6 +88,8 @@ def load_candidates(path):
       c["score"] = float(row.get("n_tracks_max") or 0.)
       if row.get("z_best") not in (None, ""):
         c["z_best"] = float(row["z_best"])
+      if min_score is not None and c["score"] < min_score:
+        continue
       event = row.get("event") or Path(row["view_id"]).parent.name
       out.setdefault(event, []).append(c)
   return out
@@ -414,6 +416,8 @@ def main():
   parser.add_argument("--shift-max", type=float,
                       default=DEFAULT_SHIFT_MAX_PX)
   parser.add_argument("--seed", type=int, default=0)
+  parser.add_argument("--min-score", type=float,
+                      help="keep candidates with n_tracks_max >= this")
   parser.add_argument("--details", help="write per-vertex rows to CSV")
   parser.add_argument("--nearest", action="store_true",
                       help="XY distance and z gap of the nearest "
@@ -423,7 +427,7 @@ def main():
 
   tolerances = [float(t) for t in args.tolerances.split(",")]
   events = load_truth(args.dataset)
-  cands = load_candidates(args.candidates)
+  cands = load_candidates(args.candidates, args.min_score)
   shifts = random_shifts(args.n_shifts, args.shift_min, args.shift_max,
                          np.random.default_rng(args.seed))
   rows, extra = evaluate(events, cands, tolerances, shifts, args.space)
