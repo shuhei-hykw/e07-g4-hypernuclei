@@ -54,7 +54,9 @@ beam divergence, measured layer thickness and shrinkage) are needed.
 
 A handle that is not degenerate with the beam divergence and the defocus
 blur: a MIP track has a fixed grain density along its length (14.8 /
-100 um undeveloped, e07-fullscan STATUS), i.e. 0.148 x Sh = 0.28 grains
+100 um assumed; this value is a measurement of e07-fullscan's own image
+processing, STATUS 14.77 with px 0.29 and grains merged within 15 px, not
+an external calibration), i.e. 0.148 x Sh = 0.28 grains
 per developed um along z for a track perpendicular to the sheets, so the
 number of grains seen per slice scales with the physical step. Persistent
 dark dots (perpendicular beam tracks, 150 per view) are found in the
@@ -71,9 +73,19 @@ views rendered with image model v11 at dz 3.0 and 1.5 um (3 each):
 
 Peaks per slice (mean over all dots); the four real views agree within
 0.003. For every threshold the real views match the 1.5 um rendering and
-not the 3.0 um one (the two synthetic sets differ by the expected factor
-of about two). Under the assumptions of the MIP grain density (14.8 /
-100 um) and Sh = 1.9, the data therefore favour a physical step of about
-1.5 um per slice in the developed emulsion; if either assumption were
-off by a factor of two the conclusion would change, so these inputs
-should be confirmed.
+not the 3.0 um one. The detection is non-linear: the ratio of the two
+synthetic sets is 1.2 / 1.9 / 5.1 / 14.5 for thresholds 4 / 6 / 9 / 12.
+
+Checks (threshold 6 / 9): taking every second slice of the real stacks,
+i.e. doubling their step, gives 0.067 / 0.041, as the 3.0 um rendering
+(0.064 / 0.041) and the 1.5 um rendering thinned the same way (0.069 /
+0.047): the real stacks respond like the 1.5 um model at their native
+step and like the 3.0 um model at twice the step. With 50 or 300 dots
+per view instead of 150 the rates stay 0.030-0.033 (real), 0.032-0.034
+(1.5 um) and 0.062-0.066 (3.0 um). With the image model v11 fixed and under the assumptions of the
+MIP grain density (14.8 / 100 um, self-measured) and Sh = 1.9, the data
+favour a physical step of about 1.5 um per slice in the developed
+emulsion. The grain density and the shrinkage enter as a product; if it
+were off by a factor of two the conclusion would change, so an
+independent value (nominal emulsion sensitivity or a measurement) is
+needed to settle the step.

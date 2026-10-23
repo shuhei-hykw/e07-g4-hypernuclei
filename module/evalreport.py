@@ -258,6 +258,11 @@ def main():
                    + f" | {per_event:.0f} |")
     out.append("")
 
+  # 4c. ranking of B' candidates by image darkness (precomputed study)
+  study = config.OUTPUT_DIR / "bprime_ranking.md"
+  if study.exists():
+    out += [study.read_text(), ""]
+
   # 5. other channels with method A
   others = [("v3_embed_ll11be_dz3.0", "Xi- + 14N -> LL11Be + 4He"),
             ("v3_embed_ibuki_dz3.0", "Xi- + 14N -> L10Be + L5He (twin)"),
