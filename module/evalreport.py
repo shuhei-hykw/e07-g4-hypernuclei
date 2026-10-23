@@ -333,6 +333,32 @@ def main():
             "| best <6 um | best <12 um | cand/event |",
             "|---|---|---|---|---|---|---|---|"] + lines
 
+  out += ["", "## Recommendations (from the evidence above)", "",
+          "1. **Physical focal step**: use 1.5 um per slice in the "
+          "developed emulsion for analyses (beam-track grain counts match "
+          "the 1.5 um model, and thinning the real stacks reproduces the "
+          "3.0 um model; output/dz_comparison.md). This rests on the MIP "
+          "grain density (14.8 / 100 um, e07-fullscan's own measurement) "
+          "and Sh = 1.9 (recorded in the image JSON); an independent "
+          "value of their product would make it final.",
+          "2. **Method A**: rank candidates by z_best rather than the z "
+          "range, and correct or renormalize z_best near the ends of the "
+          "image stack (section 3); at dz 1.5 um method A then finds the "
+          "capture vertex within 12 um in ~28 % of events at a background "
+          "rate of ~10 %.",
+          "3. **Method B'**: on real data rank the branch points by the "
+          "combined multiplicity + image-darkness score, which ranks the "
+          "true vertex above the shifted control in all nine special "
+          "events; keep the top ~770 per view (the method-A rate), where "
+          "the darkness alone already keeps ~50 % of the simulated capture "
+          "vertices within 6 um at a 3 % chance level.",
+          "4. **Simulation**: improve the simulated vertex appearance so "
+          "that high-multiplicity branch points arise as on real events "
+          "(the multiplicity does not rank the simulated vertices at "
+          "either step); use embedded datasets for efficiencies and the "
+          "v14 synthetic images (all 23 realism statistics within 3 "
+          "spreads) for training and controls."]
+
   out += ["", "## Reading the tables", "",
           "- The excess over the shifted-truth chance level is a measure "
           "of association, not an efficiency by itself; with ~800 method-A "
