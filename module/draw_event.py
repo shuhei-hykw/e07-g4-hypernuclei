@@ -1,6 +1,6 @@
 """Event display with the emulsion module layers.
 
-  python3 draw_event.py emulsim.root --event 0 --zoom 40 -o event0.png
+  ./run.py draw data/sim/nagara.root --event 0 --zoom 40 -o event0.png
 
 Top row: +-zoom um around the capture point; bottom row: whole event.
 Columns: XY (sheet plane, microscope view), ZX and ZY (z = beam axis,

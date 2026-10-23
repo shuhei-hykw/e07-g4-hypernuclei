@@ -10,7 +10,8 @@ import math
 import os
 import sys
 
-import species as sp
+from . import config
+from . import species as sp
 
 # Xi- binding energy in the atomic 3D state (MeV), as used in E07 analyses
 TARGETS = {
@@ -120,7 +121,7 @@ def main():
   parser.add_argument("--measured-only", action="store_true",
                       help="drop single-L hypernuclei with estimated B_L")
   parser.add_argument("--max-bodies", type=int, default=MAX_BODIES)
-  parser.add_argument("--outdir", default="output")
+  parser.add_argument("--outdir", default=str(config.OUTPUT_DIR))
   args = parser.parse_args()
 
   pool = stable_pool(not args.measured_only)

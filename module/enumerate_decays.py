@@ -11,8 +11,9 @@ import csv
 import os
 import sys
 
-import enumerate_channels as ec
-import species as sp
+from . import enumerate_channels as ec
+from . import config
+from . import species as sp
 
 MAX_DECAY_BODIES = 4   # including the pion
 MODES = [("pi-", 1, sp.M_PI_MINUS), ("pi0", 0, sp.M_PI_ZERO),
@@ -54,7 +55,7 @@ def main():
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument("--measured-only", action="store_true")
   parser.add_argument("--max-bodies", type=int, default=MAX_DECAY_BODIES)
-  parser.add_argument("--outdir", default="output")
+  parser.add_argument("--outdir", default=str(config.OUTPUT_DIR))
   args = parser.parse_args()
 
   pool = ec.stable_pool(not args.measured_only)

@@ -1,6 +1,6 @@
 """Containment summary of capture and hypernuclear decay products.
 
-  python3 summary.py emulsim.root -o summary.png
+  ./run.py summary data/sim/nagara.root -o summary.png
 
 Left: capture-point depth for all events and for events whose charged
 capture / decay products all stop inside the module (base films and the

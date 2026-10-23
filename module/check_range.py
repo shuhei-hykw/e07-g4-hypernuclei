@@ -1,7 +1,6 @@
 """Compare Geant4 ranges with the kinema range-energy relation.
 
-  python3 check_range.py emulsim.root --kinema ~/work/kinema \
-    --density 3.53
+  ./run.py check-range data/sim/nagara.root [--density 3.53]
 """
 
 import argparse
@@ -11,7 +10,10 @@ import types
 
 import ROOT
 
+from . import config
+
 MAX_PRINT_EVENTS = 3
+DEFAULT_DENSITY = 3.53
 SECANT_STEP = 1e-3
 SECANT_TOL = 1e-10
 SECANT_MAX_ITER = 100
@@ -44,8 +46,8 @@ def load_range_energy(kinema_dir):
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument("root_file")
-  parser.add_argument("--kinema", required=True)
-  parser.add_argument("--density", type=float, required=True)
+  parser.add_argument("--kinema", default=str(config.KINEMA_DIR))
+  parser.add_argument("--density", type=float, default=DEFAULT_DENSITY)
   args = parser.parse_args()
 
   re = load_range_energy(args.kinema)

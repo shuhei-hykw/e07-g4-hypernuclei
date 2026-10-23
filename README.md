@@ -4,11 +4,39 @@ Geant4 track simulation of double-strangeness events in the J-PARC E07
 nuclear emulsion: Xi- capture at rest on the light emulsion nuclei 12C,
 14N, 16O, followed by the weak decays of the produced hypernuclei.
 
+## Quick start
+
+Everything is driven by `./run.py` (`./run.py --help`, `./run.py <command>
+--help`). Requires Python 3 with numpy and PyROOT, ROOT (tested with
+6.40) and Geant4 (tested with 11.4.3; `GEANT4_DIR`, default
+`~/software/geant4/11.4.3`).
+
+```
+./run.py setup                       # tables + Geant4 build
+./run.py sim --preset nagara --events 100
+./run.py draw data/sim/nagara.root --event 0 -o ev0.png
+./run.py summary data/sim/nagara.root -o summary.png
+./run.py check-range data/sim/nagara.root
+```
+
+| Command | Module | Output |
+|---------|--------|--------|
+| `channels` | `module/enumerate_channels.py` | `output/channels_*.csv`, `species.csv`, `targets.csv` |
+| `decays` | `module/enumerate_decays.py` | `output/decays.csv` |
+| `build` | `module/build.py` | `g4/build/emulsim` |
+| `sim` | `module/simulate.py` | `data/sim/<name>.{mac,log,root}` |
+| `draw` | `module/draw_event.py` | event display PNG |
+| `summary` | `module/summary.py` | containment summary PNG |
+| `check-range` | `module/check_range.py` | range comparison with kinema |
+| `setup` | | `channels` + `decays` + `build` |
+
+Layout: `module/` Python package, `g4/` Geant4 application (C++),
+`output/` tables (tracked), `data/` generated files (not tracked).
+
 ## Channel enumeration
 
 ```
-python3 channels/enumerate_channels.py [--measured-only] \
-  [--max-bodies N] [--outdir output]
+./run.py channels [--measured-only] [--max-bodies N]
 ```
 
 Conservation laws: baryon number A+1, charge Z-1, two Lambdas
@@ -18,7 +46,7 @@ Conservation laws: baryon number A+1, charge Z-1, two Lambdas
 
 is listed (up to `--max-bodies`, default 6).
 
-### Inputs (`channels/species.py`)
+### Inputs (`module/species.py`)
 
 | Item | Source / assumption |
 |------|---------------------|
@@ -57,8 +85,7 @@ the Geant4 generator.
 ## Weak-decay enumeration
 
 ```
-python3 channels/enumerate_decays.py [--measured-only] \
-  [--max-bodies N] [--outdir output]
+./run.py decays [--measured-only] [--max-bodies N]
 ```
 
 For every hypernucleus in `species.csv` one Lambda decays at a time:
@@ -86,18 +113,22 @@ hypernuclei decay at rest into a channel of `output/decays.csv`, again
 with phase-space kinematics, so that chains such as
 LL6He -> L5He + p + pi-, L5He -> 4He + p + pi- are followed.
 
-### Build and run
+### Running
 
-Requires Geant4 (tested with 11.4.3) and ROOT (6.40).
+`./run.py sim` writes a macro to `data/sim/<name>.mac` and runs emulsim
+with the Geant4 environment:
 
 ```
-python3 channels/enumerate_channels.py && python3 channels/enumerate_decays.py
-source <geant4-install>/bin/geant4.sh
-cd g4 && mkdir -p build && cd build
-cmake .. && make -j
-./emulsim nagara.mac   # Xi- + 12C -> LL6He + 4He + t, simple decay policy
-./emulsim ibuki.mac    # Xi- + 14N -> L10Be + L5He, uniform decay policy
+./run.py sim --preset nagara --events 1000      # 12C -> LL6He + 4He + t
+./run.py sim --preset ibuki                      # 14N -> L10Be + L5He
+./run.py sim --target 16O --channel LL13B,4He --policy uniform \
+  --name o16_ll13b --events 100
+./run.py sim --preset nagara --fix LL6He=L5He,p,pi- \
+  --set "/emul/thickEmulsion 530 um"
 ```
+
+`--set` passes any macro command below (`/emul/*` are placed before
+`/run/initialize` automatically).
 
 Macro commands:
 
@@ -176,18 +207,18 @@ nagara.mac.
 The tree `layers` lists the module layers (`sheet`, `emulsion`, `thick`,
 `zmin`, `zmax`, `halfx`, `halfy` in um).
 
-### Scripts
+### Plots and checks
 
-- `g4/scripts/draw_event.py file.root --event N [--zoom 40] [--neutral]
+- `./run.py draw file.root --event N [--zoom 40] [--neutral]
   -o ev.png`: event display relative to the capture point; top row
   +-zoom um, bottom row the whole capture / decay chain; columns XY
   (sheet plane), ZX, ZY with base films shaded and the outside of the
   module hatched. Capture products thick, decay products medium, other
   secondaries thin; escaping tracks end with an open circle.
-- `g4/scripts/summary.py file.root -o summary.png`: capture-point depth
+- `./run.py summary file.root -o summary.png`: capture-point depth
   of all / contained events and escape fraction per particle.
-- `g4/scripts/check_range.py file.root --kinema <kinema dir>
-  --density 3.53`: compares Geant4 ranges of the capture products with
+- `./run.py check-range file.root [--kinema <dir>] [--density 3.53]`
+  (`KINEMA_DIR`, default `~/work/kinema`): compares Geant4 ranges of the capture products with
   the kinema range-energy relation (`rangeenergy.py`) and checks
   energy-momentum conservation.
 

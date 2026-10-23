@@ -15,5 +15,3 @@ target_include_directories(emulsim PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(emulsim ${Geant4_LIBRARIES} ROOT::Physics
                       ROOT::Tree ROOT::RIO)
 
-file(GLOB macros ${PROJECT_SOURCE_DIR}/macros/*.mac)
-file(COPY ${macros} DESTINATION ${PROJECT_BINARY_DIR})
