@@ -258,12 +258,13 @@ def current_defaults():
           "speckle_scale_px": b.speckle_scale_px}
 
 
-def perturb(values, rng, scale):
+def perturb(values, rng, scale, names=None):
   """Move one to MAX_MOVED parameters at once (joint moves are needed,
   e.g. wider grains with weaker defocus blur and more fog)."""
   out = dict(values)
-  n = int(rng.integers(1, MAX_MOVED + 1))
-  for name in rng.choice(list(PARAMS), n, replace=False):
+  pool = list(names or PARAMS)
+  n = int(rng.integers(1, min(MAX_MOVED, len(pool)) + 1))
+  for name in rng.choice(pool, n, replace=False):
     _, _, lo, hi, logs = PARAMS[name]
     if logs:
       v = np.exp(np.log(out[name]) + rng.normal(0., scale)
@@ -284,6 +285,8 @@ def main():
                       help="physical focal step per slice (um)")
   parser.add_argument("--z-loss", action="store_true",
                       help="loss in units of the real view-to-view spread")
+  parser.add_argument("--only", default="",
+                      help="comma separated parameters to move (default all)")
   parser.add_argument("--exclude", default="",
                       help="comma separated target statistics to ignore")
   parser.add_argument("--output", default=str(config.OUTPUT_DIR
@@ -310,7 +313,8 @@ def main():
   print(f"start loss {best_loss:.3f}")
   for it in range(args.iterations):
     scale = 0.3 * (1. - it / args.iterations) + 0.03
-    trial = perturb(best, rng, scale)
+    trial = perturb(best, rng, scale,
+                    [p for p in args.only.split(",") if p] or None)
     s = patch_stats(trial)
     l = loss(s, targets, stds)
     if l < best_loss:
