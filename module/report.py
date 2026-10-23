@@ -83,7 +83,9 @@ def main():
     if not m:
       continue
     dataset = config.IMAGE_DIR / m["dataset"]
-    if not dataset.exists():
+    # B' files are appended per event: use them only once complete
+    if not dataset.exists() or (m["method"] == "bprime"
+                                and not path.with_suffix(".done").exists()):
       continue
     events = eff.load_truth(dataset)
     rows, extra = eff.evaluate(events,

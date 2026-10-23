@@ -178,7 +178,9 @@ def main():
              ("B' mult >= 4", f"{ds}_bprime.csv", 4, "edge")]
     for label, name, min_score, metric in pairs:
       path = cdir / name
-      if not path.exists():
+      # B' files are appended per event: use them only once complete
+      if not path.exists() or ("bprime" in name
+                               and not path.with_suffix(".done").exists()):
         continue
       events, cands, rows, extra = efficiency_rows(ds, path, min_score)
       per_event = extra["n_candidates"] / len(events)
