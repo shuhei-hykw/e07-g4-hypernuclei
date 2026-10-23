@@ -19,6 +19,7 @@ Commands:
   calibrate    tune the image model to real views -> output/image_model.json
   flatfield    illumination profile of real views -> output/flatfield.npy
   efficiency   vertex-finding efficiency of candidates vs truth
+  report       efficiency table over datasets and methods
   setup        channels + decays + build
 
 Typical:
@@ -49,6 +50,7 @@ COMMANDS: dict[str, str] = {
   "calibrate":   "module.synth.calibrate",
   "flatfield":   "module.synth.flatfield",
   "efficiency":  "module.efficiency",
+  "report":      "module.report",
 }
 SEQUENCES: dict[str, list[str]] = {
   "setup": ["channels", "decays", "build"],

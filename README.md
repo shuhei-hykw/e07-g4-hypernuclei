@@ -388,3 +388,12 @@ specification, agreed with the e07-fullscan analysis:
 - Full-scan criterion (200 px XY, depth within 30 um of the z range) as
   a loose recovery measure; "LL event" = capture and double-Lambda decay
   vertex both found; rank by `n_tracks_max`.
+
+`./run.py report [--pattern 'v3_*']` evaluates every candidate file
+`<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis
+(`~/work/e07-fullscan/results/sim_eval`) and writes
+`output/efficiency_report.md`: efficiency (chance level) of the capture
+vertex, the double-Lambda decay vertex and the LL event per tolerance,
+duplicates and candidates per event. With real backgrounds (about 800
+method-A candidates per view, z ranges of ~50 slices) the chance level
+at 30 um reaches 50-90 %, so only the tight tolerances are meaningful.
