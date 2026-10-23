@@ -21,6 +21,7 @@ Commands:
   validate     realism of synthetic stacks on held-out real views
   beamgrains   grains per slice on perpendicular beam tracks (step)
   rankstudy    ranking study for point candidates (B')
+  specialsrank darkness ranking of B' points on real special events
   efficiency   vertex-finding efficiency of candidates vs truth
   report       efficiency table over datasets and methods
   zbias        depth bias of candidate z_best vs truth
@@ -57,6 +58,7 @@ COMMANDS: dict[str, str] = {
   "validate":    "module.synth.validate",
   "beamgrains":  "module.beamgrains",
   "rankstudy":   "module.rankstudy",
+  "specialsrank": "module.specials_rank",
   "efficiency":  "module.efficiency",
   "report":      "module.report",
   "zbias":       "module.zbias",
