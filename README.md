@@ -30,6 +30,8 @@ Everything is driven by `./run.py` (`./run.py --help`, `./run.py <command>
 | `check-range` | `module/check_range.py` | range comparison with kinema |
 | `replay` | `module/replay.py` | `output/replay/{nagara,ibuki}.csv` fixed kinematics |
 | `images` | `module/synth/` | `data/images/<name>/ev<NNNN>/` microscope stacks |
+| `compare` | `module/imagestats.py` | image statistics of real vs synthetic stacks |
+| `calibrate` | `module/synth/calibrate.py` | `output/image_model.json` tuned image model |
 | `efficiency` | `module/efficiency.py` | vertex-finding efficiency vs truth |
 | `setup` | | `channels` + `decays` + `build` |
 
@@ -303,22 +305,60 @@ Rendering takes about 70 s and 170 MB per event (`-j` renders events in
 parallel). `--tracks-only` writes only the two Geant4 track pictures for
 an existing dataset (the view placement is reproduced from the seed).
 
+### Embedding into real views (`--background`)
+
+```
+./run.py images data/sim/eval_nagara.root --events 0-4 -j 5 \
+  --background random --name embed_nagara_dz3.0
+```
+
+The Geant4 signal is rendered alone (same grain and optics model) and
+its transmission multiplies the slices of a real tohoku-v1 view
+(`/home/hayakawa/microscope-image/.../AREA00/IMAGE00_AREA00`, read
+only), so fog, beam tracks, junk and noise are real and the candidate
+background of the full scan is preserved. The stack size and stage z
+follow the real view, `truth.json` records `background_view`, and the
+labels cover the signal only. Views used for CNN labels (V00000011,
+V00000991, V00001012, V00001339) are never picked.
+
+### Calibration against real views
+
+`./run.py compare --real <view.json> --synth <event dir> -o cmp.png`
+computes, for central slices and a central crop: intensity percentiles,
+blobs of the darkest 5 % of pixels, connected components after a
+full-scan-like preprocessing (Gaussian background subtraction, Otsu),
+the radial power spectrum and the correlation of neighbouring slices.
+
+`./run.py calibrate --views 6 --iterations 150` averages these
+statistics over random real views (`output/real_image_stats.json`) and
+searches the model parameters (brightness, mottle, residual
+transmission, temporal and fixed-pattern noise, grain image width,
+defocus blur, grain density, fog density, grain darkness spread) that
+reproduce them; the result `output/image_model.json` is used by
+`./run.py images` unless `--model none`.
+
 ## Vertex-finding efficiency (`./run.py efficiency`)
 
 ```
 ./run.py efficiency data/images/nagara_dz3.0 candidates.csv \
-  --tolerances 6,12,30 --details eff.csv -o eff.png
+  --tolerances 6,12,30 --details rows.csv -o eff.png
 ```
 
 `candidates.csv` holds the merged vertex candidates of a full-scan
-method (columns `event`, `vx_px`, `vy_px`, `z_min`/`z_max` or `z_mean`
-in stage mm, optional `n_tracks_max`). True and candidate vertices are
-matched one-to-one in 3-D distance in the developed emulsion for each
-tolerance; the full-scan criterion (200 px XY, depth within the
-candidate z range +- 30 um) is also reported. The matching space is
-printed: `--space developed` (default, image space) or `undeveloped`
-(z distances x Sh, the Geant4 space). A control sample shifts
-the true vertices by 600 px to estimate chance matches. The summary
-gives the efficiency per vertex type and for "LL event" (capture and
-double-Lambda decay vertex both found); the plot shows efficiency vs
-tolerance and vs the range of the double-Lambda hypernucleus.
+method (columns `event` or `view_id`, `vx_px`, `vy_px`, `z_min`/`z_max`
+or `z_mean` in stage mm, optional `n_tracks_max`). The matching
+specification, agreed with the e07-fullscan analysis:
+
+- Truth: in-view vertices of `truth.json`.
+- Distance in the developed emulsion (`--space undeveloped`: z x Sh):
+  x, y = pixels x 0.289 um, z = slice difference x `physical_dz_um`.
+- Candidate z ranges: `edge` (primary) uses the distance to the nearer
+  end of the range, `inclusive` counts the inside of the range as zero;
+  point candidates use the plain distance.
+- One-to-one greedy matching per tolerance; the optimal assignment is
+  computed for comparison; unmatched candidates within the tolerance of
+  a truth are reported as duplicates.
+- Control: mean over 10 random shifts of 400-1000 px of the truths.
+- Full-scan criterion (200 px XY, depth within 30 um of the z range) as
+  a loose recovery measure; "LL event" = capture and double-Lambda decay
+  vertex both found; rank by `n_tracks_max`.

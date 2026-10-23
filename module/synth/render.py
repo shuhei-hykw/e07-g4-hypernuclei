@@ -38,11 +38,22 @@ class Optics:
   shrink: float = 1.9          # emulsion thickness ratio before / after
   grain_sigma_um: float = 0.35 # in-focus grain image (s0)
   defocus_slope: float = 0.35  # k: blur growth per um of defocus
-  max_defocus_um: float = 6.0  # grains farther from focus are ignored
+  max_defocus_cap_um: float = 40.  # upper bound of the defocus range
   n_defocus_bins: int = 12
   grain_density: float = 0.8   # d0: optical density of a focused grain
   pad_px: int = 64             # margin against FFT wrap-around
   label_radius_px: int = 2
+
+
+# A grain is ignored where its peak density drops below this fraction
+DEFOCUS_AMPLITUDE_CUT = 0.03
+
+
+def max_defocus_um(optics):
+  """Defocus beyond which grains are negligible: (s0/s)^2 < cut."""
+  ratio = np.sqrt(1. / DEFOCUS_AMPLITUDE_CUT - 1.)
+  return min(optics.max_defocus_cap_um,
+             ratio * optics.grain_sigma_um / optics.defocus_slope)
 
 
 @dataclass(frozen=True)
@@ -61,14 +72,16 @@ class Background:
   # Relative rms and length scale of the slow brightness variations
   mottle: tuple = ((0.08, 25.), (0.06, 6.))
   min_transmission: float = 0.4     # darkest level relative to B
-  noise_sigma: float = 4.
+  noise_sigma: float = 4.           # temporal pixel noise (per slice)
+  fixed_noise_sigma: float = 0.     # fixed-pattern noise (all slices)
   n_beam_tracks: int = 100          # nearly parallel MIP tracks per view
   beam_slope_max: float = 0.1       # |dx/dz|, |dy/dz| of the beam axis
   beam_spread: float = 0.01         # rms slope around the beam axis
   n_random_tracks: int = 15         # isotropic straight background tracks
   random_track_ionization: tuple = (1., 4.)  # x MIP grain density
   n_blobs: int = 20                 # large dark grain clusters (junk)
-  n_dead_pixels: int = 200          # pixels dark in every slice
+  n_dead_pixels: int = 0            # pixels dark in every slice (the
+                                    # tohoku-v1 dead-pixel map is empty)
   blob_radius_um: tuple = (1.5, 5.)
   blob_grains_per_um3: float = 0.5
 
@@ -155,8 +168,8 @@ class View:
   def zdev_range(self):
     """Developed depth covered by the stack including defocus margin."""
     o = self.optics
-    return (self.slice_zdev(0) - o.max_defocus_um,
-            self.slice_zdev(o.n_slices - 1) + o.max_defocus_um)
+    m = max_defocus_um(o)
+    return (self.slice_zdev(0) - m, self.slice_zdev(o.n_slices - 1) + m)
 
 
 def track_grains(points, edep, emulsion, rng):
@@ -294,6 +307,20 @@ def mottle_field(optics, background, rng):
   return background.brightness * total
 
 
+def fixed_pattern(optics, background, rng):
+  """Per-pixel noise common to all slices of a view."""
+  return rng.normal(0., background.fixed_noise_sigma,
+                    (optics.size_px, optics.size_px))
+
+
+def compose(bright, density, background, fixed, rng):
+  """Slice intensity from brightness, optical density and noise."""
+  t_min = background.min_transmission
+  img = bright * (t_min + (1. - t_min) * np.exp(-density)) + fixed \
+    + rng.normal(0., background.noise_sigma, density.shape)
+  return np.clip(np.rint(img), 0, 255).astype(np.uint8)
+
+
 class Renderer:
   def __init__(self, optics):
     self.o = optics
@@ -302,8 +329,14 @@ class Renderer:
     fy = np.fft.fftfreq(n)[:, None]
     fx = np.fft.rfftfreq(n)[None, :]
     self.f2 = fx ** 2 + fy ** 2
-    edges = np.linspace(0., optics.max_defocus_um,
-                        optics.n_defocus_bins + 1)
+    self.max_defocus = max_defocus_um(optics)
+    # Bins equally spaced in blur width
+    s_edges = np.linspace(optics.grain_sigma_um,
+                          np.hypot(optics.grain_sigma_um,
+                                   optics.defocus_slope * self.max_defocus),
+                          optics.n_defocus_bins + 1)
+    edges = np.sqrt(np.maximum(s_edges ** 2 - optics.grain_sigma_um ** 2,
+                               0.)) / optics.defocus_slope
     self.bin_edges = edges
     s0 = optics.grain_sigma_um / optics.pixel_um
     self.kernels = []
@@ -337,7 +370,7 @@ class Renderer:
     relative darkness weights."""
     o = self.o
     dz = np.abs(grains[:, 2] - k) * o.dz_um
-    sel = dz < o.max_defocus_um
+    sel = dz < self.max_defocus
     g, w, dz = grains[sel], weights[sel], dz[sel]
     bins = np.digitize(dz, self.bin_edges) - 1
     spectrum = np.zeros((self.shape[0], self.shape[1] // 2 + 1),

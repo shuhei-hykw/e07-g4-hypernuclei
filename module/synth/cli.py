@@ -20,6 +20,15 @@ For every event a directory data/images/<name>/ev<NNNN>/ is written:
 
 The capture point is placed at a random position in the view and the
 stack at a random depth inside the emulsion layer (--centered disables).
+
+Model parameters tuned by ./run.py calibrate (output/image_model.json)
+are used when present (--model none for the built-in defaults).
+
+--background random|<view.json> embeds the signal into a real full-scan
+view instead: only the Geant4 tracks are rendered and their transmission
+multiplies the real slices (fog, beam tracks, junk and noise are real);
+the stack size and stage z follow the real view and the labels cover the
+signal only.
 """
 
 import argparse
@@ -28,6 +37,8 @@ import multiprocessing
 import sys
 import time
 from dataclasses import replace
+
+from pathlib import Path
 
 import numpy as np
 
@@ -63,12 +74,13 @@ def parse_events(spec, n_events):
   return [i for i in out if 0 <= i < n_events]
 
 
-def collect_grains(ev, view, devz, emulsion, background, rng):
+def collect_grains(ev, view, devz, emulsion, background, rng,
+                   signal_only=False):
   """Labelled grains (view coords) with class and instance, and fog."""
   o = view.optics
   lo = -o.pad_px
   hi = o.size_px + o.pad_px
-  margin = o.max_defocus_um / o.dz_um + 1.
+  margin = render.max_defocus_um(o) / o.dz_um + 1.
 
   def in_view(v):
     return ((v[:, 0] >= lo) & (v[:, 0] < hi) & (v[:, 1] >= lo)
@@ -93,6 +105,9 @@ def collect_grains(ev, view, devz, emulsion, background, rng):
     g = render.track_grains(t.points, t.edep, emulsion, rng)
     counts[t.id] = add(g, render.LABEL_OF_ORIGIN[t.origin],
                        np.full(len(g), t.id))
+  if signal_only:
+    return (np.vstack(grains), np.concatenate(classes),
+            np.concatenate(instances), np.zeros((0, 3)), counts)
   beam, owner = render.beam_grains(view, background, emulsion,
                                    ev.vertex[2], rng)
   add(beam, render.LABEL_BEAM, BACKGROUND_ID0 - owner)
@@ -171,15 +186,14 @@ def truth_record(ev, view, counts):
           "tracks": tracks}
 
 
-def view_json(view, stage_dz_mm, out_dir):
+def view_json(view, stage_z_mm, out_dir):
   o = view.optics
   pix_mm = o.pixel_um / UM_PER_MM
   x0 = view.cx / UM_PER_MM - o.size_px / 2. * pix_mm
   y0 = view.cy / UM_PER_MM - o.size_px / 2. * pix_mm
   images = [{"Path": f"{k:04d}.png", "x": round(view.cx / UM_PER_MM, 6),
-             "y": round(view.cy / UM_PER_MM, 6),
-             "z": round(STAGE_Z0_MM + k * stage_dz_mm, 6)}
-            for k in range(o.n_slices)]
+             "y": round(view.cy / UM_PER_MM, 6), "z": round(z, 8)}
+            for k, z in enumerate(stage_z_mm)]
   meta = {
     "DocumentType": {"ver": "20180521", "unit": "mm",
                      "comment": "e07-g4-hypernuclei synthetic; physical "
@@ -205,8 +219,26 @@ def preview(stack_min, vertex, out_dir):
   write_gray_png(out_dir / "preview.png", np.hstack([crop, whole]))
 
 
+def pick_background(args, rng):
+  """Real view JSON used as background, or None."""
+  if not args.background:
+    return None
+  if args.background != "random":
+    return Path(args.background)
+  views = sorted(Path(calibrate.REAL_DIR).glob("V*.json"))
+  return views[int(rng.integers(len(views)))]
+
+
 def render_event(ev, layers, args, optics, emulsion, background, out_dir):
   rng = np.random.default_rng(args.seed + ev.index)
+  bg_json = pick_background(args, rng)
+  if bg_json:
+    real = imagestats.read_stack(bg_json)
+    stage_z = [im["z"] for im in json.loads(bg_json.read_text())["Images"]]
+    optics = replace(optics, n_slices=len(real), size_px=real[0].shape[0])
+  else:
+    stage_z = [STAGE_Z0_MM + k * args.stage_dz
+               for k in range(optics.n_slices)]
   devz = render.DevelopedZ(layers, optics.shrink)
   if args.centered:
     vdev = float(devz.to_dev(np.array([ev.vertex[2]]))[0])
@@ -220,11 +252,12 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
   if args.tracks_only:
     return
   labelled, classes, instances, fog, counts = collect_grains(
-    ev, view, devz, emulsion, background, rng)
+    ev, view, devz, emulsion, background, rng, signal_only=bool(bg_json))
   all_grains = np.vstack([labelled, fog])
   weights = render.grain_weights(len(all_grains), emulsion, rng)
   renderer = render.Renderer(optics)
   bright = render.mottle_field(optics, background, rng)
+  fixed = render.fixed_pattern(optics, background, rng)
   dead = rng.integers(0, optics.size_px, (background.n_dead_pixels, 2))
 
   stack_min = np.full((optics.size_px, optics.size_px), GRAY_MAX,
@@ -233,10 +266,12 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
   t_min = background.min_transmission
   for k in range(optics.n_slices):
     d = renderer.density(all_grains, weights, k)
-    img = bright * (t_min + (1. - t_min) * np.exp(-d)) \
-      + rng.normal(0., background.noise_sigma, d.shape)
-    img[dead[:, 1], dead[:, 0]] = 0.
-    img = np.clip(np.rint(img), 0, GRAY_MAX).astype(np.uint8)
+    if bg_json:
+      img = real[k] * (t_min + (1. - t_min) * np.exp(-d))
+      img = np.clip(np.rint(img), 0, GRAY_MAX).astype(np.uint8)
+    else:
+      img = render.compose(bright, d, background, fixed, rng)
+      img[dead[:, 1], dead[:, 0]] = 0
     write_gray_png(out_dir / f"{k:04d}.png", img)
     np.minimum(stack_min, img, out=stack_min)
     if not args.no_labels:
@@ -246,11 +281,14 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
   if cls_stack:
     np.savez_compressed(out_dir / "labels.npz", labels=np.array(cls_stack),
                         instance=np.array(ins_stack))
-  view_json(view, args.stage_dz, out_dir)
+  view_json(view, stage_z, out_dir)
   truth = truth_record(ev, view, counts)
   truth.update(
     n_track_grains=int(len(labelled)), n_fog_grains=int(len(fog)),
-    physical_dz_um=optics.dz_um, stage_dz_mm=args.stage_dz,
+    physical_dz_um=optics.dz_um,
+    stage_z0_mm=stage_z[0],
+    stage_dz_mm=(stage_z[-1] - stage_z[0]) / max(len(stage_z) - 1, 1),
+    background_view=str(bg_json) if bg_json else None,
     shrink=optics.shrink, pixel_um=optics.pixel_um,
     size_px=optics.size_px, n_slices=optics.n_slices,
     view_center_um=[round(view.cx, 3), round(view.cy, 3)],
@@ -294,6 +332,11 @@ def main():
                       "(same view placement as the full rendering)")
   parser.add_argument("-j", "--jobs", type=int, default=1,
                       help="events rendered in parallel")
+  parser.add_argument("--model", default=str(config.OUTPUT_DIR
+                                             / calibrate.MODEL_FILE),
+                      help="tuned model parameters ('none' for defaults)")
+  parser.add_argument("--background",
+                      help="'random' or a real view JSON to embed into")
   args = parser.parse_args()
 
   optics = replace(render.Optics(), size_px=args.size,
@@ -304,6 +347,10 @@ def main():
                        n_beam_tracks=args.beam_tracks,
                        n_random_tracks=args.random_tracks,
                        n_blobs=args.blobs)
+  if args.model != "none" and Path(args.model).exists():
+    optics, emulsion, background = calibrate.apply_values(
+      calibrate.load_model(args.model), optics, emulsion, background)
+    print(f"model parameters from {args.model}", file=sys.stderr)
 
   name = args.name or args.root_file.rsplit("/", 1)[-1].rsplit(".", 1)[0]
   indices = parse_events(args.events, len(EventFile(args.root_file)))

@@ -1,0 +1,213 @@
+"""Tune the image model to the statistics of real full-scan views.
+
+  ./run.py calibrate --views 6 --iterations 120
+
+Target statistics (module/imagestats.py) are averaged over randomly
+chosen real views (central slices, central crop) and stored in
+output/real_image_stats.json. Background-only synthetic patches (fog,
+beam and random tracks, junk) are rendered with trial parameters and a
+coordinate / random search minimizes the squared relative deviations.
+The best parameters are written to output/image_model.json, which
+./run.py images uses by default.
+"""
+
+import argparse
+import json
+import random
+from dataclasses import asdict, replace
+
+import numpy as np
+
+from .. import config
+from .. import imagestats as st
+from . import render
+
+REAL_DIR = ("/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/"
+            "PL12/tohoku-v1/AREA00/IMAGE00_AREA00")
+CROP_PX = 1024
+HALF_SLICES = 2
+# Statistic -> (weight, compare in log)
+TARGETS = {
+  "median": (1., False), "std": (2., False), "p1": (1., False),
+  "p5": (1., False), "n_cc_per_mpx": (1., True),
+  "cc_area_p90": (2., True), "dark_blobs_per_mpx": (1., True),
+  "dark_blob_area_median": (1., True), "corr1": (3., False),
+  "corr2": (3., False), "fg_fraction": (1., False),
+}
+# Parameter -> (object, field, low, high, log scale)
+PARAMS = {
+  "brightness": ("background", "brightness", 150., 240., False),
+  "mottle_large": ("background", "mottle", 0.0, 0.25, False),
+  "mottle_small": ("background", "mottle", 0.0, 0.2, False),
+  "min_transmission": ("background", "min_transmission", 0.0, 0.7, False),
+  "noise_sigma": ("background", "noise_sigma", 0.3, 6., True),
+  "fixed_noise_sigma": ("background", "fixed_noise_sigma", 0.0, 10., False),
+  "grain_sigma_um": ("optics", "grain_sigma_um", 0.15, 1.0, True),
+  "defocus_slope": ("optics", "defocus_slope", 0.01, 0.5, True),
+  "grain_density": ("optics", "grain_density", 0.2, 4., True),
+  "fog_per_um3": ("emulsion", "fog_per_um3", 5e-4, 4e-2, True),
+  "grain_spread": ("emulsion", "grain_spread", 0.1, 1.0, False),
+}
+MOTTLE_SCALES_UM = (25., 6.)
+MODEL_FILE = "image_model.json"
+
+
+def real_targets(n_views, seed):
+  views = sorted(p for p in __import__("pathlib").Path(REAL_DIR)
+                 .glob("V*.json"))
+  random.Random(seed).shuffle(views)
+  stats = []
+  for v in views[:n_views]:
+    idx = st.central(st.n_slices(v), HALF_SLICES)
+    stats.append(flatten(st.stack_stats(st.read_stack(v, idx), CROP_PX)))
+  return {k: float(np.mean([s[k] for s in stats])) for k in TARGETS}, \
+    [str(v) for v in views[:n_views]]
+
+
+def flatten(s):
+  out = {k: v for k, v in s.items() if not k.startswith("_")}
+  corr = out.pop("slice_corr")
+  out["corr1"] = corr.get(1, 0.)
+  out["corr2"] = corr.get(2, 0.)
+  return out
+
+
+def apply_values(values, optics, emulsion, background):
+  """Models with the tuned parameter values substituted."""
+  objs = {"optics": optics, "emulsion": emulsion, "background": background}
+  for name, v in values.items():
+    obj, field, *_ = PARAMS[name]
+    if not name.startswith("mottle"):
+      objs[obj] = replace(objs[obj], **{field: v})
+  objs["background"] = replace(objs["background"], mottle=(
+    (values["mottle_large"], MOTTLE_SCALES_UM[0]),
+    (values["mottle_small"], MOTTLE_SCALES_UM[1])))
+  return objs["optics"], objs["emulsion"], objs["background"]
+
+
+def load_model(path):
+  """Tuned parameter values from output/image_model.json."""
+  return json.loads(open(path).read())["params"]
+
+
+def make_models(values):
+  optics = replace(render.Optics(), size_px=CROP_PX,
+                   n_slices=2 * HALF_SLICES + 1)
+  background = replace(render.Background(), n_dead_pixels=0)
+  return apply_values(values, optics, render.Emulsion(), background)
+
+
+class _Layer:
+  def __init__(self, emulsion, zmin, zmax):
+    self.emulsion, self.zmin, self.zmax = emulsion, zmin, zmax
+
+
+def render_patch(values, seed):
+  """Background-only stack with the trial parameters."""
+  optics, emulsion, background = make_models(values)
+  rng = np.random.default_rng(seed)
+  # A thick emulsion layer around z = 0 (undeveloped um)
+  devz = render.DevelopedZ([_Layer(True, -500., 500.)], optics.shrink)
+  view = render.View(0., 0., float(devz.to_dev(np.array([0.]))[0]),
+                     devz, optics)
+  grains = [render.fog_grains(view, emulsion, rng)]
+  for maker in (render.beam_grains, render.random_track_grains):
+    g, _ = maker(view, background, emulsion, 0., rng)
+    grains.append(view.to_view(g[devz.in_emulsion(g[:, 2])]))
+  blobs, _ = render.blob_grains(view, background, rng)
+  grains.append(blobs)
+  allg = np.vstack(grains)
+  weights = render.grain_weights(len(allg), emulsion, rng)
+  renderer = render.Renderer(optics)
+  bright = render.mottle_field(optics, background, rng)
+  fixed = render.fixed_pattern(optics, background, rng)
+  return [render.compose(bright, renderer.density(allg, weights, k),
+                         background, fixed, rng)
+          for k in range(optics.n_slices)]
+
+
+def loss(stats, targets):
+  total = 0.
+  for k, (w, logc) in TARGETS.items():
+    a, b = stats[k], targets[k]
+    if logc:
+      d = np.log(max(a, 1e-3)) - np.log(max(b, 1e-3))
+    else:
+      d = (a - b) / max(abs(b), 1.) if k not in ("corr1", "corr2",
+                                                 "fg_fraction") else (a - b)
+    total += w * d * d
+  return total
+
+
+def start_values(path):
+  """Previous tuning result if any, else the built-in defaults."""
+  values = current_defaults()
+  if path.exists():
+    values.update(load_model(path))
+  return values
+
+
+def current_defaults():
+  o, e, b = render.Optics(), render.Emulsion(), render.Background()
+  return {"brightness": b.brightness, "mottle_large": b.mottle[0][0],
+          "mottle_small": b.mottle[1][0],
+          "min_transmission": b.min_transmission,
+          "noise_sigma": b.noise_sigma,
+          "fixed_noise_sigma": b.fixed_noise_sigma,
+          "grain_sigma_um": o.grain_sigma_um,
+          "defocus_slope": o.defocus_slope, "grain_density": o.grain_density,
+          "fog_per_um3": e.fog_per_um3, "grain_spread": e.grain_spread}
+
+
+def perturb(values, rng, scale):
+  out = dict(values)
+  name = rng.choice(list(PARAMS))
+  _, _, lo, hi, logs = PARAMS[name]
+  if logs:
+    v = np.exp(np.log(out[name]) + rng.normal(0., scale)
+               * np.log(hi / lo))
+  else:
+    v = out[name] + rng.normal(0., scale) * (hi - lo)
+  out[name] = float(np.clip(v, lo, hi))
+  return out
+
+
+def main():
+  parser = argparse.ArgumentParser(
+    description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+  parser.add_argument("--views", type=int, default=6)
+  parser.add_argument("--iterations", type=int, default=120)
+  parser.add_argument("--seed", type=int, default=0)
+  args = parser.parse_args()
+
+  target_file = config.OUTPUT_DIR / "real_image_stats.json"
+  targets, views = real_targets(args.views, args.seed)
+  target_file.write_text(json.dumps({"views": views, "stats": targets},
+                                    indent=1))
+  print("targets:", {k: round(v, 3) for k, v in targets.items()})
+
+  rng = np.random.default_rng(args.seed)
+  best = start_values(config.OUTPUT_DIR / MODEL_FILE)
+  best_stats = flatten(st.stack_stats(render_patch(best, 1), CROP_PX))
+  best_loss = loss(best_stats, targets)
+  print(f"start loss {best_loss:.3f}")
+  for it in range(args.iterations):
+    scale = 0.3 * (1. - it / args.iterations) + 0.03
+    trial = perturb(best, rng, scale)
+    s = flatten(st.stack_stats(render_patch(trial, 1), CROP_PX))
+    l = loss(s, targets)
+    if l < best_loss:
+      best, best_stats, best_loss = trial, s, l
+      print(f"[{it}] loss {l:.3f} "
+            + " ".join(f"{k}={v:.3g}" for k, v in best.items()), flush=True)
+  print("final stats vs targets:")
+  for k in TARGETS:
+    print(f"  {k:22s} {best_stats[k]:10.4g} {targets[k]:10.4g}")
+  (config.OUTPUT_DIR / MODEL_FILE).write_text(json.dumps(
+    {"params": best, "loss": best_loss, "stats": best_stats,
+     "targets": targets}, indent=1))
+  print(f"-> {config.OUTPUT_DIR / MODEL_FILE}")
+
+
+if __name__ == "__main__":
+  main()

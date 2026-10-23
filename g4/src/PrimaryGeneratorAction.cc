@@ -7,6 +7,7 @@
 #include "G4RunManager.hh"
 #include "G4SystemOfUnits.hh"
 #include "PhaseSpace.hh"
+#include "Randomize.hh"
 #include "TRandom.h"
 
 namespace {
@@ -86,6 +87,8 @@ void PrimaryGeneratorAction::Initialize()
                 ("channel closed: " + fChannel).c_str());
   }
   gRandom->SetSeed(fSeed);
+  // Capture points are sampled with the Geant4 engine: seed it as well
+  G4Random::setTheSeed(fSeed);
   G4cout << "Xi- + " << fTarget << " -> " << fChannel
          << "  Q = " << fQValue << " MeV" << G4endl;
   fInitialized = true;

@@ -1,0 +1,23 @@
+{
+ "views": [
+  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00000961_L0_VX0016_VY0021_0_058.json",
+  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00001849_L0_VX0004_VY0041_0_058.json",
+  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00000008_L0_VX0008_VY0000_0_058.json",
+  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00001397_L0_VX0002_VY0031_0_058.json",
+  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00000994_L0_VX0004_VY0022_0_058.json",
+  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00001176_L0_VX0006_VY0026_0_058.json"
+ ],
+ "stats": {
+  "median": 204.5,
+  "std": 24.08349175922022,
+  "p1": 143.83333333333334,
+  "p5": 162.66666666666666,
+  "n_cc_per_mpx": 13598.283131917318,
+  "cc_area_p90": 27.0,
+  "dark_blobs_per_mpx": 3402.868906656901,
+  "dark_blob_area_median": 2.8333333333333335,
+  "corr1": 0.9231310301998296,
+  "corr2": 0.8351080955245044,
+  "fg_fraction": 0.3325330416361491
+ }
+}

@@ -15,6 +15,8 @@ Commands:
   check-range  compare Geant4 ranges with the kinema range-energy relation
   replay       fixed kinematics of Nagara / Ibuki -> output/replay/
   images       render microscope image stacks  -> data/images/<name>/
+  compare      image statistics of real vs synthetic stacks
+  calibrate    tune the image model to real views -> output/image_model.json
   efficiency   vertex-finding efficiency of candidates vs truth
   setup        channels + decays + build
 
@@ -42,6 +44,8 @@ COMMANDS: dict[str, str] = {
   "check-range": "module.check_range",
   "replay":      "module.replay",
   "images":      "module.synth.cli",
+  "compare":     "module.imagestats",
+  "calibrate":   "module.synth.calibrate",
   "efficiency":  "module.efficiency",
 }
 SEQUENCES: dict[str, list[str]] = {
