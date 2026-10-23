@@ -88,6 +88,10 @@ def main():
                                 and not path.with_suffix(".done").exists()):
       continue
     events = eff.load_truth(dataset)
+    if m["method"] == "bprime":
+      # B' runs may cover only the first events: use those in the file
+      present = set(eff.load_candidates(path))
+      events = {k: v for k, v in events.items() if k in present}
     rows, extra = eff.evaluate(events,
                                eff.load_candidates(path, args.min_score),
                                tolerances, shifts, "developed")

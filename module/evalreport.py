@@ -35,6 +35,11 @@ def _sel(rows, vtype, control):
 def efficiency_rows(dataset, csv_path, min_score=None):
   events = eff.load_truth(config.IMAGE_DIR / dataset)
   cands = eff.load_candidates(csv_path, min_score)
+  if "bprime" in Path(csv_path).name:
+    # B' runs may cover only the first events of a dataset: evaluate the
+    # events present in the file (all of them have thousands of points)
+    present = set(eff.load_candidates(csv_path))
+    events = {k: v for k, v in events.items() if k in present}
   rows, extra = eff.evaluate(events, cands, TOLS, SHIFTS, "developed")
   return events, cands, rows, extra
 
@@ -264,7 +269,9 @@ def main():
     out += ["", "## 5. Other channels (dz 3.0)", "",
             "Method A production with the inclusive and z_best "
             "conventions; B' rows (point candidates, multiplicity >= 3) "
-            "repeat the point distance in both column pairs.", "",
+            "repeat the point distance in both column pairs. The B' replay "
+            "runs cover the first 10 events (ev0000-0009) of each replay "
+            "dataset.", "",
             "| dataset | vertices | n | inclusive <6 um | inclusive <12 um "
             "| best <6 um | best <12 um | cand/event |",
             "|---|---|---|---|---|---|---|---|"] + lines

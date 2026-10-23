@@ -91,7 +91,7 @@ B' candidates are points (all depth conventions coincide); multiplicity cuts on 
 
 ## 5. Other channels (dz 3.0)
 
-Method A production with the inclusive and z_best conventions; B' rows (point candidates, multiplicity >= 3) repeat the point distance in both column pairs.
+Method A production with the inclusive and z_best conventions; B' rows (point candidates, multiplicity >= 3) repeat the point distance in both column pairs. The B' replay runs cover the first 10 events (ev0000-0009) of each replay dataset.
 
 | dataset | vertices | n | inclusive <6 um | inclusive <12 um | best <6 um | best <12 um | cand/event |
 |---|---|---|---|---|---|---|---|
@@ -101,8 +101,12 @@ Method A production with the inclusive and z_best conventions; B' rows (point ca
 | Xi- + 14N -> L10Be + L5He (twin) | hypernuclear decays | 82 | 30% (14%) | 68% (42%) | 5% (1%) | 29% (7%) | 769 |
 | Nagara replay | capture | 20 | 30% (10%) | 45% (21%) | 5% (0%) | 25% (6%) | 769 |
 | Nagara replay | hypernuclear decays | 36 | 44% (8%) | 72% (30%) | 11% (0%) | 14% (4%) | 769 |
+| Nagara replay [B' mult >= 3] | capture | 10 | 20% (13%) | 60% (32%) | 20% (13%) | 60% (32%) | 10650 |
+| Nagara replay [B' mult >= 3] | hypernuclear decays | 18 | 50% (7%) | 61% (36%) | 50% (7%) | 61% (36%) | 10650 |
 | Ibuki replay | capture | 20 | 20% (13%) | 65% (30%) | 0% (1%) | 20% (4%) | 770 |
 | Ibuki replay | hypernuclear decays | 38 | 24% (12%) | 53% (37%) | 5% (1%) | 13% (6%) | 770 |
+| Ibuki replay [B' mult >= 3] | capture | 10 | 20% (14%) | 40% (50%) | 20% (14%) | 40% (50%) | 10736 |
+| Ibuki replay [B' mult >= 3] | hypernuclear decays | 18 | 28% (16%) | 72% (50%) | 28% (16%) | 72% (50%) | 10736 |
 | Nagara replay, synthetic | capture | 20 | 20% (0%) | 25% (0%) | 15% (0%) | 30% (0%) | 42 |
 | Nagara replay, synthetic | hypernuclear decays | 38 | 26% (0%) | 29% (0%) | 5% (0%) | 16% (0%) | 42 |
 | Ibuki replay, synthetic | capture | 20 | 30% (0%) | 35% (0%) | 20% (0%) | 35% (0%) | 44 |
