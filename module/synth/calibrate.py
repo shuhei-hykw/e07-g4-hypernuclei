@@ -219,12 +219,16 @@ def main():
   parser.add_argument("--seed", type=int, default=0)
   parser.add_argument("--dz", type=float, default=render.Optics.dz_um,
                       help="physical focal step per slice (um)")
+  parser.add_argument("--exclude", default="",
+                      help="comma separated target statistics to ignore")
   parser.add_argument("--output", default=str(config.OUTPUT_DIR
                                               / MODEL_FILE),
                       help="model file (also the start point if present)")
   args = parser.parse_args()
   global DZ_UM
   DZ_UM = args.dz
+  for k in filter(None, args.exclude.split(",")):
+    TARGETS.pop(k)
 
   target_file = config.OUTPUT_DIR / "real_image_stats.json"
   targets, views = real_targets(args.views, args.seed)

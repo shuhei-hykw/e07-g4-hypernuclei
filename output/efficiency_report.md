@@ -58,6 +58,12 @@ B' candidates are points (all depth conventions coincide); multiplicity cuts on 
 |---|---|---|---|---|---|
 | 3.0 | A production | capture | 40% (16%) | 40% (52%) | 777 |
 | 3.0 | A production | LL decay | 25% (12%) | 25% (42%) | 777 |
+| 3.0 | B' all | capture | 20% (22%) | 80% (58%) | 30462 |
+| 3.0 | B' all | LL decay | 25% (18%) | 100% (55%) | 30462 |
+| 3.0 | B' mult >= 3 | capture | 20% (12%) | 60% (36%) | 11030 |
+| 3.0 | B' mult >= 3 | LL decay | 25% (8%) | 50% (32%) | 11030 |
+| 3.0 | B' mult >= 4 | capture | 20% (6%) | 40% (22%) | 4866 |
+| 3.0 | B' mult >= 4 | LL decay | 0% (5%) | 25% (18%) | 4866 |
 | 1.5 | A production | capture | 60% (8%) | 60% (32%) | 771 |
 | 1.5 | A production | LL decay | 25% (8%) | 25% (22%) | 771 |
 
