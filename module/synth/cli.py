@@ -263,8 +263,9 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
   all_grains = np.vstack([labelled, fog])
   weights = render.grain_weights(len(all_grains), emulsion, rng)
   renderer = render.Renderer(optics)
-  bright = render.mottle_field(optics, background, rng) \
-    * flatfield.load(optics.size_px)
+  mottle = render.MottleVolume(optics, background, rng, view.slice_zdev(0),
+                               view.slice_zdev(optics.n_slices - 1))
+  flat = flatfield.load(optics.size_px)
   fixed = render.fixed_pattern(optics, background, rng)
   dead = rng.integers(0, optics.size_px, (background.n_dead_pixels, 2))
 
@@ -278,7 +279,8 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
       img = real[k] * (t_min + (1. - t_min) * np.exp(-d))
       img = np.clip(np.rint(img), 0, GRAY_MAX).astype(np.uint8)
     else:
-      img = render.compose(bright, d, background, fixed, rng)
+      img = render.compose(mottle.at(view.slice_zdev(k)) * flat, d,
+                           background, fixed, rng)
       img[dead[:, 1], dead[:, 0]] = 0
     write_gray_png(out_dir / f"{k:04d}.png", img)
     np.minimum(stack_min, img, out=stack_min)

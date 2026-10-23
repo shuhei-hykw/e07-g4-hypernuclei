@@ -52,14 +52,15 @@ PARAMS = {
   "mottle_large": ("background", "mottle", 0.0, 0.25, False),
   "mottle_small": ("background", "mottle", 0.0, 0.3, False),
   "mottle_small_um": ("background", "mottle", 1.5, 15., True),
+  "mottle_z_um": ("background", "mottle_z_um", 2., 200., True),
   "min_transmission": ("background", "min_transmission", 0.0, 0.7, False),
   "noise_sigma": ("background", "noise_sigma", 0.3, 6., True),
   "fixed_noise_sigma": ("background", "fixed_noise_sigma", 0.0, 2., False),
   "beam_slope_max": ("background", "beam_slope_max", 0.005, 0.3, True),
   "beam_spread": ("background", "beam_spread", 0.001, 0.1, True),
   "grain_sigma_um": ("optics", "grain_sigma_um", 0.15, 1.0, True),
-  # Lower bound from the defocus blur of a 20x objective (NA >= 0.3)
-  "defocus_slope": ("optics", "defocus_slope", 0.1, 0.5, True),
+  # Lower bound: defocus blur of an objective with NA >= ~0.1
+  "defocus_slope": ("optics", "defocus_slope", 0.03, 0.5, True),
   "grain_density": ("optics", "grain_density", 0.03, 4., True),
   "fog_per_um3": ("emulsion", "fog_per_um3", 5e-4, 4e-2, True),
   "grain_spread": ("emulsion", "grain_spread", 0.0, 1.0, False),
@@ -122,7 +123,7 @@ def apply_values(values, optics, emulsion, background):
       objs[obj] = replace(objs[obj], random_track_ionization=(1., v))
     elif name == "flat_ion_max":
       objs[obj] = replace(objs[obj], flat_ionization=(1., v))
-    elif not name.startswith("mottle"):
+    elif name == "mottle_z_um" or not name.startswith("mottle"):
       objs[obj] = replace(objs[obj], **{field: v})
   objs["background"] = replace(objs["background"], mottle=(
     (values["mottle_large"], MOTTLE_SCALES_UM[0]),
@@ -169,10 +170,13 @@ def render_patch(values, seed):
   allg = np.vstack(grains)
   weights = render.grain_weights(len(allg), emulsion, rng)
   renderer = render.Renderer(optics)
-  bright = render.mottle_field(optics, background, rng)
-  fixed = render.fixed_pattern(optics, background, rng)
   c = optics.n_slices // 2
-  return [render.compose(bright, renderer.density(allg, weights, c + o),
+  mottle = render.MottleVolume(optics, background, rng,
+                               view.slice_zdev(c + min(OFFSETS)),
+                               view.slice_zdev(c + max(OFFSETS)))
+  fixed = render.fixed_pattern(optics, background, rng)
+  return [render.compose(mottle.at(view.slice_zdev(c + o)),
+                         renderer.density(allg, weights, c + o),
                          background, fixed, rng) for o in OFFSETS]
 
 
@@ -213,6 +217,7 @@ def current_defaults():
   return {"brightness": b.brightness, "mottle_large": b.mottle[0][0],
           "mottle_small": b.mottle[1][0],
           "mottle_small_um": b.mottle[1][1],
+          "mottle_z_um": b.mottle_z_um if b.mottle_z_um > 0 else 30.,
           "min_transmission": b.min_transmission,
           "noise_sigma": b.noise_sigma,
           "fixed_noise_sigma": b.fixed_noise_sigma,

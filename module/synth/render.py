@@ -71,6 +71,8 @@ class Background:
   brightness: float = 210.
   # Relative rms and length scale of the slow brightness variations
   mottle: tuple = ((0.08, 25.), (0.06, 6.))
+  # Depth correlation length of the mottle (developed um, 0: static)
+  mottle_z_um: float = 0.
   min_transmission: float = 0.2     # darkest level relative to B
   noise_sigma: float = 2.           # temporal pixel noise (per slice)
   fixed_noise_sigma: float = 3.     # fixed-pattern noise (all slices)
@@ -322,12 +324,12 @@ def fog_grains(view, emulsion, rng):
   return np.column_stack([col, row, sl])
 
 
-def mottle_field(optics, background, rng):
-  """Slowly varying brightness B(x, y) as smoothed noise of two scales."""
+def _mottle_layer(optics, background, rng):
+  """Relative brightness variation (mean 0) of the two mottle scales."""
   n = optics.size_px
   fy = np.fft.fftfreq(n)[:, None]
   fx = np.fft.rfftfreq(n)[None, :]
-  total = np.ones((n, n))
+  total = np.zeros((n, n))
   for rel, scale_um in background.mottle:
     sigma_px = scale_um / optics.pixel_um
     kernel = np.exp(-2. * np.pi ** 2 * sigma_px ** 2
@@ -335,7 +337,41 @@ def mottle_field(optics, background, rng):
     field = np.fft.irfft2(np.fft.rfft2(rng.normal(size=(n, n))) * kernel,
                           s=(n, n))
     total += rel * field / (field.std() or 1.)
-  return background.brightness * total
+  return total
+
+
+def mottle_field(optics, background, rng):
+  """Static slowly varying brightness B(x, y)."""
+  return background.brightness * (1. + _mottle_layer(optics, background,
+                                                     rng))
+
+
+class MottleVolume:
+  """Brightness B(x, y, z) whose mottle decorrelates over mottle_z_um in
+  developed depth: independent layers at nodes spaced mottle_z_um,
+  interpolated with variance-preserving weights."""
+
+  def __init__(self, optics, background, rng, zdev_min, zdev_max):
+    self.b = background
+    self.lz = background.mottle_z_um
+    if self.lz <= 0.:
+      self.static = mottle_field(optics, background, rng)
+      return
+    self.z0 = zdev_min
+    n_nodes = int(np.ceil((zdev_max - zdev_min) / self.lz)) + 2
+    self.layers = [_mottle_layer(optics, background, rng)
+                   for _ in range(n_nodes)]
+
+  def at(self, zdev):
+    if self.lz <= 0.:
+      return self.static
+    t = (zdev - self.z0) / self.lz
+    i = int(np.clip(np.floor(t), 0, len(self.layers) - 2))
+    f = t - i
+    w0, w1 = 1. - f, f
+    norm = np.hypot(w0, w1)
+    rel = (w0 * self.layers[i] + w1 * self.layers[i + 1]) / norm
+    return self.b.brightness * (1. + rel)
 
 
 def fixed_pattern(optics, background, rng):
