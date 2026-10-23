@@ -268,9 +268,12 @@ Files per event:
 | `truth.json` | col / row / slice and `polyline` are image (developed) coordinates, `um` the Geant4 (undeveloped) position; vertices (`capture`, `HypernucleusDecay`, `hBertiniCaptureAtRest`, `Decay`) with col / row / slice and `in_view`; charged tracks with origin, start / end, `vertex_start` / `vertex_end`, 3-D `polyline` (2 um steps); dataset parameters |
 | `labels.npz` | per slice: `labels` class of in-focus grains (1 capture, 2 decay, 3 other secondary, 4 background track, 5 junk) and `instance` (track id; negative for background tracks and junk) |
 | `preview.png` | minimum projection: crop around the capture point and the whole view |
+| `g4_tracks.png` | Geant4 event display before imaging (as `./run.py draw`) |
+| `g4_view.png` | Geant4 tracks in the image coordinates of the view (crop as `preview.png`, whole view, column vs slice) |
 
 Rendering takes about 70 s and 170 MB per event (`-j` renders events in
-parallel).
+parallel). `--tracks-only` writes only the two Geant4 track pictures for
+an existing dataset (the view placement is reproduced from the seed).
 
 ## Vertex-finding efficiency (`./run.py efficiency`)
 

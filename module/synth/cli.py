@@ -15,6 +15,8 @@ For every event a directory data/images/<name>/ev<NNNN>/ is written:
                  fog) and `instance` (track id; -1-i background track i,
                  -100001-i junk cluster i, 0 none)
   preview.png    min projection: crop around the vertex | whole view
+  g4_tracks.png  Geant4 event display before imaging (./run.py draw)
+  g4_view.png    Geant4 tracks in the image coordinates of the view
 
 The capture point is placed at a random position in the view and the
 stack at a random depth inside the emulsion layer (--centered disables).
@@ -31,8 +33,10 @@ import numpy as np
 
 from .. import config
 from . import render
+from .. import draw_event
 from .event import EventFile
 from .pngio import write_gray_png
+from .trackview import draw_view
 
 CHAIN_PROCESSES = ("HypernucleusDecay", "hBertiniCaptureAtRest", "Decay")
 PREVIEW_CROP_PX = 512
@@ -210,6 +214,11 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
   else:
     view = render.View.around(ev.vertex, devz, optics, rng,
                               VERTEX_MARGIN_PX)
+  out_dir.mkdir(parents=True, exist_ok=True)
+  draw_event.draw(args.root_file, ev.index, out_dir / "g4_tracks.png")
+  draw_view(ev, view, out_dir / "g4_view.png")
+  if args.tracks_only:
+    return
   labelled, classes, instances, fog, counts = collect_grains(
     ev, view, devz, emulsion, background, rng)
   all_grains = np.vstack([labelled, fog])
@@ -218,7 +227,6 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
   bright = render.mottle_field(optics, background, rng)
   dead = rng.integers(0, optics.size_px, (background.n_dead_pixels, 2))
 
-  out_dir.mkdir(parents=True, exist_ok=True)
   stack_min = np.full((optics.size_px, optics.size_px), GRAY_MAX,
                       dtype=np.uint8)
   cls_stack, ins_stack = [], []
@@ -281,6 +289,9 @@ def main():
                       help="vertex at the view center, stack centered")
   parser.add_argument("--seed", type=int, default=0)
   parser.add_argument("--no-labels", action="store_true")
+  parser.add_argument("--tracks-only", action="store_true",
+                      help="only write g4_tracks.png and g4_view.png "
+                      "(same view placement as the full rendering)")
   parser.add_argument("-j", "--jobs", type=int, default=1,
                       help="events rendered in parallel")
   args = parser.parse_args()

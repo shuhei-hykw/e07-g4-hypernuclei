@@ -147,14 +147,18 @@ def main():
                       help="also draw neutral tracks")
   parser.add_argument("-o", "--output", default="event.png")
   args = parser.parse_args()
+  draw(args.root_file, args.event, args.output, args.zoom, args.neutral)
 
+
+def draw(root_file, event, output, zoom=40., neutral=False):
+  """Write the event display of one event to `output`."""
   ROOT.gROOT.SetBatch(True)
   ROOT.gStyle.SetOptStat(0)
-  f = ROOT.TFile.Open(args.root_file)
+  f = ROOT.TFile.Open(str(root_file))
   tree = f.Get("tree")
-  tree.GetEntry(args.event)
+  tree.GetEntry(event)
 
-  tracks = load_tracks(tree, args.neutral)
+  tracks = load_tracks(tree, neutral)
   layers = load_layers(f, tree.vz)
   # The wide view covers the capture and hypernuclear decay products
   chain = [t for t in tracks
@@ -172,7 +176,7 @@ def main():
   status = "all charged tracks contained" if tree.contained else (
     "escaping track(s), marked o")
   title = ROOT.TLatex(0.01, (1. + TITLE_Y) / 2.,
-                      f"Xi^{{-}} + {tree.channel}   (event {args.event}, "
+                      f"Xi^{{-}} + {tree.channel}   (event {event}, "
                       f"vertex z = {tree.vz:.0f} #mum, {status})")
   title.SetNDC()
   title.SetTextAlign(12)
@@ -183,7 +187,7 @@ def main():
   grid.Divide(len(VIEWS), 2)
   legend = ROOT.TLegend(LEGEND_X, 0.3, 1., TITLE_Y)
   keep = [grid, legend]
-  for row, half in enumerate([args.zoom, wide]):
+  for row, half in enumerate([zoom, wide]):
     for col, view in enumerate(VIEWS):
       grid.cd(row * len(VIEWS) + col + 1)
       ROOT.gPad.SetLeftMargin(PAD_LEFT_MARGIN)
@@ -191,7 +195,7 @@ def main():
                  legend if row == 1 and col == 0 else None)
   canvas.cd()
   legend.Draw()
-  canvas.SaveAs(args.output)
+  canvas.SaveAs(str(output))
 
 
 if __name__ == "__main__":
