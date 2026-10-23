@@ -361,32 +361,31 @@ faint as real MIP tracks. The tuned model (v3) puts the beam density at
 about 1e4 tracks / mm2 nearly perpendicular to the sheets (slope ~0.01),
 consistent with the long-range slice correlation.
 
-Image model v11 (`output/image_model.json`, the default) adds to the
-model flat tracks nearly in the sheet plane, mottle that decorrelates in
-depth (`mottle_z_um`), a static fine texture and an optics / camera blur
-of the transmitted image (0.5 px); straight background tracks have a
-fixed length (1 mm) and flat / isotropic ones a density per volume, so
-that the grain density does not depend on the view size or stack depth.
-The calibration matches, besides the statistics above, elongated
-components, the raw power spectrum in three bands, the shape of the
-background-subtracted intensity distribution, the near-saturated
-fraction and the minimum projection; its loss is the mean squared z
-score in units of the real view-to-view spread, with patch statistics
-averaged over three seeds.
+Image model v13 (`output/image_model.json`, the default, calibrated for
+a physical step of 1.5 um per slice, now the default `--dz`) adds to the
+model flat tracks nearly in the sheet plane, fine mottle of two depth
+correlation lengths (`mottle_z_um`, `mottle_long`), a static fine
+texture and an optics / camera blur of the transmitted image (0.6 px);
+straight background tracks have a fixed length (1 mm) and flat /
+isotropic ones a density per volume, so that the grain density does not
+depend on the view size or stack depth. The calibration matches,
+besides the statistics above, elongated components, the raw power
+spectrum in three bands, the shape of the background-subtracted
+intensity distribution, the near-saturated fraction and the minimum
+projection; its loss is the mean squared z score in units of the real
+view-to-view spread, with patch statistics averaged over three seeds.
 
 `./run.py validate data/images/<dataset>` compares a synthetic dataset
 with 20 real views not used in the calibration (`output/realism.md`).
-For v11 19 of 23 statistics are within 3 spreads of the real views
-(intensity percentiles, binarized foreground fraction, distribution
-shape, elongated components, slice correlation at 1-5 slices, dark
-blobs); the remaining deviations are the high-frequency power (+0.07
-dex), the 90 % component area (36 vs 28 px), the slice correlation at
-13 slices (0.14 vs 0.18) and the minimum-projection detail (+5 %).
-With synthetic v4 images method A of e07-fullscan finds ~795
-candidates per view, as on real views (~770; v3: ~40). Heavy signal
-tracks have depth 0.11-0.22 and width 3-4 px on minimum projections
-(real Ibuki heavy track 0.22 / 4 px). The v3_* evaluation datasets were
-made with model v3 (`data/image_model_v3.json`).
+For v13 20 of 23 statistics are within 3 spreads of the real views,
+including the slice correlation at 1-13 slices; the remaining ones are
+the high-frequency power (+0.05 dex, z = 4.4), the minimum-projection
+detail (+7 %, z = 4.3) and the 90 % component area (+18 %, z = 3.1).
+With synthetic images method A of e07-fullscan finds 800-900
+candidates per view, as on real views (~770; model v3: ~40). Heavy
+signal tracks have depth 0.11-0.22 and width 3-4 px on minimum
+projections (real Ibuki heavy track 0.22 / 4 px). The v3_* evaluation
+datasets were made with model v3 (`data/image_model_v3.json`).
 
 `./run.py flatfield` stores the median middle slice of 20 real views
 (smoothed, normalized to 1 at the center) in `output/flatfield.npy`:
@@ -421,6 +420,11 @@ specification, agreed with the e07-fullscan analysis:
 - `./run.py beamgrains <view.json> ...`: grains per slice along
   perpendicular beam tracks, a step handle independent of the beam
   divergence and defocus (output/dz_comparison.md).
+- `./run.py rankstudy <dataset> <bprime.csv>`: ranking of point
+  candidates by multiplicity, local density or image darkness at fixed
+  candidates per view (`output/bprime_ranking.md`).
+- `./run.py specialsrank`: the same rankings on the B' branch points of
+  the real special events (`output/specials_ranking.md`).
 - `./run.py zbias <dataset> <csv> --sim <root>`: offset z_best - z_true
   of the XY-nearest candidate, split by layer / stack position, daughter
   z asymmetry and n_tracks_max.

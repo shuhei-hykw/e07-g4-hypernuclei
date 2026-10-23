@@ -6,7 +6,8 @@
 For every special event the branch points of B' (<event>_points.csv:
 vx_px, vy_px, slice, z_mm, mult) are scored by multiplicity and by the
 image darkness of module/rankstudy.py (background-subtracted minimum
-projection over +-3 slices, mean within 6 px). A branch point matches
+projection over +-3 slices, mean within 6 px), and by the sum of the two
+rank fractions (combined). A branch point matches
 the clicked true vertex if it lies within --tol-xy px in XY and its
 stage z within --tol-z um of the clicked slice. The figure of merit is
 the best rank of a matching point divided by the number of points
@@ -53,7 +54,7 @@ def darkness(stack, xy, slices):
     k = int(np.clip(k, 0, n - 1))
     if k not in cache:
       lo, hi = max(0, k - DARK_HALF_SLICES), min(n, k + DARK_HALF_SLICES + 1)
-      mp = stack[lo:hi].min(axis=0)
+      mp = stack[lo:hi].min(axis=0).astype(float)
       cache[k] = st.gaussian_blur(mp, BG_SIGMA_PX) - mp
     det = cache[k]
     yi, xi = int(round(y)), int(round(x))
@@ -90,7 +91,8 @@ def main():
   names = args.events.split(",") if args.events else sorted(gt)
   rng = np.random.default_rng(0)
   lines = ["| event | points | multiplicity: true (control) | "
-           "darkness: true (control) |", "|---|---|---|---|"]
+           "darkness: true (control) | combined: true (control) |",
+           "|---|---|---|---|---|"]
   for name in names:
     pts = Path(args.points) / f"{name}_points.csv"
     img = Path(args.images) / name / "image.json"
@@ -101,11 +103,15 @@ def main():
     meta = json.loads(img.read_text())
     truth_z = float(meta["Images"][int(g["z_slice"])]["z"])
     truth_xy = np.array([g["vx"], g["vy"]], dtype=float)
-    stack = np.array(st.read_stack(img)).astype(float)
+    # 8-bit stack: 200-slice specials would need ~7 GB as floats
+    stack = np.array(st.read_stack(img))
     size = stack.shape[1]
     dark = darkness(stack, xy, slices)
+    # Combined: sum of the two rank fractions (smaller is better)
+    rk = lambda v: np.argsort(np.argsort(-v)) / len(v)
+    combined = -(rk(mult) + rk(dark))
     cells = []
-    for score in (mult, dark):
+    for score in (mult, dark, combined):
       true = best_rank_fraction(score, xy, z_mm, truth_xy, truth_z,
                                 args.tol_xy, args.tol_z)
       ctrl = []
@@ -119,7 +125,8 @@ def main():
           ctrl.append(f)
       cells.append(f"{true:.4f}" if true is not None else "no match")
       cells[-1] += f" ({np.median(ctrl):.4f})" if ctrl else " (-)"
-    lines.append(f"| {name} | {len(xy)} | {cells[0]} | {cells[1]} |")
+    lines.append(f"| {name} | {len(xy)} | {cells[0]} | {cells[1]} | "
+                 f"{cells[2]} |")
     print(lines[-1], flush=True)
   text = ("Best rank of a branch point matching the clicked vertex divided "
           "by the number of points (smaller is better); control: median "

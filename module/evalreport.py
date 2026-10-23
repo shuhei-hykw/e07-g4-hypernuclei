@@ -258,10 +258,21 @@ def main():
                    + f" | {per_event:.0f} |")
     out.append("")
 
-  # 4c. ranking of B' candidates by image darkness (precomputed study)
+  # 4c. ranking of B' candidates by image darkness (precomputed studies)
   study = config.OUTPUT_DIR / "bprime_ranking.md"
   if study.exists():
     out += [study.read_text(), ""]
+  specials = config.OUTPUT_DIR / "specials_ranking.md"
+  if specials.exists():
+    out += ["### Ranking of B' branch points on the real special events "
+            "(`./run.py specialsrank`)", "",
+            "Match: 200 px in XY and 30 um in stage z of the clicked "
+            "vertex. On real events the multiplicity ranks well for most "
+            "events (unlike the simulation, where the simulated vertices "
+            "rarely produce high-multiplicity branch points), the "
+            "darkness for others, and their combination ranks the true "
+            "vertex better than the shifted control in all nine events.",
+            "", specials.read_text(), ""]
 
   # 5. other channels with method A
   others = [("v3_embed_ll11be_dz3.0", "Xi- + 14N -> LL11Be + 4He"),
