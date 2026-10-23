@@ -198,11 +198,18 @@ def main():
             ("v3_synth_nagara_replay_dz3.0", "Nagara replay, synthetic"),
             ("v3_synth_ibuki_replay_dz3.0", "Ibuki replay, synthetic")]
   lines = []
+  sources = []
   for ds, label in others:
-    path = cdir / f"{ds}_methodA_production.csv"
-    if not path.exists():
+    sources.append((ds, label, f"{ds}_methodA_production.csv", None,
+                    ("inclusive", "best")))
+    sources.append((ds, label + " [B' mult >= 3]", f"{ds}_bprime.csv", 3,
+                    ("edge", "edge")))
+  for ds, label, name, min_score, metrics in sources:
+    path = cdir / name
+    if not path.exists() or ("bprime" in name
+                             and not path.with_suffix(".done").exists()):
       continue
-    events, cands, rows, extra = efficiency_rows(ds, path)
+    events, cands, rows, extra = efficiency_rows(ds, path, min_score)
     per_event = extra["n_candidates"] / len(events)
     for vlabel, vtype in (("capture", "capture"),
                           ("hypernuclear decays", "HypernucleusDecay")):
@@ -211,7 +218,7 @@ def main():
       if not sel:
         continue
       cells = []
-      for m in ("inclusive", "best"):
+      for m in metrics:
         for t in TOLS:
           k = f"found_{m}_{t:g}"
           cells.append(f"{np.mean([r[k] for r in sel]):.0%} "
@@ -220,7 +227,10 @@ def main():
       lines.append(f"| {label} | {vlabel} | {len(sel)} | "
                    + " | ".join(cells) + f" | {per_event:.0f} |")
   if lines:
-    out += ["", "## 5. Other channels (method A production, dz 3.0)", "",
+    out += ["", "## 5. Other channels (dz 3.0)", "",
+            "Method A production with the inclusive and z_best "
+            "conventions; B' rows (point candidates, multiplicity >= 3) "
+            "repeat the point distance in both column pairs.", "",
             "| dataset | vertices | n | inclusive <6 um | inclusive <12 um "
             "| best <6 um | best <12 um | cand/event |",
             "|---|---|---|---|---|---|---|---|"] + lines

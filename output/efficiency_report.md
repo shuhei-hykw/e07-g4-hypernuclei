@@ -74,7 +74,9 @@ B' candidates are points (all depth conventions coincide); multiplicity cuts on 
 | 1.5 | B' mult >= 4 | LL decay | 25% (5%) | 50% (45%) | 4784 |
 
 
-## 5. Other channels (method A production, dz 3.0)
+## 5. Other channels (dz 3.0)
+
+Method A production with the inclusive and z_best conventions; B' rows (point candidates, multiplicity >= 3) repeat the point distance in both column pairs.
 
 | dataset | vertices | n | inclusive <6 um | inclusive <12 um | best <6 um | best <12 um | cand/event |
 |---|---|---|---|---|---|---|---|
