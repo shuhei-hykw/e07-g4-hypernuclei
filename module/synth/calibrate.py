@@ -77,6 +77,7 @@ PARAMS = {
 }
 MOTTLE_SCALES_UM = (25., 6.)
 MAX_MOVED = 3
+PATCH_SEEDS = (1, 2, 3)
 # Minimum spread used for z scores: fraction of the target value (or of
 # Z_FLOOR_ABS for values near zero)
 Z_FLOOR_REL = 0.02
@@ -178,6 +179,14 @@ def render_patch(values, seed):
   return [render.compose(mottle.at(view.slice_zdev(c + o)),
                          renderer.density(allg, weights, c + o),
                          background, fixed, rng) for o in OFFSETS]
+
+
+def patch_stats(values):
+  """Statistics averaged over patches of several seeds: one patch
+  fluctuates far more than the real view-to-view spread."""
+  runs = [flatten(st.stack_stats(render_patch(values, seed), CROP_PX,
+                                 OFFSETS)) for seed in PATCH_SEEDS]
+  return {k: float(np.mean([r[k] for r in runs])) for k in runs[0]}
 
 
 def loss(stats, targets, stds=None):
@@ -283,14 +292,13 @@ def main():
 
   rng = np.random.default_rng(args.seed)
   best = start_values(Path(args.output))
-  best_stats = flatten(st.stack_stats(render_patch(best, 1), CROP_PX,
-                                      OFFSETS))
+  best_stats = patch_stats(best)
   best_loss = loss(best_stats, targets, stds)
   print(f"start loss {best_loss:.3f}")
   for it in range(args.iterations):
     scale = 0.3 * (1. - it / args.iterations) + 0.03
     trial = perturb(best, rng, scale)
-    s = flatten(st.stack_stats(render_patch(trial, 1), CROP_PX, OFFSETS))
+    s = patch_stats(trial)
     l = loss(s, targets, stds)
     if l < best_loss:
       best, best_stats, best_loss = trial, s, l
