@@ -395,6 +395,10 @@ specification, agreed with the e07-fullscan analysis:
   z gap of that candidate, true vs control (separates XY accuracy from
   the depth convention).
 
+`./run.py evalreport` writes the user-facing summary
+`output/efficiency_report.md` (dz 3.0 / 1.5 comparison for method A with
+the three depth conventions, XY accuracy, z_best bias, B' vs A).
+
 `./run.py report [--pattern 'v3_*']` evaluates every candidate file
 `<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis
 (`~/work/e07-fullscan/results/sim_eval`) and writes
