@@ -21,7 +21,7 @@ from . import config
 from . import efficiency as eff
 
 DEFAULT_CANDIDATES = Path.home() / "work/e07-fullscan/results/sim_eval"
-NAME_RE = re.compile(r"^(?P<dataset>.+?)_(?P<method>method[^_]+)"
+NAME_RE = re.compile(r"^(?P<dataset>.+?)_(?P<method>method[^_]+|bprime)"
                      r"(?:_(?P<cuts>[^.]+))?\.csv$")
 
 
