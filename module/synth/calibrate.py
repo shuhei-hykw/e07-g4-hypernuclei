@@ -33,7 +33,8 @@ OFFSETS = [-2, -1, 0, 1, 2, 5, 13]
 CORR_LAGS = (1, 2, 5, 13)
 # Statistic -> (weight, compare in log)
 TARGETS = {
-  "median": (1., False), "std": (2., False), "p1": (1., False),
+  "median": (3., False), "std": (2., False), "p1": (1., False),
+  "p99": (3., False), "frac_bright": (10., False),
   "p5": (1., False), "n_cc_per_mpx": (1., True),
   "cc_area_p90": (2., True), "dark_blobs_per_mpx": (1., True),
   "dark_blob_area_median": (1., True),
@@ -42,10 +43,12 @@ TARGETS = {
   "corr2": (3., False), "corr5": (3., False), "corr13": (3., False),
   "fg_fraction": (5., False), "n_elong_per_mpx": (3., True),
   "pow_low": (3., False), "pow_mid": (3., False), "pow_high": (3., False),
+  "d_skew": (3., False), "d_kurt": (2., True), "d_iqr": (3., False),
+  "mp_detail_std": (5., False), "mp_dark_frac": (5., False),
 }
 # Parameter -> (object, field, low, high, log scale)
 PARAMS = {
-  "brightness": ("background", "brightness", 150., 280., False),
+  "brightness": ("background", "brightness", 150., 235., False),
   "mottle_large": ("background", "mottle", 0.0, 0.25, False),
   "mottle_small": ("background", "mottle", 0.0, 0.3, False),
   "mottle_small_um": ("background", "mottle", 1.5, 15., True),
@@ -67,7 +70,7 @@ PARAMS = {
   "flat_per_mm2": ("background", "flat_per_mm2", 1., 2e4, True),
   "flat_dip_max": ("background", "flat_dip_max", 0.01, 0.5, True),
   "flat_ion_max": ("background", "flat_ionization", 1.5, 30., True),
-  "speckle_rel": ("background", "speckle_rel", 0.0, 0.15, False),
+  "speckle_rel": ("background", "speckle_rel", 0.0, 0.3, False),
   "speckle_scale_px": ("background", "speckle_scale_px", 0.5, 4., True),
 }
 MOTTLE_SCALES_UM = (25., 6.)
@@ -75,7 +78,8 @@ MAX_MOVED = 3
 # Statistics compared by absolute difference (fractions, correlations)
 ABSOLUTE_STATS = ("corr1", "corr2", "corr5", "corr13", "fg_fraction",
                   "dark_contrast_median", "dark_contrast_p90",
-                  "pow_low", "pow_mid", "pow_high")
+                  "pow_low", "pow_mid", "pow_high", "d_skew",
+                  "frac_bright", "mp_dark_frac")
 MODEL_FILE = "image_model.json"
 # Real views labelled by hand for the full-scan CNN: never used here
 EXCLUDED_VIEWS = ("V00000011", "V00000991", "V00001012", "V00001339")

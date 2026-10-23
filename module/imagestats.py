@@ -31,6 +31,8 @@ N_SPECTRUM_BINS = 120
 HIST_BINS = 64
 MAX_LAG = 2
 DEFAULT_CROP_PX = 1024
+BRIGHT_LEVEL = 250  # near-saturated gray level
+MP_DARK_LEVEL = 20.  # dark detail level in the minimum projection
 # Bands of the raw radial power spectrum (cycles / px)
 SPECTRUM_BANDS = {"pow_low": (0.004, 0.02), "pow_mid": (0.02, 0.08),
                   "pow_high": (0.08, 0.3)}
@@ -194,12 +196,17 @@ def stack_stats(stack, crop, offsets=None):
   d = diffs[c]
   thr = otsu(d)
   fg = d > thr
+  zd = (d - d.mean()) / (d.std() or 1.)
+  q25, q75 = np.percentile(d, [25, 75])
   area, elong = component_stats(fg)
   n_elong = int(((elong > ELONG_MIN) & (area >= ELONG_MIN_AREA)).sum())
   dark = mid <= np.quantile(mid, DARK_FRACTION)
   dark_area, _ = component_stats(dark)
   contrast = blob_contrast(mid, dark)
   k, power = radial_spectrum(d)
+  # Minimum projection over all given slices (depth-integrated grains)
+  mp = np.min(np.array(imgs), axis=0)
+  dmp = gaussian_blur(mp, BG_SIGMA_PX) - mp
   # Spectrum of the raw image normalized by its mean (keeps the clouds)
   kr, praw = radial_spectrum(mid / mid.mean())
   bands = {}
@@ -215,7 +222,11 @@ def stack_stats(stack, crop, offsets=None):
   return {
     "median": float(np.median(raw)), "std": float(raw.std()),
     "p1": float(np.percentile(raw, 1)), "p5": float(np.percentile(raw, 5)),
+    "p99": float(np.percentile(raw, 99)),
+    "frac_bright": float(np.mean(raw >= BRIGHT_LEVEL)),
     "fg_fraction": float(fg.mean()), "n_cc_per_mpx": len(area) / mpx,
+    "d_skew": float((zd ** 3).mean()), "d_kurt": float((zd ** 4).mean()),
+    "d_iqr": float(q75 - q25),
     "cc_area_median": float(np.median(area)),
     "cc_area_p90": float(np.percentile(area, 90)),
     "cc_elong_p90": float(np.percentile(elong, 90)),
@@ -225,6 +236,8 @@ def stack_stats(stack, crop, offsets=None):
     "dark_contrast_median": float(np.median(contrast)),
     "dark_contrast_p90": float(np.percentile(contrast, 90)),
     "slice_corr": corr,
+    "mp_detail_std": float(dmp.std()),
+    "mp_dark_frac": float(np.mean(dmp > MP_DARK_LEVEL)),
     **bands,
     "_raw": raw, "_area": area, "_elong": elong, "_k": k,
     "_power": power, "_dark_area": dark_area,

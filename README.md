@@ -288,8 +288,10 @@ Each simulated event becomes one view of the E07 full scan
   mottled brightness B (two scales), t_min = 0.4 and pixel noise.
 - Background (densities per mm2 of view, tuned by `calibrate`): nearly
   parallel beam MIP tracks around an axis close to z, isotropic straight
-  tracks of 1-4 x MIP ionization, large junk clusters; temporal and
-  fixed-pattern pixel noise; the flat field of the real microscope.
+  tracks, flat tracks nearly in the sheet plane (the many thin lines of
+  real single slices), large junk clusters; mottle at two scales, a
+  static fine texture, temporal and fixed-pattern pixel noise; the flat
+  field of the real microscope.
 
 Files per event:
 
@@ -357,6 +359,24 @@ and L5He and 0.36 / 4 px for alpha, while p and pi- (0.03-0.04) are as
 faint as real MIP tracks. The tuned model (v3) puts the beam density at
 about 1e4 tracks / mm2 nearly perpendicular to the sheets (slope ~0.01),
 consistent with the long-range slice correlation.
+
+Image model v4 (`output/image_model.json`, the default): besides the
+statistics above, the calibration matches the elongated components
+(track segments) of single slices, the raw power spectrum in three
+frequency bands (clouds and lines), the shape of the background-
+subtracted intensity distribution (skewness, kurtosis, interquartile
+range, which set the binarized foreground fraction), the fraction of
+near-saturated pixels and the minimum projection over the used slices.
+Full-size v4 images against two real views: foreground fraction 0.38
+(real 0.32-0.34), elongated components 14 / Mpx (13-25), skewness /
+kurtosis 0.93 / 5.5 (0.95-1.05 / 5.1-5.4), near-saturated 1.1 % (1-4 %),
+minimum-projection detail 14.3 (12.1-12.7), power bands within ~0.3
+dex; the remaining differences are the slice correlation at 13 slices
+(0.33 vs 0.19) and flat lines that look more beaded than the smooth
+real ones. Heavy signal tracks (Ibuki replay): depth 0.11-0.22 and
+width 3-4 px on minimum projections (real Ibuki heavy track 0.22 / 4
+px). Model v3 (`data/image_model_v3.json`) was used for the v3_*
+evaluation datasets.
 
 `./run.py flatfield` stores the median middle slice of 20 real views
 (smoothed, normalized to 1 at the center) in `output/flatfield.npy`:
