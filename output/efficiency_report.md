@@ -88,6 +88,29 @@ B' candidates are points (all depth conventions coincide); multiplicity cuts on 
 | 1.5 | B' mult >= 4 | capture | 0% (24%) | 60% (48%) | 4784 |
 | 1.5 | B' mult >= 4 | LL decay | 25% (5%) | 50% (45%) | 4784 |
 
+### B' vs A on the same 20 events (v3_embed_nagara_dz3.0)
+
+| method | vertex | <6 um | <12 um | cand/event |
+|---|---|---|---|---|
+| A production (best) | capture | 15% (2%) | 15% (8%) | 769 |
+| A production (best) | LL decay | 5% (1%) | 21% (4%) | 769 |
+| A production (best) | LL event | 0% (0%) | 0% (1%) | 769 |
+| A production (inclusive) | capture | 20% (10%) | 45% (36%) | 769 |
+| A production (inclusive) | LL decay | 21% (7%) | 53% (27%) | 769 |
+| A production (inclusive) | LL event | 0% (0%) | 21% (12%) | 769 |
+| B' all | capture | 60% (24%) | 95% (60%) | 29169 |
+| B' all | LL decay | 47% (17%) | 100% (59%) | 29169 |
+| B' all | LL event | 47% (8%) | 100% (48%) | 29169 |
+| B' mult >= 3 | capture | 15% (10%) | 70% (36%) | 10521 |
+| B' mult >= 3 | LL decay | 26% (8%) | 63% (34%) | 10521 |
+| B' mult >= 3 | LL event | 5% (3%) | 58% (20%) | 10521 |
+| B' mult >= 4 | capture | 5% (4%) | 55% (20%) | 4622 |
+| B' mult >= 4 | LL decay | 11% (5%) | 21% (21%) | 4622 |
+| B' mult >= 4 | LL event | 0% (1%) | 16% (10%) | 4622 |
+| B' mult >= 5 | capture | 5% (0%) | 35% (10%) | 2172 |
+| B' mult >= 5 | LL decay | 0% (2%) | 5% (10%) | 2172 |
+| B' mult >= 5 | LL event | 0% (0%) | 5% (4%) | 2172 |
+
 
 ## 5. Other channels (dz 3.0)
 
@@ -123,6 +146,6 @@ Method A production with the inclusive and z_best conventions; B' rows (point ca
 - The excess over the shifted-truth chance level is a measure of association, not an efficiency by itself; with ~800 method-A candidates per real view a 30 um tolerance is reached by chance in most cases, hence 6 and 12 um here. A stronger control is the method run on the same real views before embedding (section 1, background control; `./run.py efficiency --background-candidates`).
 - The dz comparison shows how method A performs if the physical focal step is 3.0 or 1.5 um per slice; it does not measure the step itself. Calibrating the image model under either step could not distinguish them (output/dz_comparison.md).
 - z_best is pulled towards the middle of the image stack for vertices near its ends (section 3); a correction or a normalization of the crossing counts near the stack ends would sharpen it.
-- Section 4 has 5 events only.
+- Section 4 (5 events per dz) is indicative only; the 20-event comparison is the basis for B' vs A: B' (all branch points) has a larger excess over chance at 6 um than method A but ~40 times more candidates per view, and cuts on the branch multiplicity remove the signal faster than the background.
 - Synthetic v3 images give ~40 method-A candidates per view, synthetic v4 ~795, close to the ~770 of real views: the v4 background reproduces the candidate rate of real data, so its efficiencies can be compared with the embedded ones.
 

@@ -32,8 +32,10 @@ def _sel(rows, vtype, control):
   return rs
 
 
-def efficiency_rows(dataset, csv_path, min_score=None):
+def efficiency_rows(dataset, csv_path, min_score=None, only_events=None):
   events = eff.load_truth(config.IMAGE_DIR / dataset)
+  if only_events is not None:
+    events = {k: v for k, v in events.items() if k in only_events}
   cands = eff.load_candidates(csv_path, min_score)
   if "bprime" in Path(csv_path).name:
     # B' runs may cover only the first events of a dataset: evaluate the
@@ -229,6 +231,33 @@ def main():
                    + f" | {per_event:.0f} |")
   out.append("")
 
+  # 4b. B' vs A on the same 20 events of the 100-event dataset
+  ds = "v3_embed_nagara_dz3.0"
+  bp = cdir / f"{ds}_bprime.csv"
+  if bp.exists() and bp.with_suffix(".done").exists():
+    present = set(eff.load_candidates(bp))
+    out += [f"### B' vs A on the same {len(present)} events "
+            f"({ds})", "",
+            "| method | vertex | <6 um | <12 um | cand/event |",
+            "|---|---|---|---|---|"]
+    rows_spec = [("A production (best)", f"{ds}_methodA_production.csv",
+                  None, "best"),
+                 ("A production (inclusive)",
+                  f"{ds}_methodA_production.csv", None, "inclusive"),
+                 ("B' all", f"{ds}_bprime.csv", None, "edge"),
+                 ("B' mult >= 3", f"{ds}_bprime.csv", 3, "edge"),
+                 ("B' mult >= 4", f"{ds}_bprime.csv", 4, "edge"),
+                 ("B' mult >= 5", f"{ds}_bprime.csv", 5, "edge")]
+    for label, name, min_score, metric in rows_spec:
+      events, cands, rows, extra = efficiency_rows(ds, cdir / name,
+                                                   min_score, present)
+      per_event = extra["n_candidates"] / len(events)
+      for vlabel, vtype in VERTICES + (("LL event", "LL event"),):
+        out.append(f"| {label} | {vlabel} | "
+                   + " | ".join(cell(rows, vtype, metric, t) for t in TOLS)
+                   + f" | {per_event:.0f} |")
+    out.append("")
+
   # 5. other channels with method A
   others = [("v3_embed_ll11be_dz3.0", "Xi- + 14N -> LL11Be + 4He"),
             ("v3_embed_ibuki_dz3.0", "Xi- + 14N -> L10Be + L5He (twin)"),
@@ -296,7 +325,11 @@ def main():
           "vertices near its ends (section 3); a correction or a "
           "normalization of the crossing counts near the stack ends would "
           "sharpen it.",
-          "- Section 4 has 5 events only.",
+          "- Section 4 (5 events per dz) is indicative only; the 20-event "
+          "comparison is the basis for B' vs A: B' (all branch points) has "
+          "a larger excess over chance at 6 um than method A but ~40 times "
+          "more candidates per view, and cuts on the branch multiplicity "
+          "remove the signal faster than the background.",
           "- Synthetic v3 images give ~40 method-A candidates per view, "
           "synthetic v4 ~795, close to the ~770 of real views: the v4 "
           "background reproduces the candidate rate of real data, so its "
