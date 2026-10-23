@@ -15,6 +15,7 @@ Each candidate is scored by
                  slices, averaged within DARK_RADIUS_PX (heavy, dark
                  tracks start at hypernuclear vertices, while most
                  background branch points are crossings of faint MIPs)
+  combined       sum of the multiplicity and darkness rank fractions
 and only the top K per event are kept; the one-to-one efficiency at 6
 and 12 um and its chance level (shifted truths) are reported for each K,
 so that rankings can be compared at the candidate rate of method A
@@ -33,7 +34,8 @@ from . import imagestats as st
 DEFAULT_TOP = "100,300,770"
 DEFAULT_RADIUS_UM = 5.
 TOLS = [6., 12.]
-SCORES = ("multiplicity", "density", "mult_density", "darkness")
+SCORES = ("multiplicity", "density", "mult_density", "darkness",
+          "combined")
 DARK_HALF_SLICES = 3
 DARK_RADIUS_PX = 6
 BG_SIGMA_PX = 8.
@@ -116,8 +118,11 @@ def main():
     dens = neighbour_sums(xyz, np.ones(len(cs)), args.radius)
     mdens = neighbour_sums(xyz, mult, args.radius)
     dark = darkness_scores(Path(args.dataset) / name, truth, cs)
+    rk = lambda v: np.argsort(np.argsort(-v)) / len(v)
+    comb = -(rk(mult) + rk(dark))
     for s, val in (("multiplicity", mult), ("density", dens),
-                   ("mult_density", mdens), ("darkness", dark)):
+                   ("mult_density", mdens), ("darkness", dark),
+                   ("combined", comb)):
       scored[s][name] = [dict(c, score=float(v)) for c, v in zip(cs, val)]
   print(f"{len(events)} events, radius {args.radius:g} um; cells: "
         "efficiency (chance) at <6 / <12 um, one-to-one")
