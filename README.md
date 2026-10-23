@@ -347,6 +347,17 @@ reproduce them; the result `output/image_model.json` is used by
 at once in the search (e.g. wider grains need weaker defocus blur and
 more fog together).
 
+Grain darkness is constrained by the depth of the darkest blobs
+relative to their local background (real: median 0.19, 90 % 0.32).
+As a check of the signal, `module/synth/profile.py` measures the
+transverse profile of tracks on minimum projections: a heavy track of
+the real Ibuki image (specials_x20, another scanner) has depth 0.22 and
+FWHM 4 px, the simulated Ibuki replay gives 0.17-0.19 / 3-4 px for t
+and L5He and 0.36 / 4 px for alpha, while p and pi- (0.03-0.04) are as
+faint as real MIP tracks. The tuned model (v3) puts the beam density at
+about 1e4 tracks / mm2 nearly perpendicular to the sheets (slope ~0.01),
+consistent with the long-range slice correlation.
+
 `./run.py flatfield` stores the median middle slice of 20 real views
 (smoothed, normalized to 1 at the center) in `output/flatfield.npy`:
 the circular field stop and the vignetting, applied to the brightness

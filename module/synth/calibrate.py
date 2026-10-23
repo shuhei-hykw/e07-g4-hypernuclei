@@ -36,7 +36,9 @@ TARGETS = {
   "median": (1., False), "std": (2., False), "p1": (1., False),
   "p5": (1., False), "n_cc_per_mpx": (1., True),
   "cc_area_p90": (2., True), "dark_blobs_per_mpx": (1., True),
-  "dark_blob_area_median": (1., True), "corr1": (3., False),
+  "dark_blob_area_median": (1., True),
+  "dark_contrast_median": (5., False), "dark_contrast_p90": (5., False),
+  "corr1": (3., False),
   "corr2": (3., False), "corr5": (3., False), "corr13": (3., False),
   "fg_fraction": (3., False),
 }
@@ -52,15 +54,18 @@ PARAMS = {
   "beam_spread": ("background", "beam_spread", 0.001, 0.1, True),
   "grain_sigma_um": ("optics", "grain_sigma_um", 0.15, 1.0, True),
   "defocus_slope": ("optics", "defocus_slope", 0.01, 0.5, True),
-  "grain_density": ("optics", "grain_density", 0.2, 4., True),
+  "grain_density": ("optics", "grain_density", 0.03, 4., True),
   "fog_per_um3": ("emulsion", "fog_per_um3", 5e-4, 4e-2, True),
-  "grain_spread": ("emulsion", "grain_spread", 0.1, 1.0, False),
-  "beam_per_mm2": ("background", "beam_per_mm2", 100., 1e4, True),
+  "grain_spread": ("emulsion", "grain_spread", 0.0, 1.0, False),
+  "beam_per_mm2": ("background", "beam_per_mm2", 100., 5e4, True),
   "random_per_mm2": ("background", "random_per_mm2", 10., 3e3, True),
-  "blobs_per_mm2": ("background", "blobs_per_mm2", 10., 3e3, True),
+  "blobs_per_mm2": ("background", "blobs_per_mm2", 1., 3e3, True),
 }
 MOTTLE_SCALES_UM = (25., 6.)
 MAX_MOVED = 3
+# Statistics compared by absolute difference (fractions, correlations)
+ABSOLUTE_STATS = ("corr1", "corr2", "corr5", "corr13", "fg_fraction",
+                  "dark_contrast_median", "dark_contrast_p90")
 MODEL_FILE = "image_model.json"
 # Real views labelled by hand for the full-scan CNN: never used here
 EXCLUDED_VIEWS = ("V00000011", "V00000991", "V00001012", "V00001339")
@@ -149,8 +154,7 @@ def loss(stats, targets):
     if logc:
       d = np.log(max(a, 1e-3)) - np.log(max(b, 1e-3))
     else:
-      d = (a - b) / max(abs(b), 1.) if k not in ("corr1", "corr2",
-                                                 "fg_fraction") else (a - b)
+      d = (a - b) if k in ABSOLUTE_STATS else (a - b) / max(abs(b), 1.)
     total += w * d * d
   return total
 

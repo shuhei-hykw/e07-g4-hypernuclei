@@ -123,6 +123,20 @@ def label_components(mask):
   return parent[:-1].reshape(n, m)
 
 
+def blob_contrast(img, mask):
+  """Per blob: (local background - minimum) / local background."""
+  lab = label_components(mask)
+  sel = lab[mask]
+  _, inv = np.unique(sel, return_inverse=True)
+  bg = gaussian_blur(img, BG_SIGMA_PX)[mask]
+  vals = img[mask]
+  n = inv.max() + 1 if len(inv) else 0
+  vmin = np.full(n, np.inf)
+  np.minimum.at(vmin, inv, vals)
+  bmean = np.bincount(inv, bg, n) / np.maximum(np.bincount(inv, None, n), 1)
+  return (bmean - vmin) / np.maximum(bmean, 1.)
+
+
 def component_stats(mask):
   """Areas and elongations (sqrt of eigenvalue ratio) of components."""
   lab = label_components(mask)
@@ -177,6 +191,7 @@ def stack_stats(stack, crop, offsets=None):
   area, elong = component_stats(fg)
   dark = mid <= np.quantile(mid, DARK_FRACTION)
   dark_area, _ = component_stats(dark)
+  contrast = blob_contrast(mid, dark)
   k, power = radial_spectrum(d)
   corr = {}
   for k, off in enumerate(offsets):
@@ -193,6 +208,8 @@ def stack_stats(stack, crop, offsets=None):
     "cc_elong_p90": float(np.percentile(elong, 90)),
     "dark_blobs_per_mpx": len(dark_area) / mpx,
     "dark_blob_area_median": float(np.median(dark_area)),
+    "dark_contrast_median": float(np.median(contrast)),
+    "dark_contrast_p90": float(np.percentile(contrast, 90)),
     "slice_corr": corr,
     "_raw": raw, "_area": area, "_elong": elong, "_k": k,
     "_power": power, "_dark_area": dark_area,

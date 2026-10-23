@@ -16,6 +16,8 @@
   "cc_area_p90": 28.0,
   "dark_blobs_per_mpx": 3523.667653401693,
   "dark_blob_area_median": 3.0,
+  "dark_contrast_median": 0.19406632931723733,
+  "dark_contrast_p90": 0.32448862626050295,
   "corr1": 0.926840110603176,
   "corr2": 0.833746496990929,
   "corr5": 0.5636611993160973,
