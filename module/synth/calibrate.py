@@ -27,29 +27,40 @@ REAL_DIR = ("/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/"
             "PL12/tohoku-v1/AREA00/IMAGE00_AREA00")
 CROP_PX = 1024
 HALF_SLICES = 2
+# Slice offsets from the central slice used for the statistics; the
+# long lags probe the nearly perpendicular beam tracks
+OFFSETS = [-2, -1, 0, 1, 2, 5, 13]
+CORR_LAGS = (1, 2, 5, 13)
 # Statistic -> (weight, compare in log)
 TARGETS = {
   "median": (1., False), "std": (2., False), "p1": (1., False),
   "p5": (1., False), "n_cc_per_mpx": (1., True),
   "cc_area_p90": (2., True), "dark_blobs_per_mpx": (1., True),
   "dark_blob_area_median": (1., True), "corr1": (3., False),
-  "corr2": (3., False), "fg_fraction": (1., False),
+  "corr2": (3., False), "corr5": (3., False), "corr13": (3., False),
+  "fg_fraction": (3., False),
 }
 # Parameter -> (object, field, low, high, log scale)
 PARAMS = {
-  "brightness": ("background", "brightness", 150., 240., False),
+  "brightness": ("background", "brightness", 150., 280., False),
   "mottle_large": ("background", "mottle", 0.0, 0.25, False),
   "mottle_small": ("background", "mottle", 0.0, 0.2, False),
   "min_transmission": ("background", "min_transmission", 0.0, 0.7, False),
   "noise_sigma": ("background", "noise_sigma", 0.3, 6., True),
-  "fixed_noise_sigma": ("background", "fixed_noise_sigma", 0.0, 10., False),
+  "fixed_noise_sigma": ("background", "fixed_noise_sigma", 0.0, 2., False),
+  "beam_slope_max": ("background", "beam_slope_max", 0.005, 0.3, True),
+  "beam_spread": ("background", "beam_spread", 0.001, 0.1, True),
   "grain_sigma_um": ("optics", "grain_sigma_um", 0.15, 1.0, True),
   "defocus_slope": ("optics", "defocus_slope", 0.01, 0.5, True),
   "grain_density": ("optics", "grain_density", 0.2, 4., True),
   "fog_per_um3": ("emulsion", "fog_per_um3", 5e-4, 4e-2, True),
   "grain_spread": ("emulsion", "grain_spread", 0.1, 1.0, False),
+  "beam_per_mm2": ("background", "beam_per_mm2", 100., 1e4, True),
+  "random_per_mm2": ("background", "random_per_mm2", 10., 3e3, True),
+  "blobs_per_mm2": ("background", "blobs_per_mm2", 10., 3e3, True),
 }
 MOTTLE_SCALES_UM = (25., 6.)
+MAX_MOVED = 3
 MODEL_FILE = "image_model.json"
 # Real views labelled by hand for the full-scan CNN: never used here
 EXCLUDED_VIEWS = ("V00000011", "V00000991", "V00001012", "V00001339")
@@ -61,8 +72,10 @@ def real_targets(n_views, seed):
   random.Random(seed).shuffle(views)
   stats = []
   for v in views[:n_views]:
-    idx = st.central(st.n_slices(v), HALF_SLICES)
-    stats.append(flatten(st.stack_stats(st.read_stack(v, idx), CROP_PX)))
+    c = st.n_slices(v) // 2
+    idx = [c + o for o in OFFSETS]
+    stats.append(flatten(st.stack_stats(st.read_stack(v, idx), CROP_PX,
+                                        OFFSETS)))
   return {k: float(np.mean([s[k] for s in stats])) for k in TARGETS}, \
     [str(v) for v in views[:n_views]]
 
@@ -70,8 +83,8 @@ def real_targets(n_views, seed):
 def flatten(s):
   out = {k: v for k, v in s.items() if not k.startswith("_")}
   corr = out.pop("slice_corr")
-  out["corr1"] = corr.get(1, 0.)
-  out["corr2"] = corr.get(2, 0.)
+  for lag in CORR_LAGS:
+    out[f"corr{lag}"] = corr.get(lag, 0.)
   return out
 
 
@@ -95,7 +108,7 @@ def load_model(path):
 
 def make_models(values):
   optics = replace(render.Optics(), size_px=CROP_PX,
-                   n_slices=2 * HALF_SLICES + 1)
+                   n_slices=2 * max(OFFSETS) + 1)
   background = replace(render.Background(), n_dead_pixels=0)
   return apply_values(values, optics, render.Emulsion(), background)
 
@@ -124,9 +137,9 @@ def render_patch(values, seed):
   renderer = render.Renderer(optics)
   bright = render.mottle_field(optics, background, rng)
   fixed = render.fixed_pattern(optics, background, rng)
-  return [render.compose(bright, renderer.density(allg, weights, k),
-                         background, fixed, rng)
-          for k in range(optics.n_slices)]
+  c = optics.n_slices // 2
+  return [render.compose(bright, renderer.density(allg, weights, c + o),
+                         background, fixed, rng) for o in OFFSETS]
 
 
 def loss(stats, targets):
@@ -146,8 +159,11 @@ def start_values(path):
   """Previous tuning result if any, else the built-in defaults."""
   values = current_defaults()
   if path.exists():
-    values.update(load_model(path))
-  return values
+    values.update({k: v for k, v in load_model(path).items()
+                   if k in PARAMS})
+  # Keep the start inside the (possibly changed) search ranges
+  return {k: float(np.clip(v, PARAMS[k][2], PARAMS[k][3]))
+          for k, v in values.items()}
 
 
 def current_defaults():
@@ -159,19 +175,27 @@ def current_defaults():
           "fixed_noise_sigma": b.fixed_noise_sigma,
           "grain_sigma_um": o.grain_sigma_um,
           "defocus_slope": o.defocus_slope, "grain_density": o.grain_density,
-          "fog_per_um3": e.fog_per_um3, "grain_spread": e.grain_spread}
+          "fog_per_um3": e.fog_per_um3, "grain_spread": e.grain_spread,
+          "beam_per_mm2": b.beam_per_mm2,
+          "beam_slope_max": b.beam_slope_max,
+          "beam_spread": b.beam_spread,
+          "random_per_mm2": b.random_per_mm2,
+          "blobs_per_mm2": b.blobs_per_mm2}
 
 
 def perturb(values, rng, scale):
+  """Move one to MAX_MOVED parameters at once (joint moves are needed,
+  e.g. wider grains with weaker defocus blur and more fog)."""
   out = dict(values)
-  name = rng.choice(list(PARAMS))
-  _, _, lo, hi, logs = PARAMS[name]
-  if logs:
-    v = np.exp(np.log(out[name]) + rng.normal(0., scale)
-               * np.log(hi / lo))
-  else:
-    v = out[name] + rng.normal(0., scale) * (hi - lo)
-  out[name] = float(np.clip(v, lo, hi))
+  n = int(rng.integers(1, MAX_MOVED + 1))
+  for name in rng.choice(list(PARAMS), n, replace=False):
+    _, _, lo, hi, logs = PARAMS[name]
+    if logs:
+      v = np.exp(np.log(out[name]) + rng.normal(0., scale)
+                 * np.log(hi / lo))
+    else:
+      v = out[name] + rng.normal(0., scale) * (hi - lo)
+    out[name] = float(np.clip(v, lo, hi))
   return out
 
 
@@ -191,13 +215,14 @@ def main():
 
   rng = np.random.default_rng(args.seed)
   best = start_values(config.OUTPUT_DIR / MODEL_FILE)
-  best_stats = flatten(st.stack_stats(render_patch(best, 1), CROP_PX))
+  best_stats = flatten(st.stack_stats(render_patch(best, 1), CROP_PX,
+                                      OFFSETS))
   best_loss = loss(best_stats, targets)
   print(f"start loss {best_loss:.3f}")
   for it in range(args.iterations):
     scale = 0.3 * (1. - it / args.iterations) + 0.03
     trial = perturb(best, rng, scale)
-    s = flatten(st.stack_stats(render_patch(trial, 1), CROP_PX))
+    s = flatten(st.stack_stats(render_patch(trial, 1), CROP_PX, OFFSETS))
     l = loss(s, targets)
     if l < best_loss:
       best, best_stats, best_loss = trial, s, l

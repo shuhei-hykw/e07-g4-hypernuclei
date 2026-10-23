@@ -1,0 +1,44 @@
+{
+ "params": {
+  "brightness": 238.48697032876424,
+  "mottle_large": 0.0,
+  "mottle_small": 0.025139176174995278,
+  "min_transmission": 0.11324694378207414,
+  "noise_sigma": 0.3,
+  "fixed_noise_sigma": 6.33359505738712,
+  "grain_sigma_um": 0.48747579813382774,
+  "defocus_slope": 0.1507032115667352,
+  "grain_density": 0.6,
+  "fog_per_um3": 0.002760458812632383,
+  "grain_spread": 0.34337579080044744
+ },
+ "loss": 0.12486679587304245,
+ "stats": {
+  "median": 222.0,
+  "std": 22.9076964730331,
+  "p1": 131.0,
+  "p5": 178.0,
+  "fg_fraction": 0.12559032440185547,
+  "n_cc_per_mpx": 14585.494995117188,
+  "cc_area_median": 1.0,
+  "cc_area_p90": 30.0,
+  "cc_elong_p90": 2.785078960689526,
+  "dark_blobs_per_mpx": 3140.4495239257812,
+  "dark_blob_area_median": 3.0,
+  "corr1": 0.9115943169952615,
+  "corr2": 0.7377147279137947
+ },
+ "targets": {
+  "median": 203.33333333333334,
+  "std": 23.359756030971752,
+  "p1": 145.5,
+  "p5": 163.33333333333334,
+  "n_cc_per_mpx": 13905.36626180013,
+  "cc_area_p90": 28.0,
+  "dark_blobs_per_mpx": 3523.667653401693,
+  "dark_blob_area_median": 3.0,
+  "corr1": 0.926840110603176,
+  "corr2": 0.833746496990929,
+  "fg_fraction": 0.33600632349650067
+ }
+}

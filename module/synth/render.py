@@ -36,11 +36,11 @@ class Optics:
   n_slices: int = 60
   dz_um: float = 3.0           # focal step in the developed emulsion
   shrink: float = 1.9          # emulsion thickness ratio before / after
-  grain_sigma_um: float = 0.35 # in-focus grain image (s0)
-  defocus_slope: float = 0.35  # k: blur growth per um of defocus
+  grain_sigma_um: float = 0.5  # in-focus grain image (s0)
+  defocus_slope: float = 0.08  # k: blur growth per um of defocus
   max_defocus_cap_um: float = 40.  # upper bound of the defocus range
   n_defocus_bins: int = 12
-  grain_density: float = 0.8   # d0: optical density of a focused grain
+  grain_density: float = 0.6   # d0: optical density of a focused grain
   pad_px: int = 64             # margin against FFT wrap-around
   label_radius_px: int = 2
 
@@ -61,25 +61,26 @@ class Emulsion:
   grains_mip_per_um: float = 0.148  # MIP grain density (fullscan STATUS)
   grains_sat_per_um: float = 2.5    # saturation for heavy ionization
   dedx_mip_mev_per_um: float = 5.47e-4  # 1.55 MeV cm2/g x 3.53 g/cm3
-  fog_per_um3: float = 6e-3         # fog grains per developed um3
+  fog_per_um3: float = 2e-3         # fog grains per developed um3
   grain_jitter_um: float = 0.1
   grain_spread: float = 0.4         # lognormal sigma of grain darkness
 
 
 @dataclass(frozen=True)
 class Background:
-  brightness: float = 167.
+  brightness: float = 210.
   # Relative rms and length scale of the slow brightness variations
   mottle: tuple = ((0.08, 25.), (0.06, 6.))
-  min_transmission: float = 0.4     # darkest level relative to B
-  noise_sigma: float = 4.           # temporal pixel noise (per slice)
-  fixed_noise_sigma: float = 0.     # fixed-pattern noise (all slices)
-  n_beam_tracks: int = 100          # nearly parallel MIP tracks per view
+  min_transmission: float = 0.2     # darkest level relative to B
+  noise_sigma: float = 2.           # temporal pixel noise (per slice)
+  fixed_noise_sigma: float = 3.     # fixed-pattern noise (all slices)
+  # Densities per mm2 of view area (counts scale with the view size)
+  beam_per_mm2: float = 1100.       # nearly parallel MIP tracks
   beam_slope_max: float = 0.1       # |dx/dz|, |dy/dz| of the beam axis
   beam_spread: float = 0.01         # rms slope around the beam axis
-  n_random_tracks: int = 15         # isotropic straight background tracks
+  random_per_mm2: float = 170.      # isotropic straight tracks
   random_track_ionization: tuple = (1., 4.)  # x MIP grain density
-  n_blobs: int = 20                 # large dark grain clusters (junk)
+  blobs_per_mm2: float = 230.       # large dark grain clusters (junk)
   n_dead_pixels: int = 0            # pixels dark in every slice (the
                                     # tohoku-v1 dead-pixel map is empty)
   blob_radius_um: tuple = (1.5, 5.)
@@ -194,6 +195,13 @@ def track_grains(points, edep, emulsion, rng):
   return grains + rng.normal(0., e.grain_jitter_um, grains.shape)
 
 
+def view_count(view, per_mm2, rng):
+  """Poisson count of objects with a density per mm2 in the view."""
+  o = view.optics
+  area_mm2 = (o.size_px * o.pixel_um * 1e-3) ** 2
+  return int(rng.poisson(per_mm2 * area_mm2))
+
+
 def straight_grains(view, emulsion, vertex_z, n_tracks, direction_fn,
                     density_fn, rng):
   """Grains of straight tracks crossing the view (original um) and the
@@ -230,7 +238,8 @@ def beam_grains(view, background, emulsion, vertex_z, rng):
     d = np.array([s[0], s[1], 1.])
     return d / np.linalg.norm(d)
   return straight_grains(view, emulsion, vertex_z,
-                         background.n_beam_tracks, direction,
+                         view_count(view, background.beam_per_mm2, rng),
+                         direction,
                          lambda: emulsion.grains_mip_per_um, rng)
 
 
@@ -241,7 +250,8 @@ def random_track_grains(view, background, emulsion, vertex_z, rng):
     return d / np.linalg.norm(d)
   lo, hi = background.random_track_ionization
   return straight_grains(
-    view, emulsion, vertex_z, background.n_random_tracks, direction,
+    view, emulsion, vertex_z,
+    view_count(view, background.random_per_mm2, rng), direction,
     lambda: emulsion.grains_mip_per_um * rng.uniform(lo, hi), rng)
 
 
@@ -251,7 +261,7 @@ def blob_grains(view, background, rng):
   o = view.optics
   lo, hi = view.zdev_range()
   out, owners = [], []
-  for i in range(background.n_blobs):
+  for i in range(view_count(view, background.blobs_per_mm2, rng)):
     r = rng.uniform(*background.blob_radius_um)
     n = rng.poisson(background.blob_grains_per_um3 * 4. / 3. * np.pi
                     * r ** 3)

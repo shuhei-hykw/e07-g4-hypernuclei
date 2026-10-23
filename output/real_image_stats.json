@@ -1,23 +1,25 @@
 {
  "views": [
-  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00000961_L0_VX0016_VY0021_0_058.json",
-  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00001849_L0_VX0004_VY0041_0_058.json",
+  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00000932_L0_VX0032_VY0020_0_058.json",
+  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00001353_L0_VX0003_VY0030_0_058.json",
   "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00000008_L0_VX0008_VY0000_0_058.json",
-  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00001397_L0_VX0002_VY0031_0_058.json",
-  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00000994_L0_VX0004_VY0022_0_058.json",
-  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00001176_L0_VX0006_VY0026_0_058.json"
+  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00000456_L0_VX0006_VY0010_0_058.json",
+  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00000993_L0_VX0003_VY0022_0_058.json",
+  "/home/hayakawa/microscope-image/tohoku/fullscan/E07/MOD108/PL12/tohoku-v1/AREA00/IMAGE00_AREA00/V00002014_L0_VX0034_VY0044_0_058.json"
  ],
  "stats": {
-  "median": 204.5,
-  "std": 24.08349175922022,
-  "p1": 143.83333333333334,
-  "p5": 162.66666666666666,
-  "n_cc_per_mpx": 13598.283131917318,
-  "cc_area_p90": 27.0,
-  "dark_blobs_per_mpx": 3402.868906656901,
-  "dark_blob_area_median": 2.8333333333333335,
-  "corr1": 0.9231310301998296,
-  "corr2": 0.8351080955245044,
-  "fg_fraction": 0.3325330416361491
+  "median": 203.33333333333334,
+  "std": 23.359756030971752,
+  "p1": 145.5,
+  "p5": 163.33333333333334,
+  "n_cc_per_mpx": 13905.36626180013,
+  "cc_area_p90": 28.0,
+  "dark_blobs_per_mpx": 3523.667653401693,
+  "dark_blob_area_median": 3.0,
+  "corr1": 0.926840110603176,
+  "corr2": 0.833746496990929,
+  "corr5": 0.5636611993160973,
+  "corr13": 0.18753825043343766,
+  "fg_fraction": 0.33600632349650067
  }
 }

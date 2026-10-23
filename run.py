@@ -17,6 +17,7 @@ Commands:
   images       render microscope image stacks  -> data/images/<name>/
   compare      image statistics of real vs synthetic stacks
   calibrate    tune the image model to real views -> output/image_model.json
+  flatfield    illumination profile of real views -> output/flatfield.npy
   efficiency   vertex-finding efficiency of candidates vs truth
   setup        channels + decays + build
 
@@ -46,6 +47,7 @@ COMMANDS: dict[str, str] = {
   "images":      "module.synth.cli",
   "compare":     "module.imagestats",
   "calibrate":   "module.synth.calibrate",
+  "flatfield":   "module.synth.flatfield",
   "efficiency":  "module.efficiency",
 }
 SEQUENCES: dict[str, list[str]] = {

@@ -158,15 +158,20 @@ def radial_spectrum(img):
   return 0.5 * (edges[:-1] + edges[1:]), power / np.maximum(count, 1)
 
 
-def stack_stats(stack, crop):
-  """Statistics of a list of consecutive slices (central crop px)."""
+def stack_stats(stack, crop, offsets=None):
+  """Statistics of slices (central crop px). `offsets` gives the slice
+  offset of each image from the central one (default: consecutive)."""
   n = stack[0].shape[0]
   lo = max(0, (n - crop) // 2)
   imgs = [s[lo:lo + crop, lo:lo + crop].astype(np.float64) for s in stack]
-  mid = imgs[len(imgs) // 2]
-  raw = np.concatenate([i.ravel() for i in imgs])
+  if offsets is None:
+    offsets = [i - len(imgs) // 2 for i in range(len(imgs))]
+  c = offsets.index(0)
+  mid = imgs[c]
+  near = [i for i, off in zip(imgs, offsets) if abs(off) <= MAX_LAG]
+  raw = np.concatenate([i.ravel() for i in near])
   diffs = [gaussian_blur(i, BG_SIGMA_PX) - i for i in imgs]
-  d = diffs[len(diffs) // 2]
+  d = diffs[c]
   thr = otsu(d)
   fg = d > thr
   area, elong = component_stats(fg)
@@ -174,11 +179,10 @@ def stack_stats(stack, crop):
   dark_area, _ = component_stats(dark)
   k, power = radial_spectrum(d)
   corr = {}
-  c = len(diffs) // 2
-  for lag in range(1, MAX_LAG + 1):
-    if c + lag < len(diffs):
-      corr[lag] = float(np.corrcoef(diffs[c].ravel(),
-                                    diffs[c + lag].ravel())[0, 1])
+  for k, off in enumerate(offsets):
+    if off > 0:
+      corr[off] = float(np.corrcoef(diffs[c].ravel(),
+                                    diffs[k].ravel())[0, 1])
   mpx = mid.size / 1e6
   return {
     "median": float(np.median(raw)), "std": float(raw.std()),

@@ -32,6 +32,7 @@ Everything is driven by `./run.py` (`./run.py --help`, `./run.py <command>
 | `images` | `module/synth/` | `data/images/<name>/ev<NNNN>/` microscope stacks |
 | `compare` | `module/imagestats.py` | image statistics of real vs synthetic stacks |
 | `calibrate` | `module/synth/calibrate.py` | `output/image_model.json` tuned image model |
+| `flatfield` | `module/synth/flatfield.py` | `output/flatfield.npy` illumination profile |
 | `efficiency` | `module/efficiency.py` | vertex-finding efficiency vs truth |
 | `setup` | | `channels` + `decays` + `build` |
 
@@ -285,9 +286,10 @@ Each simulated event becomes one view of the E07 full scan
   sqrt(s0^2 + (k dz)^2) (s0 = 0.35 um, k = 0.35) with constant
   integrated density; I = B (t_min + (1 - t_min) exp(-sum D)) with a
   mottled brightness B (two scales), t_min = 0.4 and pixel noise.
-- Background: 100 nearly parallel beam MIP tracks (axis within 0.1 of
-  z, 0.01 spread), 15 isotropic straight tracks of 1-4 x MIP ionization,
-  20 large junk clusters and 200 dead pixels per view.
+- Background (densities per mm2 of view, tuned by `calibrate`): nearly
+  parallel beam MIP tracks around an axis close to z, isotropic straight
+  tracks of 1-4 x MIP ionization, large junk clusters; temporal and
+  fixed-pattern pixel noise; the flat field of the real microscope.
 
 Files per event:
 
@@ -327,7 +329,13 @@ V00000991, V00001012, V00001339) are never picked.
 computes, for central slices and a central crop: intensity percentiles,
 blobs of the darkest 5 % of pixels, connected components after a
 full-scan-like preprocessing (Gaussian background subtraction, Otsu),
-the radial power spectrum and the correlation of neighbouring slices.
+the radial power spectrum and the correlation of background-subtracted
+slices. In real views this correlation stays high over many slices
+(about 0.7 at 1-5 slices, 0.33 at 13, 0.05 at 40): the nearly
+perpendicular, dense beam tracks appear at almost the same place in
+consecutive slices. The calibration therefore matches the correlation
+at offsets 1, 2, 5 and 13, which separates beam density / slope /
+spread from the defocus blur of the grains.
 
 `./run.py calibrate --views 6 --iterations 150` averages these
 statistics over random real views (`output/real_image_stats.json`) and
@@ -335,7 +343,14 @@ searches the model parameters (brightness, mottle, residual
 transmission, temporal and fixed-pattern noise, grain image width,
 defocus blur, grain density, fog density, grain darkness spread) that
 reproduce them; the result `output/image_model.json` is used by
-`./run.py images` unless `--model none`.
+`./run.py images` unless `--model none`. Several parameters are moved
+at once in the search (e.g. wider grains need weaker defocus blur and
+more fog together).
+
+`./run.py flatfield` stores the median middle slice of 20 real views
+(smoothed, normalized to 1 at the center) in `output/flatfield.npy`:
+the circular field stop and the vignetting, applied to the brightness
+of fully synthetic images.
 
 ## Vertex-finding efficiency (`./run.py efficiency`)
 

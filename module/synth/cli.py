@@ -37,14 +37,16 @@ import multiprocessing
 import sys
 import time
 from dataclasses import replace
-
 from pathlib import Path
 
 import numpy as np
 
 from .. import config
-from . import render
 from .. import draw_event
+from .. import imagestats
+from . import calibrate
+from . import flatfield
+from . import render
 from .event import EventFile
 from .pngio import write_gray_png
 from .trackview import draw_view
@@ -113,7 +115,7 @@ def collect_grains(ev, view, devz, emulsion, background, rng,
   add(beam, render.LABEL_BEAM, BACKGROUND_ID0 - owner)
   rand, owner2 = render.random_track_grains(view, background, emulsion,
                                             ev.vertex[2], rng)
-  offset = background.n_beam_tracks
+  offset = len(np.unique(owner))
   add(rand, render.LABEL_BEAM, BACKGROUND_ID0 - offset - owner2)
   blobs, owner3 = render.blob_grains(view, background, rng)
   grains.append(blobs)
@@ -257,7 +259,8 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
   all_grains = np.vstack([labelled, fog])
   weights = render.grain_weights(len(all_grains), emulsion, rng)
   renderer = render.Renderer(optics)
-  bright = render.mottle_field(optics, background, rng)
+  bright = render.mottle_field(optics, background, rng) \
+    * flatfield.load(optics.size_px)
   fixed = render.fixed_pattern(optics, background, rng)
   dead = rng.integers(0, optics.size_px, (background.n_dead_pixels, 2))
 
@@ -318,12 +321,12 @@ def main():
   parser.add_argument("--fog", type=float,
                       default=render.Emulsion.fog_per_um3,
                       help="fog grains per developed um3")
-  parser.add_argument("--beam-tracks", type=int,
-                      default=render.Background.n_beam_tracks)
-  parser.add_argument("--random-tracks", type=int,
-                      default=render.Background.n_random_tracks)
-  parser.add_argument("--blobs", type=int,
-                      default=render.Background.n_blobs)
+  parser.add_argument("--beam-density", type=float,
+                      help="beam tracks per mm2 (default: model)")
+  parser.add_argument("--random-density", type=float,
+                      help="isotropic tracks per mm2 (default: model)")
+  parser.add_argument("--blob-density", type=float,
+                      help="junk clusters per mm2 (default: model)")
   parser.add_argument("--centered", action="store_true",
                       help="vertex at the view center, stack centered")
   parser.add_argument("--seed", type=int, default=0)
@@ -344,14 +347,16 @@ def main():
                    n_slices=args.slices, dz_um=args.dz,
                    shrink=args.shrink)
   emulsion = replace(render.Emulsion(), fog_per_um3=args.fog)
-  background = replace(render.Background(),
-                       n_beam_tracks=args.beam_tracks,
-                       n_random_tracks=args.random_tracks,
-                       n_blobs=args.blobs)
+  background = render.Background()
   if args.model != "none" and Path(args.model).exists():
     optics, emulsion, background = calibrate.apply_values(
       calibrate.load_model(args.model), optics, emulsion, background)
     print(f"model parameters from {args.model}", file=sys.stderr)
+  for field, value in (("beam_per_mm2", args.beam_density),
+                       ("random_per_mm2", args.random_density),
+                       ("blobs_per_mm2", args.blob_density)):
+    if value is not None:
+      background = replace(background, **{field: value})
 
   name = args.name or args.root_file.rsplit("/", 1)[-1].rsplit(".", 1)[0]
   indices = parse_events(args.events, len(EventFile(args.root_file)))
