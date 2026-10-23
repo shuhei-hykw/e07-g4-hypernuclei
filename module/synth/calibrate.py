@@ -40,7 +40,7 @@ TARGETS = {
   "dark_blob_area_median": (1., True),
   "dark_contrast_median": (5., False), "dark_contrast_p90": (5., False),
   "corr1": (3., False),
-  "corr2": (3., False), "corr5": (3., False), "corr13": (3., False),
+  "corr2": (3., False), "corr5": (3., False), "corr13": (6., False),
   "fg_fraction": (5., False), "n_elong_per_mpx": (3., True),
   "pow_low": (3., False), "pow_mid": (3., False), "pow_high": (3., False),
   "d_skew": (3., False), "d_kurt": (2., True), "d_iqr": (3., False),
@@ -58,7 +58,8 @@ PARAMS = {
   "beam_slope_max": ("background", "beam_slope_max", 0.005, 0.3, True),
   "beam_spread": ("background", "beam_spread", 0.001, 0.1, True),
   "grain_sigma_um": ("optics", "grain_sigma_um", 0.15, 1.0, True),
-  "defocus_slope": ("optics", "defocus_slope", 0.01, 0.5, True),
+  # Lower bound from the defocus blur of a 20x objective (NA >= 0.3)
+  "defocus_slope": ("optics", "defocus_slope", 0.1, 0.5, True),
   "grain_density": ("optics", "grain_density", 0.03, 4., True),
   "fog_per_um3": ("emulsion", "fog_per_um3", 5e-4, 4e-2, True),
   "grain_spread": ("emulsion", "grain_spread", 0.0, 1.0, False),
@@ -75,6 +76,10 @@ PARAMS = {
 }
 MOTTLE_SCALES_UM = (25., 6.)
 MAX_MOVED = 3
+# Minimum spread used for z scores: fraction of the target value (or of
+# Z_FLOOR_ABS for values near zero)
+Z_FLOOR_REL = 0.02
+Z_FLOOR_ABS = 0.05
 # Statistics compared by absolute difference (fractions, correlations)
 ABSOLUTE_STATS = ("corr1", "corr2", "corr5", "corr13", "fg_fraction",
                   "dark_contrast_median", "dark_contrast_p90",
@@ -95,8 +100,9 @@ def real_targets(n_views, seed):
     idx = [c + o for o in OFFSETS]
     stats.append(flatten(st.stack_stats(st.read_stack(v, idx), CROP_PX,
                                         OFFSETS)))
-  return {k: float(np.mean([s[k] for s in stats])) for k in TARGETS}, \
-    [str(v) for v in views[:n_views]]
+  means = {k: float(np.mean([s[k] for s in stats])) for k in TARGETS}
+  stds = {k: float(np.std([s[k] for s in stats])) for k in TARGETS}
+  return means, stds, [str(v) for v in views[:n_views]]
 
 
 def flatten(s):
@@ -170,7 +176,16 @@ def render_patch(values, seed):
                          background, fixed, rng) for o in OFFSETS]
 
 
-def loss(stats, targets):
+def loss(stats, targets, stds=None):
+  """Sum of squared deviations in units of the view-to-view spread of the
+  real statistic (z scores); without spreads, relative deviations."""
+  if stds is not None:
+    total = 0.
+    for k in TARGETS:
+      floor = Z_FLOOR_REL * max(abs(targets[k]), Z_FLOOR_ABS)
+      z = (stats[k] - targets[k]) / max(stds[k], floor)
+      total += z * z
+    return total / len(TARGETS)
   total = 0.
   for k, (w, logc) in TARGETS.items():
     a, b = stats[k], targets[k]
@@ -240,6 +255,8 @@ def main():
   parser.add_argument("--seed", type=int, default=0)
   parser.add_argument("--dz", type=float, default=render.Optics.dz_um,
                       help="physical focal step per slice (um)")
+  parser.add_argument("--z-loss", action="store_true",
+                      help="loss in units of the real view-to-view spread")
   parser.add_argument("--exclude", default="",
                       help="comma separated target statistics to ignore")
   parser.add_argument("--output", default=str(config.OUTPUT_DIR
@@ -252,22 +269,24 @@ def main():
     TARGETS.pop(k)
 
   target_file = config.OUTPUT_DIR / "real_image_stats.json"
-  targets, views = real_targets(args.views, args.seed)
-  target_file.write_text(json.dumps({"views": views, "stats": targets},
-                                    indent=1))
+  targets, stds, views = real_targets(args.views, args.seed)
+  target_file.write_text(json.dumps({"views": views, "stats": targets,
+                                     "spread": stds}, indent=1))
+  if not args.z_loss:
+    stds = None
   print("targets:", {k: round(v, 3) for k, v in targets.items()})
 
   rng = np.random.default_rng(args.seed)
   best = start_values(Path(args.output))
   best_stats = flatten(st.stack_stats(render_patch(best, 1), CROP_PX,
                                       OFFSETS))
-  best_loss = loss(best_stats, targets)
+  best_loss = loss(best_stats, targets, stds)
   print(f"start loss {best_loss:.3f}")
   for it in range(args.iterations):
     scale = 0.3 * (1. - it / args.iterations) + 0.03
     trial = perturb(best, rng, scale)
     s = flatten(st.stack_stats(render_patch(trial, 1), CROP_PX, OFFSETS))
-    l = loss(s, targets)
+    l = loss(s, targets, stds)
     if l < best_loss:
       best, best_stats, best_loss = trial, s, l
       print(f"[{it}] loss {l:.3f} "
