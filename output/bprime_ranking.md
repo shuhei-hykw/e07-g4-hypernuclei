@@ -24,3 +24,18 @@ events. Positions and multiplicity alone do not rank. Caveat: the
 signal darkness comes from the image model (checked against the real
 Ibuki heavy tracks, section on calibration in README); a darker
 simulated signal than real would favour this ranking.
+
+Same study on the dz 1.5 um dataset (v3_embed_nagara_dz1.5, the same
+20 events), next to dz 3.0, at 770 candidates per view:
+
+| score | dz 1.5 capture | dz 1.5 LL decay | dz 3.0 capture | dz 3.0 LL decay |
+|---|---|---|---|---|
+| multiplicity | 0% (1%) / 0% (7%) | 0% (1%) / 11% (6%) | 5% (0%) / 15% (4%) | 0% (1%) / 0% (6%) |
+| density | 10% (2%) / 35% (8%) | 5% (2%) / 16% (7%) | 0% (2%) / 10% (4%) | 0% (1%) / 0% (3%) |
+| darkness | 50% (3%) / 70% (7%) | 21% (1%) / 47% (6%) | 20% (0%) / 55% (4%) | 11% (1%) / 37% (6%) |
+| combined | 20% (2%) / 35% (8%) | 11% (1%) / 32% (5%) | 5% (1%) / 45% (6%) | 5% (0%) / 16% (5%) |
+
+The multiplicity does not rank the simulated vertices at either step,
+while it does on the real special events: the difference lies in the
+simulated signal (its branch-point topology), not in the focal step.
+The darkness ranking works at both steps and better at 1.5 um.
