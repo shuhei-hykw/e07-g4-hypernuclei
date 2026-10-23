@@ -286,7 +286,11 @@ def main():
             ("v4_synth_ibuki_replay_dz3.0", "Ibuki replay, synthetic v4"),
             ("v11_synth_nagara10_dz3.0", "Nagara, synthetic v11"),
             ("v11_synth_nagara_replay_dz3.0", "Nagara replay, synthetic v11"),
-            ("v11_synth_ibuki_replay_dz3.0", "Ibuki replay, synthetic v11")]
+            ("v11_synth_ibuki_replay_dz3.0", "Ibuki replay, synthetic v11"),
+            ("v14_synth_nagara_replay_dz1.5",
+             "Nagara replay, synthetic v14 (dz 1.5)"),
+            ("v14_synth_ibuki_replay_dz1.5",
+             "Ibuki replay, synthetic v14 (dz 1.5)")]
   lines = []
   sources = []
   for ds, label in others:
@@ -317,7 +321,7 @@ def main():
       lines.append(f"| {label} | {vlabel} | {len(sel)} | "
                    + " | ".join(cells) + f" | {per_event:.0f} |")
   if lines:
-    out += ["", "## 5. Other channels (dz 3.0)", "",
+    out += ["", "## 5. Other channels (dz 3.0 unless noted)", "",
             "Method A production with the inclusive and z_best "
             "conventions; B' rows (point candidates, multiplicity >= 3) "
             "repeat the point distance in both column pairs. The B' replay "
@@ -350,7 +354,8 @@ def main():
           "more candidates per view, and cuts on the branch multiplicity "
           "remove the signal faster than the background.",
           "- Synthetic v3 images give ~40 method-A candidates per view, "
-          "synthetic v4 ~795 and v11 ~905, close to the ~770 of real "
+          "synthetic v4 ~795, v11 ~905 and v14 ~875, close to the ~770 of "
+          "real "
           "views: these backgrounds reproduce the candidate rate of real "
           "data, so their efficiencies can be compared with the embedded "
           "ones.",
