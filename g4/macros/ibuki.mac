@@ -1,0 +1,23 @@
+# Xi- + 14N -> L10Be + L5He (Ibuki/Kiso-like twin)
+#   decay channels chosen uniformly among all enumerated ones
+/control/verbose 1
+/run/verbose 1
+
+/emul/density 3.53
+/emul/halfSize 20 mm
+/emul/minStep 0.1 um
+/emul/maxStep 10 um
+/emul/rangeFraction 0.01
+/run/initialize
+
+/xi/speciesFile ../../output/species.csv
+/xi/targetsFile ../../output/targets.csv
+/xi/decaysFile ../../output/decays.csv
+/xi/target 14N
+/xi/channel L10Be,L5He
+/xi/seed 2
+
+/decay/policy uniform
+
+/out/file ibuki.root
+/run/beamOn 100

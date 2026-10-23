@@ -3,9 +3,17 @@
 #include "G4Event.hh"
 #include "G4RunManager.hh"
 #include "G4Step.hh"
+#include "G4VProcess.hh"
 #include "G4SystemOfUnits.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "TTree.h"
+
+namespace {
+
+// Lighter particles (e+-, gamma, neutrinos) are not recorded
+constexpr double kMinRecordedMass = 100. * MeV;
+
+}  // namespace
 
 void EventAction::Book(TTree* tree)
 {
@@ -13,6 +21,9 @@ void EventAction::Book(TTree* tree)
   tree->Branch("event", &fEventId);
   tree->Branch("channel", &fChannel);
   tree->Branch("q", &fQValue);
+  tree->Branch("id", &fTrackId);
+  tree->Branch("parent", &fParentId);
+  tree->Branch("process", &fProcess);
   tree->Branch("name", &fName);
   tree->Branch("z", &fZ);
   tree->Branch("a", &fA);
@@ -33,8 +44,8 @@ void EventAction::BeginOfEventAction(const G4Event* event)
 {
   fEventId = event->GetEventID();
   fIndex.clear();
-  fName.clear();
-  for (auto* v : {&fZ, &fA, &fNLambda}) v->clear();
+  for (auto* v : {&fName, &fProcess}) v->clear();
+  for (auto* v : {&fTrackId, &fParentId, &fZ, &fA, &fNLambda}) v->clear();
   for (auto* v : {&fKE, &fPx, &fPy, &fPz, &fRange, &fLength}) v->clear();
   for (auto* v : {&fX, &fY, &fZpos, &fEdep}) v->clear();
 }
@@ -42,15 +53,19 @@ void EventAction::BeginOfEventAction(const G4Event* event)
 void EventAction::RecordStep(const G4Step* step)
 {
   const auto* track = step->GetTrack();
-  if (track->GetParentID() != 0) return;
+  const auto* def = track->GetDefinition();
+  if (def->GetPDGMass() < kMinRecordedMass) return;  // e+-, gamma, nu
 
   const int id = track->GetTrackID();
   auto it = fIndex.find(id);
   if (it == fIndex.end()) {
-    const auto* def = track->GetDefinition();
     const auto* pre = step->GetPreStepPoint();
+    const auto* creator = track->GetCreatorProcess();
     const auto mom = pre->GetMomentum();
     fIndex[id] = fName.size();
+    fTrackId.push_back(id);
+    fParentId.push_back(track->GetParentID());
+    fProcess.push_back(creator ? creator->GetProcessName() : "primary");
     fName.push_back(def->GetParticleName());
     fZ.push_back(static_cast<int>(def->GetPDGCharge() / eplus));
     fA.push_back(def->GetBaryonNumber());
@@ -62,10 +77,10 @@ void EventAction::RecordStep(const G4Step* step)
     fRange.push_back(0.);
     fLength.push_back(0.);
     const auto pos = pre->GetPosition();
-    fX.push_back({pos.x() / um});
-    fY.push_back({pos.y() / um});
-    fZpos.push_back({pos.z() / um});
-    fEdep.push_back({0.});
+    fX.push_back({float(pos.x() / um)});
+    fY.push_back({float(pos.y() / um)});
+    fZpos.push_back({float(pos.z() / um)});
+    fEdep.push_back({0.f});
     it = fIndex.find(id);
   }
   const std::size_t i = it->second;

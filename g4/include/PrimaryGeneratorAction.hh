@@ -8,8 +8,6 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "SpeciesTable.hh"
 
-class G4ParticleDefinition;
-
 // Xi- capture at rest: the final state of the chosen channel is generated
 // isotropically according to n-body phase space (TGenPhaseSpace).
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
@@ -23,16 +21,15 @@ public:
 
 private:
   void Initialize();
-  G4ParticleDefinition* Definition(const SpeciesInfo& s) const;
 
   std::string fSpeciesFile;
   std::string fTargetsFile;
+  std::string fDecaysFile;
   std::string fTarget;
   std::string fChannel;  // comma separated, e.g. "LL6He,4He,t"
   int fSeed;
 
   bool fInitialized = false;
-  SpeciesTable fTable;
   std::vector<SpeciesInfo> fProducts;
   double fInitialMass = 0.;
   double fQValue = 0.;

@@ -12,6 +12,8 @@ M_NEUTRON = 939.56542052
 M_PROTON = 938.27208816
 M_LAMBDA = 1115.683
 M_XI_MINUS = 1321.71
+M_PI_MINUS = 139.57039
+M_PI_ZERO = 134.9768
 
 # Bond energy of two Lambdas in the s-shell (Nagara event, MeV)
 DELTA_B_LL = 0.67

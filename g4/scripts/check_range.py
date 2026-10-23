@@ -54,14 +54,16 @@ def main():
 
   ratios = {}
   for i, ev in enumerate(tree):
-    names = [str(n) for n in ev.name]
-    e_sum = sum(ev.ke)
-    p_sum = [sum(ev.px), sum(ev.py), sum(ev.pz)]
+    # Only the products of the Xi- capture
+    prim = [j for j in range(len(ev.name)) if ev.parent[j] == 0]
+    names = {j: str(ev.name[j]) for j in prim}
+    e_sum = sum(ev.ke[j] for j in prim)
+    p_sum = [sum(v[j] for j in prim) for v in (ev.px, ev.py, ev.pz)]
     if i < MAX_PRINT_EVENTS:
       print(f"event {ev.event}: {ev.channel}  Q={ev.q:.3f}"
             f"  sum KE={e_sum:.3f}  sum p=({p_sum[0]:.2e},"
             f" {p_sum[1]:.2e}, {p_sum[2]:.2e})")
-    for j, name in enumerate(names):
+    for j, name in names.items():
       ke, z = ev.ke[j], ev.z[j]
       if z <= 0 or ke <= 0:
         continue

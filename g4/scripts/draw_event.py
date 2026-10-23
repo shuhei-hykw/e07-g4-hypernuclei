@@ -1,6 +1,10 @@
-"""Draw XY / XZ projections of the primary tracks of one event.
+"""Draw XY / XZ projections of the tracks of one event.
 
-  python3 draw_event.py emulsim.root --event 0 -o event0.png
+  python3 draw_event.py emulsim.root --event 0 --zoom 30 -o event0.png
+
+Primaries are drawn with thick lines, hypernuclear decay products with
+medium lines and other secondaries (pi- capture, recoils) thin. Neutral
+particles are dashed and hidden unless --neutral is given.
 """
 
 import argparse
@@ -10,19 +14,49 @@ import ROOT
 CANVAS_W = 1200
 CANVAS_H = 600
 FRAME_MARGIN = 1.1
-LINE_WIDTH = 2
-LEGEND_POS = (0.62, 0.70, 0.90, 0.90)
-COLORS = [ROOT.kRed + 1, ROOT.kBlue + 1, ROOT.kGreen + 2,
-          ROOT.kMagenta + 1, ROOT.kOrange + 7, ROOT.kCyan + 2]
+WIDTH_PRIMARY = 3
+WIDTH_DECAY = 2
+WIDTH_OTHER = 1
+LEGEND_POS = (0.60, 0.60, 0.90, 0.90)
 NEUTRAL_STYLE = 2  # dashed
+DECAY_PROCESS = "HypernucleusDecay"
+COLORS = [ROOT.kRed + 1, ROOT.kBlue + 1, ROOT.kGreen + 2,
+          ROOT.kMagenta + 1, ROOT.kOrange + 7, ROOT.kCyan + 2,
+          ROOT.kViolet + 1, ROOT.kSpring - 6, ROOT.kAzure + 7,
+          ROOT.kPink + 6, ROOT.kGray + 2, ROOT.kYellow + 3]
+
+
+def load_tracks(tree, with_neutral):
+  tracks = []
+  for j in range(len(tree.name)):
+    if tree.z[j] == 0 and not with_neutral:
+      continue
+    tracks.append({
+      "name": str(tree.name[j]),
+      "z": int(tree.z[j]),
+      "parent": int(tree.parent[j]),
+      "process": str(tree.process[j]),
+      "x": list(tree.x[j]), "y": list(tree.y[j]), "zpos": list(tree.zpos[j]),
+    })
+  return tracks
+
+
+def line_width(track):
+  if track["parent"] == 0:
+    return WIDTH_PRIMARY
+  if track["process"] == DECAY_PROCESS:
+    return WIDTH_DECAY
+  return WIDTH_OTHER
 
 
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument("root_file")
   parser.add_argument("--event", type=int, default=0)
-  parser.add_argument("--max-range", type=float, default=0.,
+  parser.add_argument("--zoom", type=float, default=0.,
                       help="half width of frame in um (0: auto)")
+  parser.add_argument("--neutral", action="store_true",
+                      help="also draw neutral tracks")
   parser.add_argument("-o", "--output", default="event.png")
   args = parser.parse_args()
 
@@ -32,33 +66,37 @@ def main():
   tree = f.Get("tree")
   tree.GetEntry(args.event)
 
-  tracks = []
-  for j in range(len(tree.name)):
-    tracks.append((str(tree.name[j]), int(tree.z[j]), list(tree.x[j]),
-                   list(tree.y[j]), list(tree.zpos[j])))
-  half = args.max_range or FRAME_MARGIN * max(
-    max(abs(v) for v in xs + ys + zs) for _, _, xs, ys, zs in tracks)
+  tracks = load_tracks(tree, args.neutral)
+  half = args.zoom or FRAME_MARGIN * max(
+    max(abs(v) for v in t["x"] + t["y"] + t["zpos"]) for t in tracks)
+
+  color_of = {}
+  for t in tracks:
+    color_of.setdefault(t["name"], COLORS[len(color_of) % len(COLORS)])
 
   canvas = ROOT.TCanvas("c", "", CANVAS_W, CANVAS_H)
   canvas.Divide(2, 1)
   keep = []
-  for pad, (label, iv) in enumerate([("y", 3), ("z", 4)], start=1):
+  for pad, label in enumerate(["y", "zpos"], start=1):
     canvas.cd(pad)
     frame = ROOT.gPad.DrawFrame(-half, -half, half, half)
+    axis = "z" if label == "zpos" else label
     frame.SetTitle(f"{tree.channel}  (event {args.event});x (#mum);"
-                   f"{label} (#mum)")
+                   f"{axis} (#mum)")
     legend = ROOT.TLegend(*LEGEND_POS)
-    for k, trk in enumerate(tracks):
-      name, z, xs = trk[0], trk[1], trk[2]
-      graph = ROOT.TGraph(len(xs))
-      for n, (xv, yv) in enumerate(zip(xs, trk[iv])):
+    shown = set()
+    for t in tracks:
+      graph = ROOT.TGraph(len(t["x"]))
+      for n, (xv, yv) in enumerate(zip(t["x"], t[label])):
         graph.SetPoint(n, xv, yv)
-      graph.SetLineColor(COLORS[k % len(COLORS)])
-      graph.SetLineWidth(LINE_WIDTH)
-      if z == 0:
+      graph.SetLineColor(color_of[t["name"]])
+      graph.SetLineWidth(line_width(t))
+      if t["z"] == 0:
         graph.SetLineStyle(NEUTRAL_STYLE)
       graph.Draw("L")
-      legend.AddEntry(graph, name, "l")
+      if t["name"] not in shown:
+        legend.AddEntry(graph, t["name"], "l")
+        shown.add(t["name"])
       keep.append(graph)
     legend.Draw()
     keep.append(legend)

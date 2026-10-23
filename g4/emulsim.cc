@@ -11,6 +11,7 @@
 #include "G4SystemOfUnits.hh"
 #include "G4UIExecutive.hh"
 #include "G4UImanager.hh"
+#include "HypernucleusDecay.hh"
 
 namespace {
 
@@ -31,6 +32,7 @@ int main(int argc, char** argv)
   auto* physics = new FTFP_BERT;
   physics->ReplacePhysics(new G4EmStandardPhysics_option4);
   physics->RegisterPhysics(new G4StepLimiterPhysics);
+  physics->RegisterPhysics(new HypernucleusDecayPhysics);
   physics->SetDefaultCutValue(kProductionCut);
   runManager->SetUserInitialization(physics);
   runManager->SetUserInitialization(new ActionInitialization);

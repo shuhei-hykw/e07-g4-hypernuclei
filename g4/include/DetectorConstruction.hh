@@ -16,7 +16,10 @@ public:
 private:
   G4Material* BuildEmulsion() const;
 
-  double fDensity;   // g/cm3
-  double fMaxStep;   // mm, step limit for fine track sampling
+  double fDensity;     // g/cm3
+  double fHalfSize;    // half width of the emulsion block
+  double fMinStep;       // lower bound of the step limit
+  double fMaxStep;       // upper bound of the step limit
+  double fRangeFraction; // step limit relative to the residual range
   std::unique_ptr<G4GenericMessenger> fMessenger;
 };

@@ -9,7 +9,9 @@
 class G4Step;
 class TTree;
 
-// Collects the trajectories of primary particles and fills the TTree.
+// Collects the trajectories of all tracks except e+-, gamma and neutrinos
+// (primaries, hypernuclear decay products, pi- capture products, ...)
+// and fills the TTree.
 class EventAction : public G4UserEventAction {
 public:
   void BeginOfEventAction(const G4Event* event) override;
@@ -25,9 +27,10 @@ private:
   int fEventId = 0;
   std::string fChannel;
   double fQValue = 0.;
-  std::vector<std::string> fName;
+  std::vector<int> fTrackId, fParentId;
+  std::vector<std::string> fName, fProcess;
   std::vector<int> fZ, fA, fNLambda;
   std::vector<double> fKE, fPx, fPy, fPz;     // MeV, MeV/c
   std::vector<double> fRange, fLength;         // um
-  std::vector<std::vector<double>> fX, fY, fZpos, fEdep;  // um, MeV
+  std::vector<std::vector<float>> fX, fY, fZpos, fEdep;  // um, MeV
 };
