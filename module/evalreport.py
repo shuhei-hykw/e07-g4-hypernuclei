@@ -235,7 +235,10 @@ def main():
             ("v3_embed_nagara_replay_dz3.0", "Nagara replay"),
             ("v3_embed_ibuki_replay_dz3.0", "Ibuki replay"),
             ("v3_synth_nagara_replay_dz3.0", "Nagara replay, synthetic"),
-            ("v3_synth_ibuki_replay_dz3.0", "Ibuki replay, synthetic")]
+            ("v3_synth_ibuki_replay_dz3.0", "Ibuki replay, synthetic"),
+            ("v4_synth_nagara5_dz3.0", "Nagara, synthetic v4"),
+            ("v4_synth_nagara_replay_dz3.0", "Nagara replay, synthetic v4"),
+            ("v4_synth_ibuki_replay_dz3.0", "Ibuki replay, synthetic v4")]
   lines = []
   sources = []
   for ds, label in others:
@@ -293,7 +296,11 @@ def main():
           "vertices near its ends (section 3); a correction or a "
           "normalization of the crossing counts near the stack ends would "
           "sharpen it.",
-          "- Section 4 has 5 events only."]
+          "- Section 4 has 5 events only.",
+          "- Synthetic v3 images give ~40 method-A candidates per view, "
+          "synthetic v4 ~795, close to the ~770 of real views: the v4 "
+          "background reproduces the candidate rate of real data, so its "
+          "efficiencies can be compared with the embedded ones."]
   out.append("")
   Path(args.output).write_text("\n".join(out) + "\n")
   print("\n".join(out))

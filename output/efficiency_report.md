@@ -111,6 +111,12 @@ Method A production with the inclusive and z_best conventions; B' rows (point ca
 | Nagara replay, synthetic | hypernuclear decays | 38 | 26% (0%) | 29% (0%) | 5% (0%) | 16% (0%) | 42 |
 | Ibuki replay, synthetic | capture | 20 | 30% (0%) | 35% (0%) | 20% (0%) | 35% (0%) | 44 |
 | Ibuki replay, synthetic | hypernuclear decays | 40 | 8% (0%) | 15% (0%) | 5% (0%) | 10% (0%) | 44 |
+| Nagara, synthetic v4 | capture | 5 | 0% (18%) | 100% (46%) | 0% (4%) | 40% (16%) | 797 |
+| Nagara, synthetic v4 | hypernuclear decays | 8 | 0% (22%) | 38% (46%) | 0% (0%) | 0% (6%) | 797 |
+| Nagara replay, synthetic v4 | capture | 10 | 0% (14%) | 60% (39%) | 0% (2%) | 10% (6%) | 794 |
+| Nagara replay, synthetic v4 | hypernuclear decays | 20 | 25% (16%) | 70% (50%) | 5% (2%) | 15% (5%) | 794 |
+| Ibuki replay, synthetic v4 | capture | 10 | 30% (23%) | 40% (66%) | 0% (1%) | 10% (6%) | 794 |
+| Ibuki replay, synthetic v4 | hypernuclear decays | 20 | 20% (24%) | 65% (62%) | 5% (1%) | 15% (7%) | 794 |
 
 ## Reading the tables
 
@@ -118,4 +124,5 @@ Method A production with the inclusive and z_best conventions; B' rows (point ca
 - The dz comparison shows how method A performs if the physical focal step is 3.0 or 1.5 um per slice; it does not measure the step itself. Calibrating the image model under either step could not distinguish them (output/dz_comparison.md).
 - z_best is pulled towards the middle of the image stack for vertices near its ends (section 3); a correction or a normalization of the crossing counts near the stack ends would sharpen it.
 - Section 4 has 5 events only.
+- Synthetic v3 images give ~40 method-A candidates per view, synthetic v4 ~795, close to the ~770 of real views: the v4 background reproduces the candidate rate of real data, so its efficiencies can be compared with the embedded ones.
 
