@@ -204,34 +204,46 @@ def track_grains(points, edep, emulsion, rng):
   return grains + rng.normal(0., e.grain_jitter_um, grains.shape)
 
 
-def view_count(view, per_mm2, rng):
-  """Poisson count of objects with a density per mm2 in the view."""
+# Straight background tracks have this fixed length and are placed in
+# the view widened by half of it, so that the grain density inside the
+# view does not depend on the view size
+STRAIGHT_TRACK_UM = 1000.
+
+
+def view_count(view, per_mm2, rng, margin_um=0.):
+  """Poisson count of objects with a density per mm2 in the view widened
+  by margin_um on each side."""
   o = view.optics
-  area_mm2 = (o.size_px * o.pixel_um * 1e-3) ** 2
-  return int(rng.poisson(per_mm2 * area_mm2))
+  width_mm = (o.size_px * o.pixel_um + 2. * margin_um) * 1e-3
+  return int(rng.poisson(per_mm2 * width_mm ** 2))
 
 
-def straight_grains(view, emulsion, vertex_z, n_tracks, direction_fn,
+def straight_grains(view, emulsion, vertex_z, per_mm2, direction_fn,
                     density_fn, rng):
-  """Grains of straight tracks crossing the view (original um) and the
-  index of the track each grain belongs to."""
+  """Grains of straight tracks of fixed length around the view (original
+  um) and the index of the track each grain belongs to."""
   o = view.optics
   half = o.size_px * o.pixel_um / 2.
   lo, hi = view.zdev_range()
-  span = (hi - lo) * o.shrink  # original-z extent, generous
+  span = (hi - lo) * o.shrink  # original-z extent of the view, generous
+  length = max(STRAIGHT_TRACK_UM, 1.2 * span)
+  margin = length / 2.
+  n_tracks = view_count(view, per_mm2, rng, margin)
   grains, owners = [], []
   for i in range(n_tracks):
-    mid = np.array([view.cx + rng.uniform(-half, half),
-                    view.cy + rng.uniform(-half, half),
+    mid = np.array([view.cx + rng.uniform(-half - margin, half + margin),
+                    view.cy + rng.uniform(-half - margin, half + margin),
                     vertex_z + rng.uniform(-span / 2., span / 2.)])
     d = direction_fn()
-    # Long enough to cross the whole view in any direction
-    length = 2. * np.hypot(2. * half, span)
     p0 = mid - d * length / 2.
     n = rng.poisson(density_fn() * length)
     g = p0 + rng.random(n)[:, None] * d * length
+    # Keep the grains near the view only (memory)
+    near = (np.abs(g[:, 0] - view.cx) < half + o.pad_px * o.pixel_um) \
+      & (np.abs(g[:, 1] - view.cy) < half + o.pad_px * o.pixel_um)
+    g = g[near]
     grains.append(g + rng.normal(0., emulsion.grain_jitter_um, g.shape))
-    owners.append(np.full(n, i))
+    owners.append(np.full(len(g), i))
   if not grains:
     return np.zeros((0, 3)), np.zeros(0, dtype=int)
   return np.vstack(grains), np.concatenate(owners)
@@ -247,8 +259,7 @@ def beam_grains(view, background, emulsion, vertex_z, rng):
     d = np.array([s[0], s[1], 1.])
     return d / np.linalg.norm(d)
   return straight_grains(view, emulsion, vertex_z,
-                         view_count(view, background.beam_per_mm2, rng),
-                         direction,
+                         background.beam_per_mm2, direction,
                          lambda: emulsion.grains_mip_per_um, rng)
 
 
@@ -259,8 +270,7 @@ def random_track_grains(view, background, emulsion, vertex_z, rng):
     return d / np.linalg.norm(d)
   lo, hi = background.random_track_ionization
   return straight_grains(
-    view, emulsion, vertex_z,
-    view_count(view, background.random_per_mm2, rng), direction,
+    view, emulsion, vertex_z, background.random_per_mm2, direction,
     lambda: emulsion.grains_mip_per_um * rng.uniform(lo, hi), rng)
 
 
@@ -273,8 +283,7 @@ def flat_track_grains(view, background, emulsion, vertex_z, rng):
     return d / np.linalg.norm(d)
   lo, hi = background.flat_ionization
   return straight_grains(
-    view, emulsion, vertex_z,
-    view_count(view, background.flat_per_mm2, rng), direction,
+    view, emulsion, vertex_z, background.flat_per_mm2, direction,
     lambda: emulsion.grains_mip_per_um * rng.uniform(lo, hi), rng)
 
 
