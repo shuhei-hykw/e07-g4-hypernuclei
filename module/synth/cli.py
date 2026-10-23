@@ -276,11 +276,14 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
   for k in range(optics.n_slices):
     d = renderer.density(all_grains, weights, k)
     if bg_json:
-      img = real[k] * (t_min + (1. - t_min) * np.exp(-d))
+      trans = np.exp(-d)
+      if optics.image_blur_px > 0.:
+        trans = render.gaussian_blur(trans, optics.image_blur_px)
+      img = real[k] * (t_min + (1. - t_min) * trans)
       img = np.clip(np.rint(img), 0, GRAY_MAX).astype(np.uint8)
     else:
       img = render.compose(mottle.at(view.slice_zdev(k)) * flat, d,
-                           background, fixed, rng)
+                           background, fixed, rng, optics.image_blur_px)
       img[dead[:, 1], dead[:, 0]] = 0
     write_gray_png(out_dir / f"{k:04d}.png", img)
     np.minimum(stack_min, img, out=stack_min)

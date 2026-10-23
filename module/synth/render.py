@@ -40,6 +40,7 @@ class Optics:
   defocus_slope: float = 0.08  # k: blur growth per um of defocus
   max_defocus_cap_um: float = 40.  # upper bound of the defocus range
   n_defocus_bins: int = 12
+  image_blur_px: float = 0.    # optics / camera MTF on the intensity
   grain_density: float = 0.6   # d0: optical density of a focused grain
   pad_px: int = 64             # margin against FFT wrap-around
   label_radius_px: int = 2
@@ -407,10 +408,23 @@ def fixed_pattern(optics, background, rng):
   return fixed
 
 
-def compose(bright, density, background, fixed, rng):
-  """Slice intensity from brightness, optical density and noise."""
+def gaussian_blur(img, sigma_px):
+  n, m = img.shape
+  fy = np.fft.fftfreq(n)[:, None]
+  fx = np.fft.rfftfreq(m)[None, :]
+  k = np.exp(-2. * np.pi ** 2 * sigma_px ** 2 * (fx ** 2 + fy ** 2))
+  return np.fft.irfft2(np.fft.rfft2(img) * k, s=img.shape)
+
+
+def compose(bright, density, background, fixed, rng, blur_px=0.):
+  """Slice intensity from brightness, optical density and noise; the
+  transmitted image is blurred by the optics / camera (blur_px) before
+  the sensor noise is added."""
   t_min = background.min_transmission
-  img = bright * (t_min + (1. - t_min) * np.exp(-density)) + fixed \
+  trans = np.exp(-density)
+  if blur_px > 0.:
+    trans = gaussian_blur(trans, blur_px)
+  img = bright * (t_min + (1. - t_min) * trans) + fixed \
     + rng.normal(0., background.noise_sigma, density.shape)
   return np.clip(np.rint(img), 0, 255).astype(np.uint8)
 

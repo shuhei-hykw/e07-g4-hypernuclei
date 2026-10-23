@@ -59,6 +59,7 @@ PARAMS = {
   "beam_slope_max": ("background", "beam_slope_max", 0.005, 0.3, True),
   "beam_spread": ("background", "beam_spread", 0.001, 0.1, True),
   "grain_sigma_um": ("optics", "grain_sigma_um", 0.15, 1.0, True),
+  "image_blur_px": ("optics", "image_blur_px", 0.0, 3.0, False),
   # Lower bound: defocus blur of an objective with NA >= ~0.1
   "defocus_slope": ("optics", "defocus_slope", 0.03, 0.5, True),
   "grain_density": ("optics", "grain_density", 0.03, 4., True),
@@ -178,7 +179,8 @@ def render_patch(values, seed):
   fixed = render.fixed_pattern(optics, background, rng)
   return [render.compose(mottle.at(view.slice_zdev(c + o)),
                          renderer.density(allg, weights, c + o),
-                         background, fixed, rng) for o in OFFSETS]
+                         background, fixed, rng, optics.image_blur_px)
+          for o in OFFSETS]
 
 
 def patch_stats(values):
@@ -231,6 +233,7 @@ def current_defaults():
           "noise_sigma": b.noise_sigma,
           "fixed_noise_sigma": b.fixed_noise_sigma,
           "grain_sigma_um": o.grain_sigma_um,
+          "image_blur_px": o.image_blur_px,
           "defocus_slope": o.defocus_slope, "grain_density": o.grain_density,
           "fog_per_um3": e.fog_per_um3, "grain_spread": e.grain_spread,
           "beam_per_mm2": b.beam_per_mm2,
