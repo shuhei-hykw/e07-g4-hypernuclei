@@ -225,7 +225,8 @@ def pick_background(args, rng):
     return None
   if args.background != "random":
     return Path(args.background)
-  views = sorted(Path(calibrate.REAL_DIR).glob("V*.json"))
+  views = [v for v in sorted(Path(calibrate.REAL_DIR).glob("V*.json"))
+           if not v.name.startswith(calibrate.EXCLUDED_VIEWS)]
   return views[int(rng.integers(len(views)))]
 
 

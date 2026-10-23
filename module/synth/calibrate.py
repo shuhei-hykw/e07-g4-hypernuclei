@@ -14,7 +14,8 @@ The best parameters are written to output/image_model.json, which
 import argparse
 import json
 import random
-from dataclasses import asdict, replace
+from dataclasses import replace
+from pathlib import Path
 
 import numpy as np
 
@@ -50,11 +51,13 @@ PARAMS = {
 }
 MOTTLE_SCALES_UM = (25., 6.)
 MODEL_FILE = "image_model.json"
+# Real views labelled by hand for the full-scan CNN: never used here
+EXCLUDED_VIEWS = ("V00000011", "V00000991", "V00001012", "V00001339")
 
 
 def real_targets(n_views, seed):
-  views = sorted(p for p in __import__("pathlib").Path(REAL_DIR)
-                 .glob("V*.json"))
+  views = sorted(p for p in Path(REAL_DIR).glob("V*.json")
+                 if not p.name.startswith(EXCLUDED_VIEWS))
   random.Random(seed).shuffle(views)
   stats = []
   for v in views[:n_views]:
