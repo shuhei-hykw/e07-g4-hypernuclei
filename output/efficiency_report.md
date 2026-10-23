@@ -28,6 +28,21 @@ Matching: one-to-one, 3-D distance in the developed emulsion. Depth conventions 
 | 1.5 | LL decay | 12% (2%) | 24% (17%) | 39% (12%) | 60% (39%) | 7% (1%) | 25% (9%) | 897 |
 | 1.5 | LL event | 1% (0%) | 13% (5%) | 9% (1%) | 44% (20%) | 0% (0%) | 7% (2%) | 897 |
 
+### Background control (same real views before embedding)
+
+Method A run on the original real views (no signal) and matched to the same true positions: efficiency [background rate]. It agrees with the shifted-truth chance level above.
+
+| cuts | dz | vertex | edge <6 um | edge <12 um | inclusive <6 um | inclusive <12 um | best <6 um | best <12 um |
+|---|---|---|---|---|---|---|---|---|
+| production | 3.0 | capture | 3% [0%] | 20% [7%] | 28% [5%] | 52% [26%] | 12% [1%] | 24% [9%] |
+| production | 3.0 | LL decay | 0% [0%] | 18% [6%] | 14% [9%] | 43% [26%] | 3% [3%] | 14% [5%] |
+| production | 1.5 | capture | 11% [1%] | 36% [14%] | 42% [7%] | 71% [28%] | 7% [1%] | 28% [10%] |
+| production | 1.5 | LL decay | 11% [4%] | 35% [17%] | 35% [9%] | 60% [32%] | 7% [2%] | 27% [7%] |
+| relaxed | 3.0 | capture | 4% [0%] | 21% [9%] | 29% [10%] | 69% [34%] | 6% [0%] | 21% [11%] |
+| relaxed | 3.0 | LL decay | 2% [0%] | 17% [8%] | 23% [9%] | 54% [31%] | 6% [0%] | 15% [6%] |
+| relaxed | 1.5 | capture | 13% [2%] | 32% [18%] | 42% [10%] | 78% [41%] | 12% [1%] | 33% [11%] |
+| relaxed | 1.5 | LL decay | 12% [2%] | 24% [16%] | 39% [11%] | 60% [40%] | 7% [2%] | 25% [6%] |
+
 ## 2. Nearest candidate in XY (method A production)
 
 Median XY distance, fraction within 6 um in XY, median depth gap of that candidate to its z-range edge and to z_best (um); control in parentheses.
@@ -95,7 +110,7 @@ Method A production with the inclusive and z_best conventions; B' rows (point ca
 
 ## Reading the tables
 
-- The excess over the shifted-truth chance level is a measure of association, not an efficiency by itself; with ~800 method-A candidates per real view a 30 um tolerance is reached by chance in most cases, hence 6 and 12 um here. A stronger control is the method run on the same real views before embedding (`./run.py efficiency --background-candidates`, view lists in output/background_views_*.csv).
+- The excess over the shifted-truth chance level is a measure of association, not an efficiency by itself; with ~800 method-A candidates per real view a 30 um tolerance is reached by chance in most cases, hence 6 and 12 um here. A stronger control is the method run on the same real views before embedding (section 1, background control; `./run.py efficiency --background-candidates`).
 - The dz comparison shows how method A performs if the physical focal step is 3.0 or 1.5 um per slice; it does not measure the step itself. Calibrating the image model under either step could not distinguish them (output/dz_comparison.md).
 - z_best is pulled towards the middle of the image stack for vertices near its ends (section 3); a correction or a normalization of the crossing counts near the stack ends would sharpen it.
 - Section 4 has 5 events only.

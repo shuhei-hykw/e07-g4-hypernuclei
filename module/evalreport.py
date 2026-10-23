@@ -133,6 +133,40 @@ def main():
           + f" | {per_event:.0f} |")
     out.append("")
 
+  # 1b. background control: method A on the real views before embedding
+  bg_lines = []
+  for cuts in ("production", "relaxed"):
+    bg_path = cdir / f"v3_bgonly_nagara_methodA_{cuts}.csv"
+    if not bg_path.exists():
+      continue
+    bg = eff.load_candidates(bg_path)
+    for dz in ("3.0", "1.5"):
+      ds = f"v3_embed_nagara_dz{dz}"
+      path = cdir / f"{ds}_methodA_{cuts}.csv"
+      if not path.exists():
+        continue
+      events = eff.load_truth(config.IMAGE_DIR / ds)
+      rows, _ = eff.evaluate(events, eff.load_candidates(path), TOLS,
+                             SHIFTS, "developed", bg)
+      for label, vtype in VERTICES:
+        sel = _sel(rows, vtype, False)
+        bsel = _sel(rows, vtype, "background")
+        cells = []
+        for m in METRICS:
+          for t in TOLS:
+            k = f"found_{m}_{t:g}"
+            cells.append(f"{np.mean([r[k] for r in sel]):.0%} "
+                         f"[{np.mean([r[k] for r in bsel]):.0%}]")
+        bg_lines.append(f"| {cuts} | {dz} | {label} | "
+                        + " | ".join(cells) + " |")
+  if bg_lines:
+    out += ["### Background control (same real views before embedding)", "",
+            "Method A run on the original real views (no signal) and "
+            "matched to the same true positions: efficiency [background "
+            "rate]. It agrees with the shifted-truth chance level above.",
+            "", f"| cuts | dz | vertex | {head} |",
+            "|" + "---|" * (3 + len(METRICS) * len(TOLS))] + bg_lines + [""]
+
   # 2. XY accuracy and depth
   out += ["## 2. Nearest candidate in XY (method A production)", "",
           "Median XY distance, fraction within 6 um in XY, median depth "
@@ -240,9 +274,9 @@ def main():
           "of association, not an efficiency by itself; with ~800 method-A "
           "candidates per real view a 30 um tolerance is reached by chance "
           "in most cases, hence 6 and 12 um here. A stronger control is the "
-          "method run on the same real views before embedding "
-          "(`./run.py efficiency --background-candidates`, view lists in "
-          "output/background_views_*.csv).",
+          "method run on the same real views before embedding (section 1, "
+          "background control; `./run.py efficiency "
+          "--background-candidates`).",
           "- The dz comparison shows how method A performs if the "
           "physical focal step is 3.0 or 1.5 um per slice; it does not "
           "measure the step itself. Calibrating the image model under "
