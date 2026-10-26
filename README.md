@@ -377,6 +377,19 @@ intensity distribution, the near-saturated fraction and the minimum
 projection; its loss is the mean squared z score in units of the real
 view-to-view spread, with patch statistics averaged over three seeds.
 
+Since v16 the calibration also matches the response of point-cloud
+methods, which the background statistics do not see: line-like pixels
+of the Hessian of the background-subtracted slice (`line_thin`, scale
+1.5 px, strong; `line_wide`, 3 px, weak), DoG maxima per Mpx
+(`dog_per_mpx`) and their fraction on lines (`dog_on_line`). Real flat
+tracks look like smooth continuous lines of varying width with many
+isolated grains around, v15 rendered them as beaded, sharp lines with
+fewer isolated points (DoG 1.0e4 vs 1.2e4 per Mpx, 0.21 vs 0.17 on
+lines). The lower bound of the flat-track grain density (`flat_ion_min`)
+is tuned as well. Model v15 (`output/image_model_v15_dz4.json`) is v14
+recalibrated at dz 4.0 (held-out: 20 / 23 within 3 spreads,
+`output/realism_v15_dz4.md`).
+
 `./run.py validate data/images/<dataset>` compares a synthetic dataset
 with 20 real views not used in the calibration (`output/realism.md`).
 For v14 all 23 statistics are within 3 spreads of the real views
