@@ -34,7 +34,7 @@ class Optics:
   pixel_um: float = 0.289      # E07 full scan, 20x objective
   size_px: int = 2048
   n_slices: int = 60
-  dz_um: float = 1.5           # focal step in the developed emulsion
+  dz_um: float = 4.0           # focal step in the developed emulsion
                                # (beam-track grains favour 1.5, see
                                # output/dz_comparison.md)
   shrink: float = 1.9          # emulsion thickness ratio before / after

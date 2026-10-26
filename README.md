@@ -393,8 +393,8 @@ faint as real MIP tracks. The tuned model (v3) puts the beam density at
 about 1e4 tracks / mm2 nearly perpendicular to the sheets (slope ~0.01),
 consistent with the long-range slice correlation.
 
-Image model v14 (`output/image_model.json`, the default, calibrated for
-a physical step of 1.5 um per slice, now the default `--dz`) adds to the
+Image model v14 (calibrated for a physical step of 1.5 um per slice,
+superseded; see v19 below) adds to the
 model flat tracks nearly in the sheet plane, fine mottle of two depth
 correlation lengths (`mottle_z_um`, `mottle_long`), a static fine
 texture and an optics / camera blur of the transmitted image (0.6 px);
@@ -429,6 +429,17 @@ views: centre-line pixels and lines per Mpx, line lengths and DoG
 points near lines (an unseen realism check; the commit is written into
 the report). v15: twice as many lines as real (z +7.5) and twice the
 DoG fraction near lines (`output/linecheck_v15.md`).
+
+Image model v19 (`output/image_model.json`, the default; physical step
+4.0 um per slice, now the default `--dz`) is v15 recalibrated with
+`--ridge` (run in ~/work/.venv), i.e. with the e07-fullscan line
+detector statistics among the targets. On a synthetic set not used for
+any choice (`v19_synth_eval_dz4`, seed 6000) all 23 held-out statistics
+are within 3 spreads (`output/realism.md`), and the long-line check
+improves from z = +4.3 / +7.3 / +5.3 (v15: centre-line pixels, lines,
+DoG near lines) to +2.2 / +5.0 / +2.2 (`output/linecheck_v19.md`); the
+synthetic views still show more short lines than real ones. v16-v18
+(line / DoG targets, fog darkness, denser flat tracks) were not adopted.
 
 `./run.py validate data/images/<dataset>` compares a synthetic dataset
 with 20 real views not used in the calibration (`output/realism.md`).
