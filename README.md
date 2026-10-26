@@ -363,6 +363,15 @@ synthetic views keep model v19. `v20_embed_nagara_dz4` re-renders the
 100 embedded events of `v19_embed_nagara_dz4` (same eval backgrounds,
 seed 3000) with v20 signal.
 
+`~/work/.venv/bin/python -m module.mipcheck <single-track dataset>`
+compares steep minimum-ionizing signal tracks with the persistent dark
+dots of the real background (the beam is minimum ionizing and nearly
+perpendicular). The result is inconclusive (`output/mipcheck_v20.md`):
+a MIP signal track is only ~3 gray levels darker than random positions
+(median 14 vs 11, window maximum per slice), and random positions pass
+the persistence cut as often as the real dots, so no clean real beam
+sample is obtained; the MIP appearance stays unverified.
+
 ### Embedding into real views (`--background`)
 
 Real views make the most faithful background (beam and cosmic tracks,
@@ -545,8 +554,15 @@ specification, agreed with the e07-fullscan analysis:
   the depth convention).
 
 `./run.py evalreport` writes the user-facing summary
-`output/efficiency_report.md` (dz 3.0 / 1.5 comparison for method A with
-the three depth conventions, XY accuracy, z_best bias, B' vs A).
+`output/efficiency_report.md` (section 0: method A at the measured step,
+dz 4.0 / 3.6, with v19 and v20 signal and the background-only control;
+then the older dz 3.0 / 1.5 comparison with the three depth conventions,
+XY accuracy, z_best bias, B' vs A). With the v20 signal (production
+cuts, inclusive depth) the capture vertex is found within 6 / 12 um in
+27 % / 51 % of the events against 17 % / 33 % for the real views alone,
+the LL decay vertex in 34 % / 48 % against 8 % / 36 %; the v19 signal
+gave no excess for the capture vertex, so the efficiency depends on
+the signal appearance.
 
 `./run.py report [--pattern 'v3_*']` evaluates every candidate file
 `<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis
