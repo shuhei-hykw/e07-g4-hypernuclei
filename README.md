@@ -390,6 +390,22 @@ therefore gained `defocus_power` p: a defocused grain has peak density
 d0 (s0/s)^p (p = 2, the default and all models up to v21, conserves the
 integrated density); p < 2 makes grains fade more slowly in depth at the
 same lateral blur (p = 1.4: compact FWHM 6.9-7.0, p = 1.0: 7.1-7.3).
+v22 (p = 1.6, other parameters recalibrated,
+`output/image_model_v22_dz4.json`) matches the depth width (6.3) and the
+number of long lines (z +0.1, `output/linecheck_v22.md`) but has 4 of 23
+held-out statistics beyond 3 spreads (dark component size +7.8,
+high-frequency power +6.0; `output/realism_v22_dz4.md`). v19 rendered
+at a smaller step (dz 3.4 / 3.6, `output/realism_v19_dz3.4.md`,
+`..._dz3.6.md`) widens the depth profile to 6.0-6.1 slices with the
+lateral statistics intact, but the slice correlations at 2 and 5 slices
+become too high (z +5.5 / +4.8 at dz 3.4). No single parameter fixes
+the depth width without breaking other statistics, so v19 stays the
+default and the ~15 % narrower depth response of isolated grains is a
+known limitation (a single-grain depth position from synthetic images
+is likely somewhat more precise than in real data). Real views also
+have fewer compact isolated grains (~26 % vs ~43 %) and more
+depth-extended ones, which points to more nearly perpendicular track
+structure (beam) than in the model rather than to the optics alone.
 
 ### Embedding into real views (`--background`)
 
