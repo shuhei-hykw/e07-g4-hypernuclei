@@ -38,14 +38,37 @@ def fullscan_commit():
 
 def import_fullscan():
   """scripts/eval_pointcloud.py of e07-fullscan. Both projects name their
-  package `module`: ours is already bound here, so it is dropped from
-  sys.modules while the full-scan one is imported."""
-  for name in [m for m in sys.modules
-               if m == "module" or m.startswith("module.")]:
-    del sys.modules[name]
+  package `module`: ours is set aside while the full-scan one is
+  imported, then restored (the imported functions keep their own)."""
+  ours = {m: sys.modules.pop(m) for m in list(sys.modules)
+          if m == "module" or m.startswith("module.")}
+  path = sys.path[:]
   sys.path[:0] = [str(FULLSCAN / "scripts"), str(FULLSCAN)]
-  import eval_pointcloud
+  try:
+    import eval_pointcloud
+  finally:
+    for m in [m for m in sys.modules
+              if m == "module" or m.startswith("module.")]:
+      del sys.modules[m]
+    sys.modules.update(ours)
+    sys.path[:] = path
   return eval_pointcloud
+
+
+def ridge_stats(img, ep):
+  """Centre-line pixels per Mpx and fraction of DoG points within
+  ON_LINE_PX of a centre line, in the central CROP_PX of a slice."""
+  import cv2
+  # Crop first: calibration patches are CROP_PX wide
+  lo = max(0, (img.shape[0] - CROP_PX) // 2)
+  img = np.ascontiguousarray(img[lo:lo + CROP_PX, lo:lo + CROP_PX])
+  c = ep.line_mask(ep.ridge_response(img)) > 0
+  d = st.gaussian_blur(img.astype(float), st.BG_SIGMA_PX) - img
+  dog = st.dog_points(d)
+  near = cv2.dilate(c.astype(np.uint8), np.ones((2 * ON_LINE_PX + 1,) * 2,
+                                                np.uint8)) > 0
+  return {"ridge_px_per_mpx": c.sum() / (c.size / 1e6),
+          "ridge_dog_near": dog[near].sum() / max(dog.sum(), 1)}
 
 
 def view_stats(json_path, ep):

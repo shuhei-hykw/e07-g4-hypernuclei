@@ -48,6 +48,9 @@ TARGETS = {
   "line_thin": (3., False), "line_wide": (3., False),
   "dog_per_mpx": (3., True), "dog_on_line": (3., False),
 }
+# With --ridge: statistics of the e07-fullscan line detector
+RIDGE_TARGETS = {"ridge_px_per_mpx": (3., True),
+                 "ridge_dog_near": (3., False)}
 # Parameter -> (object, field, low, high, log scale)
 PARAMS = {
   "brightness": ("background", "brightness", 150., 235., False),
@@ -109,8 +112,9 @@ def real_targets(n_views, seed):
   for v in views[:n_views]:
     c = st.n_slices(v) // 2
     idx = [c + o for o in OFFSETS]
-    stats.append(flatten(st.stack_stats(st.read_stack(v, idx), CROP_PX,
-                                        OFFSETS)))
+    stack = st.read_stack(v, idx)
+    stats.append(with_ridge(flatten(st.stack_stats(stack, CROP_PX,
+                                                   OFFSETS)), stack))
   means = {k: float(np.mean([s[k] for s in stats])) for k in TARGETS}
   stds = {k: float(np.std([s[k] for s in stats])) for k in TARGETS}
   return means, stds, [str(v) for v in views[:n_views]]
@@ -201,11 +205,26 @@ def render_patch(values, seed):
           for o in OFFSETS]
 
 
+RIDGE = None  # e07-fullscan eval_pointcloud with --ridge
+
+
+def with_ridge(stats, stack):
+  """Add the full-scan line detector statistics of the central slice."""
+  if RIDGE is not None:
+    from .. import linecheck
+    img = np.asarray(stack[OFFSETS.index(0)], dtype=np.uint8)
+    stats.update(linecheck.ridge_stats(img, RIDGE))
+  return stats
+
+
 def patch_stats(values):
   """Statistics averaged over patches of several seeds: one patch
   fluctuates far more than the real view-to-view spread."""
-  runs = [flatten(st.stack_stats(render_patch(values, seed), CROP_PX,
-                                 OFFSETS)) for seed in PATCH_SEEDS]
+  runs = []
+  for seed in PATCH_SEEDS:
+    stack = render_patch(values, seed)
+    runs.append(with_ridge(flatten(st.stack_stats(stack, CROP_PX,
+                                                  OFFSETS)), stack))
   return {k: float(np.mean([r[k] for r in runs])) for k in runs[0]}
 
 
@@ -293,6 +312,9 @@ def main():
   parser.add_argument("--views", type=int, default=6)
   parser.add_argument("--iterations", type=int, default=120)
   parser.add_argument("--seed", type=int, default=0)
+  parser.add_argument("--ridge", action="store_true",
+                      help="also match the e07-fullscan line detector "
+                      "(run with its environment, ~/work/.venv)")
   parser.add_argument("--dz", type=float, default=render.Optics.dz_um,
                       help="physical focal step per slice (um)")
   parser.add_argument("--z-loss", action="store_true",
@@ -305,8 +327,12 @@ def main():
                                               / MODEL_FILE),
                       help="model file (also the start point if present)")
   args = parser.parse_args()
-  global DZ_UM
+  global DZ_UM, RIDGE
   DZ_UM = args.dz
+  if args.ridge:
+    from .. import linecheck
+    RIDGE = linecheck.import_fullscan()
+    TARGETS.update(RIDGE_TARGETS)
   for k in filter(None, args.exclude.split(",")):
     TARGETS.pop(k)
 
