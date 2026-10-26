@@ -65,6 +65,7 @@ class Emulsion:
   grains_sat_per_um: float = 2.5    # saturation for heavy ionization
   dedx_mip_mev_per_um: float = 5.47e-4  # 1.55 MeV cm2/g x 3.53 g/cm3
   fog_per_um3: float = 2e-3         # fog grains per developed um3
+  fog_weight: float = 1.            # darkness of fog relative to tracks
   grain_jitter_um: float = 0.1
   grain_spread: float = 0.4         # lognormal sigma of grain darkness
 

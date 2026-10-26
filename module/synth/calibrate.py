@@ -69,6 +69,7 @@ PARAMS = {
   "defocus_slope": ("optics", "defocus_slope", 0.03, 0.5, True),
   "grain_density": ("optics", "grain_density", 0.03, 4., True),
   "fog_per_um3": ("emulsion", "fog_per_um3", 5e-4, 4e-2, True),
+  "fog_weight": ("emulsion", "fog_weight", 0.5, 6., True),
   "grain_spread": ("emulsion", "grain_spread", 0.0, 1.0, False),
   "beam_per_mm2": ("background", "beam_per_mm2", 100., 5e4, True),
   "random_per_mm2": ("background", "random_per_mm2", 10., 1e4, True),
@@ -178,6 +179,7 @@ def render_patch(values, seed):
   view = render.View(0., 0., float(devz.to_dev(np.array([0.]))[0]),
                      devz, optics)
   grains = [render.fog_grains(view, emulsion, rng)]
+  n_fog = len(grains[0])
   for maker in (render.beam_grains, render.random_track_grains,
                 render.flat_track_grains):
     g, _ = maker(view, background, emulsion, 0., rng)
@@ -186,6 +188,7 @@ def render_patch(values, seed):
   grains.append(blobs)
   allg = np.vstack(grains)
   weights = render.grain_weights(len(allg), emulsion, rng)
+  weights[:n_fog] *= emulsion.fog_weight
   renderer = render.Renderer(optics)
   c = optics.n_slices // 2
   mottle = render.MottleVolume(optics, background, rng,
@@ -253,6 +256,7 @@ def current_defaults():
           "image_blur_px": o.image_blur_px,
           "defocus_slope": o.defocus_slope, "grain_density": o.grain_density,
           "fog_per_um3": e.fog_per_um3, "grain_spread": e.grain_spread,
+          "fog_weight": e.fog_weight,
           "beam_per_mm2": b.beam_per_mm2,
           "beam_slope_max": b.beam_slope_max,
           "beam_spread": b.beam_spread,

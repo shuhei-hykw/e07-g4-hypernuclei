@@ -328,6 +328,8 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
     tracks=bg_tracks)
   all_grains = np.vstack([labelled, fog])
   weights = render.grain_weights(len(all_grains), emulsion, rng)
+  if len(fog):
+    weights[-len(fog):] *= emulsion.fog_weight
   if not args.no_labels:
     np.savez_compressed(out_dir / "grains.npz", **grain_table(
       all_grains, weights, classes, instances, len(fog), optics))
