@@ -48,6 +48,7 @@ import json
 import multiprocessing
 import sys
 import time
+import zlib
 from dataclasses import replace
 from pathlib import Path
 
@@ -74,7 +75,8 @@ STAGE_Z0_MM = 0.
 DEFAULT_STAGE_DZ_MM = -0.003
 BACKGROUND_ID0 = -1
 JUNK_ID0 = -100001
-BG_SAMPLE_STEP_UM = 1.  # sampling to find the segment ends
+BG_SAMPLE_STEP_UM = 1.
+BG_EVAL_MOD = 5   # 1 in BG_EVAL_MOD real views is kept for evaluation  # sampling to find the segment ends
 
 
 def parse_events(spec, n_events):
@@ -289,15 +291,38 @@ def preview(stack_min, vertex, out_dir):
   write_gray_png(out_dir / "preview.png", np.hstack([crop, whole]))
 
 
+def background_views(split):
+  """Real views usable as backgrounds (hand-labelled ones excluded),
+  split by a hash of the view name so that training and evaluation
+  backgrounds never share a view: 'eval' is 1 / BG_EVAL_MOD of them."""
+  views = [v for v in sorted(Path(calibrate.REAL_DIR).glob("V*.json"))
+           if not v.name.startswith(calibrate.EXCLUDED_VIEWS)]
+  if split == "all":
+    return views
+  is_eval = [zlib.crc32(v.name.split("_")[0].encode()) % BG_EVAL_MOD == 0
+             for v in views]
+  return [v for v, e in zip(views, is_eval) if e == (split == "eval")]
+
+
 def pick_background(args, rng):
   """Real view JSON used as background, or None."""
   if not args.background:
     return None
   if args.background != "random":
     return Path(args.background)
-  views = [v for v in sorted(Path(calibrate.REAL_DIR).glob("V*.json"))
-           if not v.name.startswith(calibrate.EXCLUDED_VIEWS)]
+  views = background_views(args.bg_split)
   return views[int(rng.integers(len(views)))]
+
+
+def augment_stack(stack, rng):
+  """Random rotation by k x 90 degrees and mirror of all slices alike
+  (the beam direction and illumination pattern change, the physics of
+  the background does not), and the transform applied."""
+  k, flip = int(rng.integers(4)), bool(rng.integers(2))
+  out = [np.rot90(s, k) for s in stack]
+  if flip:
+    out = [np.fliplr(s) for s in out]
+  return [np.ascontiguousarray(s) for s in out], {"rot90": k, "flip": flip}
 
 
 def render_event(ev, layers, args, optics, emulsion, background, out_dir):
@@ -305,6 +330,9 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
   bg_json = pick_background(args, rng)
   if bg_json:
     real = imagestats.read_stack(bg_json)
+    bg_transform = None
+    if args.bg_augment:
+      real, bg_transform = augment_stack(real, rng)
     stage_z = [im["z"] for im in json.loads(bg_json.read_text())["Images"]]
     optics = replace(optics, n_slices=len(real), size_px=real[0].shape[0])
   else:
@@ -375,6 +403,7 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
     stage_z0_mm=stage_z[0],
     stage_dz_mm=(stage_z[-1] - stage_z[0]) / max(len(stage_z) - 1, 1),
     background_view=str(bg_json) if bg_json else None,
+    background_transform=bg_transform if bg_json else None,
     shrink=optics.shrink, pixel_um=optics.pixel_um,
     size_px=optics.size_px, n_slices=optics.n_slices,
     view_center_um=[round(view.cx, 3), round(view.cy, 3)],
@@ -413,6 +442,11 @@ def main():
                       help="vertex at the view center, stack centered")
   parser.add_argument("--seed", type=int, default=0)
   parser.add_argument("--no-labels", action="store_true")
+  parser.add_argument("--bg-split", choices=("train", "eval", "all"),
+                      default="all",
+                      help="subset of real views for --background random")
+  parser.add_argument("--bg-augment", action="store_true",
+                      help="random rot90 / mirror of the real background")
   parser.add_argument("--tracks-only", action="store_true",
                       help="only write g4_tracks.png and g4_view.png "
                       "(same view placement as the full rendering)")

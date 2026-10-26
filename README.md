@@ -314,6 +314,15 @@ an existing dataset (the view placement is reproduced from the seed).
 
 ### Embedding into real views (`--background`)
 
+Real views make the most faithful background (beam and cosmic tracks,
+fog, junk, illumination and optics as recorded); only the signal comes
+from the model. For training data, `--bg-split train|eval` draws the
+random backgrounds from disjoint subsets of the 2025 views (1 in 5, by a
+hash of the view name, is kept for evaluation; the four hand-labelled
+views are never used), and `--bg-augment` rotates the background stack
+by a random multiple of 90 degrees and mirrors it at random (recorded
+as `background_transform` in truth.json).
+
 ```
 ./run.py images data/sim/eval_nagara.root --events 0-4 -j 5 \
   --background random --name embed_nagara_dz3.0
