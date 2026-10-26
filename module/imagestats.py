@@ -15,6 +15,10 @@ and the same statistics are computed on the central slices:
 - radially averaged power spectrum of the background-subtracted image
 - correlation of background-subtracted slices k and k+1, k+2 (depth
   correlation of the defocus blur)
+- response of point-cloud methods: line-like pixels of the Hessian of
+  the background-subtracted slice (thin strong / wide weak lines), DoG
+  maxima per Mpx and the fraction of them on lines (point-like vs
+  line-like structure, e.g. smooth flat tracks vs beaded grains)
 """
 
 import argparse
@@ -39,6 +43,15 @@ SPECTRUM_BANDS = {"pow_low": (0.004, 0.02), "pow_mid": (0.02, 0.08),
 # Elongated components (track segments): elongation and minimum area
 ELONG_MIN = 5.
 ELONG_MIN_AREA = 30
+# Line response: Hessian scale (px), scale-normalized level (gray) and
+# maximum eigenvalue ratio |l_along| / |l_across| of a line
+LINE_THIN = (1.5, 10.)
+LINE_WIDE = (3., 3.)
+LINE_ON = (3., 6.)       # line mask for the DoG points on lines
+LINE_MAX_RATIO = 0.3
+# DoG point detector: inner / outer sigma (px) and level (gray)
+DOG_SIGMAS = (1., 3.)
+DOG_LEVEL = 4.
 
 
 def decode_png(data):
@@ -167,6 +180,30 @@ def component_stats(mask):
   return area, np.sqrt(l1 / l2)
 
 
+def line_mask(d, sigma, level):
+  """Pixels of dark lines (bright ridges of the darkness d) at scale
+  sigma: scale-normalized curvature across above level, anisotropic."""
+  g = gaussian_blur(d, sigma)
+  gy, gx = np.gradient(g)
+  gyy, gyx = np.gradient(gy)
+  gxx = np.gradient(gx, axis=1)
+  tr, det = gxx + gyy, gxx * gyy - gyx ** 2
+  disc = np.sqrt(np.maximum(tr ** 2 / 4. - det, 0.))
+  across, along = tr / 2. - disc, tr / 2. + disc
+  return (sigma ** 2 * -across > level) \
+    & (np.abs(along) < LINE_MAX_RATIO * np.abs(across))
+
+
+def dog_points(d):
+  """Local maxima (3x3) of the difference of Gaussians of d."""
+  g = gaussian_blur(d, DOG_SIGMAS[0]) - gaussian_blur(d, DOG_SIGMAS[1])
+  p = np.pad(g, 1, constant_values=-np.inf)
+  n = g.shape
+  mx = np.max([p[i:i + n[0], j:j + n[1]] for i in range(3)
+               for j in range(3)], axis=0)
+  return (g >= mx) & (g > DOG_LEVEL)
+
+
 def radial_spectrum(img):
   f = np.abs(np.fft.fftshift(np.fft.fft2(img - img.mean()))) ** 2
   n = img.shape[0]
@@ -219,6 +256,8 @@ def stack_stats(stack, crop, offsets=None):
       corr[off] = float(np.corrcoef(diffs[c].ravel(),
                                     diffs[k].ravel())[0, 1])
   mpx = mid.size / 1e6
+  dog = dog_points(d)
+  on_line = line_mask(d, *LINE_ON)
   return {
     "median": float(np.median(raw)), "std": float(raw.std()),
     "p1": float(np.percentile(raw, 1)), "p5": float(np.percentile(raw, 5)),
@@ -239,6 +278,10 @@ def stack_stats(stack, crop, offsets=None):
     "mp_detail_std": float(dmp.std()),
     "mp_dark_frac": float(np.mean(dmp > MP_DARK_LEVEL)),
     **bands,
+    "line_thin": float(line_mask(d, *LINE_THIN).mean()),
+    "line_wide": float(line_mask(d, *LINE_WIDE).mean()),
+    "dog_per_mpx": float(dog.sum() / mpx),
+    "dog_on_line": float(dog[on_line].sum() / max(dog.sum(), 1)),
     "_raw": raw, "_area": area, "_elong": elong, "_k": k,
     "_power": power, "_dark_area": dark_area,
   }

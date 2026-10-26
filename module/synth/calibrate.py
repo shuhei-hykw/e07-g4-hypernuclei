@@ -45,6 +45,8 @@ TARGETS = {
   "pow_low": (3., False), "pow_mid": (3., False), "pow_high": (3., False),
   "d_skew": (3., False), "d_kurt": (2., True), "d_iqr": (3., False),
   "mp_detail_std": (5., False), "mp_dark_frac": (5., False),
+  "line_thin": (3., False), "line_wide": (3., False),
+  "dog_per_mpx": (3., True), "dog_on_line": (3., False),
 }
 # Parameter -> (object, field, low, high, log scale)
 PARAMS = {
@@ -76,6 +78,7 @@ PARAMS = {
   "flat_per_mm2": ("background", "flat_per_mm2", 1., 2e4, True),
   "flat_dip_max": ("background", "flat_dip_max", 0.01, 0.5, True),
   "flat_ion_max": ("background", "flat_ionization", 1.5, 30., True),
+  "flat_ion_min": ("background", "flat_ionization", 0.3, 10., True),
   "speckle_rel": ("background", "speckle_rel", 0.0, 0.3, False),
   "speckle_scale_px": ("background", "speckle_scale_px", 0.5, 4., True),
 }
@@ -90,7 +93,8 @@ Z_FLOOR_ABS = 0.01
 ABSOLUTE_STATS = ("corr1", "corr2", "corr5", "corr13", "fg_fraction",
                   "dark_contrast_median", "dark_contrast_p90",
                   "pow_low", "pow_mid", "pow_high", "d_skew",
-                  "frac_bright", "mp_dark_frac")
+                  "frac_bright", "mp_dark_frac", "line_thin", "line_wide",
+                  "dog_on_line")
 MODEL_FILE = "image_model.json"
 # Real views labelled by hand for the full-scan CNN: never used here
 EXCLUDED_VIEWS = ("V00000011", "V00000991", "V00001012", "V00001339")
@@ -127,7 +131,10 @@ def apply_values(values, optics, emulsion, background):
     if name == "random_ion_max":
       objs[obj] = replace(objs[obj], random_track_ionization=(1., v))
     elif name == "flat_ion_max":
-      objs[obj] = replace(objs[obj], flat_ionization=(1., v))
+      lo = min(values.get("flat_ion_min", 1.), v)
+      objs[obj] = replace(objs[obj], flat_ionization=(lo, v))
+    elif name == "flat_ion_min":
+      continue
     elif name in ("mottle_long_rel", "mottle_long_z_um"):
       continue
     elif name == "mottle_z_um" or not name.startswith("mottle"):
@@ -254,6 +261,7 @@ def current_defaults():
           "blobs_per_mm2": b.blobs_per_mm2,
           "flat_per_mm2": b.flat_per_mm2, "flat_dip_max": b.flat_dip_max,
           "flat_ion_max": b.flat_ionization[1],
+          "flat_ion_min": b.flat_ionization[0],
           "speckle_rel": b.speckle_rel,
           "speckle_scale_px": b.speckle_scale_px}
 
