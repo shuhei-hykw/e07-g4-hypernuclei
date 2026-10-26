@@ -346,6 +346,18 @@ hardly detected as lines. `track_grain_scale` (model parameter,
 `--track-grain-scale`) renders more, fainter grains along tracks (same
 mean darkness) to study this.
 
+`output/signal_model_v20.json` (v19 with `track_grain_scale` 8,
+`grain_spread` 0.35, `grain_sigma_um` 0.35) was tuned on train
+backgrounds and checked on eval backgrounds (`single_eval_v20_dz4`,
+`output/trackprofile_v20.md`): at darkness 20-30 the signal lines have
+beading 0.46 vs 0.42, gaps 2.4 % vs 1.8 % and width 5.6 vs 5.7 px per
+px. Minimum-ionizing signal is still mostly not detected as lines, and
+at darkness 30-50 the signal stays more beaded (0.48 vs 0.36). v20 is
+for embedding only: grain width and spread also act on fog, so fully
+synthetic views keep model v19. `v20_embed_nagara_dz4` re-renders the
+100 embedded events of `v19_embed_nagara_dz4` (same eval backgrounds,
+seed 3000) with v20 signal.
+
 ### Embedding into real views (`--background`)
 
 Real views make the most faithful background (beam and cosmic tracks,
