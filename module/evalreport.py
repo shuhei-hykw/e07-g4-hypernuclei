@@ -408,11 +408,16 @@ def main():
           "production, inclusive), while the v19 signal gave no excess: "
           "the result depends on the signal appearance, and the "
           "minimum-ionizing signal is not verified.",
-          "3. **Method B'**: candidate proposal, to be confirmed at dz 4.0: "
-          "rank branch points by the combined multiplicity + image-darkness "
-          "score (better than the shifted control in the nine special "
-          "events; IBUKI also served to check the darkness model, so this "
-          "is not a fully independent test).",
+          "3. **Method B'**: at dz 4.0 (v19 signal, 100 events, "
+          "output/rankstudy_v19_dz4.txt) and the method-A rate of 770 "
+          "points per view, ranking the branch points by image darkness "
+          "finds the capture vertex in 5 % / 10 % of the events within "
+          "6 / 12 um (chance 1 % / 4 %), better than multiplicity "
+          "(1 % / 5 %) or the combined score (2 % / 8 %); the LL decay "
+          "vertex is not found above chance. The combined score that "
+          "ranked best on the nine special events is not confirmed at "
+          "dz 4.0; B' is not yet a production candidate (v20 signal "
+          "not run).",
           "4. **Simulation**: matching 23 / 23 background statistics (image "
           "model v19) means the background is consistent, not that vertex "
           "or track shapes are; embedded efficiencies are values under the "
