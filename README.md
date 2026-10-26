@@ -349,10 +349,15 @@ mean darkness) to study this.
 `output/signal_model_v20.json` (v19 with `track_grain_scale` 8,
 `grain_spread` 0.35, `grain_sigma_um` 0.35) was tuned on train
 backgrounds and checked on eval backgrounds (`single_eval_v20_dz4`,
-`output/trackprofile_v20.md`): at darkness 20-30 the signal lines have
-beading 0.46 vs 0.42, gaps 2.4 % vs 1.8 % and width 5.6 vs 5.7 px per
-px. Minimum-ionizing signal is still mostly not detected as lines, and
-at darkness 30-50 the signal stays more beaded (0.48 vs 0.36). v20 is
+`output/trackprofile_v20.md`, 40 events): at darkness 20-30 the signal
+lines have beading 0.46 vs 0.41, gaps 2.4 % vs 1.7 % and width 5.7 vs
+5.8 px per px (flat signal, dip < 15 deg: 0.45, 2.0 %, 5.6).
+Minimum-ionizing signal is still mostly not detected as lines. At
+darkness 30-50 the signal is more beaded (0.48 vs 0.37), but 312 of its
+323 lines come from steep tracks, whose focus moves along the line; the
+dip mixture of the gun (1/3 above 60 deg) is not that of the real lines,
+so this bin compares different populations rather than showing a
+grain-model error. v20 is
 for embedding only: grain width and spread also act on fog, so fully
 synthetic views keep model v19. `v20_embed_nagara_dz4` re-renders the
 100 embedded events of `v19_embed_nagara_dz4` (same eval backgrounds,

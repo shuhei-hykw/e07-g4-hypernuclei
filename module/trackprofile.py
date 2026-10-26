@@ -142,15 +142,17 @@ def main():
     lines.append(f"- signal {name}: {summarize(sel)}")
   lines += ["", "At equal apparent darkness (real lines have no truth):",
             "", "| darkness | real: n, beading, gap, width | "
-            "signal: n, beading, gap, width |", "|---|---|---|"]
+            "signal: n, beading, gap, width | signal flat (dip < "
+            f"{DIP_FLAT_DEG:g} deg) |", "|---|---|---|---|"]
+  flat = [r for r in sg if r["dip"] < DIP_FLAT_DEG]
   for lo, hi in zip(DARK_BINS[:-1], DARK_BINS[1:]):
     cells = []
-    for group in (bg, sg):
+    for group in (bg, sg, flat):
       sel = [r for r in group if lo <= r["dark"] < hi]
       cells.append(f"{len(sel)}, " + ", ".join(
         f"{np.median([r[k] for r in sel]):.3g}" if sel else "-"
         for k in ("beading", "gap", "width")))
-    lines.append(f"| {lo:g}-{hi:g} | {cells[0]} | {cells[1]} |")
+    lines.append(f"| {lo:g}-{hi:g} | " + " | ".join(cells) + " |")
   text = "\n".join(lines) + "\n"
   if args.output:
     Path(args.output).write_text(text)

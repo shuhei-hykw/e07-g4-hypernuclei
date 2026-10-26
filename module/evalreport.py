@@ -20,6 +20,8 @@ from .report import DEFAULT_CANDIDATES
 TOLS = [6., 12.]
 METRICS = ("edge", "inclusive", "best")
 VERTICES = (("capture", "capture"), ("LL decay", "HypernucleusDecay"))
+# Section 0 datasets: (signal model, dz); v20 shares the v19 backgrounds
+SECTION0 = (("v19", "4"), ("v19", "3.6"), ("v20", "4"))
 SHIFTS = eff.random_shifts(eff.DEFAULT_N_SHIFTS, eff.DEFAULT_SHIFT_MIN_PX,
                            eff.DEFAULT_SHIFT_MAX_PX, np.random.default_rng(0))
 STACK_THIRDS = ("first", "middle", "last")
@@ -129,11 +131,11 @@ def main():
           "dz 4.0 and 3.6 bracket it) and embedded into real views of the "
           "evaluation split. Each cell: efficiency (shifted-truth chance) "
           "[method A on the same real views before embedding].", "",
-          f"| cuts | dz | vertex | {head0} | cand/event |",
-          "|" + "---|" * (4 + len(METRICS) * len(TOLS))]
+          f"| cuts | signal | dz | vertex | {head0} | cand/event |",
+          "|" + "---|" * (5 + len(METRICS) * len(TOLS))]
   for cuts in ("production", "relaxed"):
-    for dz in ("4", "3.6"):
-      ds = f"v19_embed_nagara_dz{dz}"
+    for model, dz in SECTION0:
+      ds = f"{model}_embed_nagara_dz{dz}"
       path = cdir / f"{ds}_methodA_{cuts}.csv"
       if not path.exists():
         continue
@@ -157,7 +159,8 @@ def main():
             if bsel:
               c += f" [{np.mean([r[k] for r in bsel]):.0%}]"
             cells.append(c)
-        out.append(f"| {cuts} | {dz} | {label} | " + " | ".join(cells)
+        out.append(f"| {cuts} | {model} | {dz} | {label} | "
+                   + " | ".join(cells)
                    + f" | {extra['n_candidates'] / len(events):.0f} |")
   out += ["", "At the measured step the embedded signal adds about one "
           "method-A candidate per view; for the capture vertex the "
