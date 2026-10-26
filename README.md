@@ -333,6 +333,19 @@ azimuth, momentum, kinetic energy, range, mean dE/dx and whether it
 stops in the module. The image dataset gets a copy as
 `single_tracks.csv`.
 
+`~/work/.venv/bin/python -m module.trackprofile data/images/<single-track
+dataset>` compares, in the same embedded images, the centre lines of the
+e07-fullscan line detector on signal tracks (near signal grains of
+grains.npz) and on the real background tracks: darkness, beading
+(spread / mean along the line), gaps and width, also at equal apparent
+darkness (the real lines have no truth). With v15/v19 signal rendering
+the signal lines are more beaded than real lines of the same darkness
+(beading 0.63 vs 0.42, gaps 8.6 % vs 1.8 % at darkness 20-30,
+`output/trackprofile_v15.md`) and minimum-ionizing signal tracks are
+hardly detected as lines. `track_grain_scale` (model parameter,
+`--track-grain-scale`) renders more, fainter grains along tracks (same
+mean darkness) to study this.
+
 ### Embedding into real views (`--background`)
 
 Real views make the most faithful background (beam and cosmic tracks,

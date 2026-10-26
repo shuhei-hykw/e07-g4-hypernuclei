@@ -358,6 +358,9 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
   weights = render.grain_weights(len(all_grains), emulsion, rng)
   if len(fog):
     weights[-len(fog):] *= emulsion.fog_weight
+  # Track grains (not junk, not fog) are fainter by the density scale
+  track = np.r_[classes != render.LABEL_JUNK, np.zeros(len(fog), bool)]
+  weights[track] /= emulsion.track_grain_scale
   if not args.no_labels:
     np.savez_compressed(out_dir / "grains.npz", **grain_table(
       all_grains, weights, classes, instances, len(fog), optics))
@@ -429,6 +432,9 @@ def main():
                       default=DEFAULT_STAGE_DZ_MM,
                       help="stage z step per slice in image.json (mm)")
   parser.add_argument("--shrink", type=float, default=render.Optics.shrink)
+  parser.add_argument("--track-grain-scale", type=float,
+                      help="more, fainter grains along tracks (model "
+                      "default)")
   parser.add_argument("--fog", type=float,
                       default=render.Emulsion.fog_per_um3,
                       help="fog grains per developed um3")
@@ -468,6 +474,8 @@ def main():
     optics, emulsion, background = calibrate.apply_values(
       calibrate.load_model(args.model), optics, emulsion, background)
     print(f"model parameters from {args.model}", file=sys.stderr)
+  if args.track_grain_scale:
+    emulsion = replace(emulsion, track_grain_scale=args.track_grain_scale)
   for field, value in (("beam_per_mm2", args.beam_density),
                        ("random_per_mm2", args.random_density),
                        ("blobs_per_mm2", args.blob_density)):

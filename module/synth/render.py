@@ -66,6 +66,9 @@ class Emulsion:
   dedx_mip_mev_per_um: float = 5.47e-4  # 1.55 MeV cm2/g x 3.53 g/cm3
   fog_per_um3: float = 2e-3         # fog grains per developed um3
   fog_weight: float = 1.            # darkness of fog relative to tracks
+  # Track grains: density along tracks x scale, darkness / scale (more,
+  # fainter grains: same mean darkness, smoother lines)
+  track_grain_scale: float = 1.
   grain_jitter_um: float = 0.1
   grain_spread: float = 0.4         # lognormal sigma of grain darkness
 
@@ -204,7 +207,7 @@ def track_grains(points, edep, emulsion, rng):
   density = e.grains_sat_per_um * (1. - np.exp(
     -e.grains_mip_per_um / e.grains_sat_per_um
     * dedx / e.dedx_mip_mev_per_um))
-  n = rng.poisson(density * length)
+  n = rng.poisson(density * length * e.track_grain_scale)
   idx = np.repeat(np.arange(len(n)), n)
   t = rng.random(len(idx))
   grains = a[idx] + t[:, None] * seg[idx]
@@ -252,7 +255,7 @@ def straight_grains(view, emulsion, vertex_z, per_mm2, direction_fn,
     d = direction_fn()
     p0 = mid - d * length / 2.
     density = density_fn()
-    n = rng.poisson(density * length)
+    n = rng.poisson(density * length * emulsion.track_grain_scale)
     g = p0 + rng.random(n)[:, None] * d * length
     if geometry is not None:
       geometry.append((p0, p0 + d * length, density))
