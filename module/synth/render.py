@@ -7,9 +7,10 @@ developed emulsion: pixel (column, row) = (x, y) / pixel_um around the
 view center, slices every dz_um in developed depth.
 
 Image formation: each silver grain adds optical density
-  D = d0 * (s0 / s)^2 * exp(-r^2 / 2 s^2),  s^2 = s0^2 + (k dz)^2
+  D = d0 * (s0 / s)^p * exp(-r^2 / 2 s^2),  s^2 = s0^2 + (k dz)^2
 where dz is its distance from the focal plane, so a defocused grain is
-wider and fainter. The intensity is I = B(x, y) exp(-sum D) + noise,
+wider and fainter; p = 2 conserves the integrated density, p < 2 lets
+a grain fade more slowly in depth at the same lateral blur. The intensity is I = B(x, y) exp(-sum D) + noise,
 which saturates for dense (heavily ionizing) tracks; a residual
 transmission keeps the darkest pixels at the level seen in real images:
   I = B (t_min + (1 - t_min) exp(-sum D)).
@@ -40,6 +41,7 @@ class Optics:
   shrink: float = 1.9          # emulsion thickness ratio before / after
   grain_sigma_um: float = 0.5  # in-focus grain image (s0)
   defocus_slope: float = 0.08  # k: blur growth per um of defocus
+  defocus_power: float = 2.    # p: peak density falls as (s0 / s)^p
   max_defocus_cap_um: float = 40.  # upper bound of the defocus range
   n_defocus_bins: int = 12
   image_blur_px: float = 0.    # optics / camera MTF on the intensity
@@ -53,8 +55,9 @@ DEFOCUS_AMPLITUDE_CUT = 0.03
 
 
 def max_defocus_um(optics):
-  """Defocus beyond which grains are negligible: (s0/s)^2 < cut."""
-  ratio = np.sqrt(1. / DEFOCUS_AMPLITUDE_CUT - 1.)
+  """Defocus beyond which grains are negligible: (s0/s)^p < cut."""
+  ratio = np.sqrt(DEFOCUS_AMPLITUDE_CUT ** (-2. / optics.defocus_power)
+                  - 1.)
   return min(optics.max_defocus_cap_um,
              ratio * optics.grain_sigma_um / optics.defocus_slope)
 
@@ -479,8 +482,11 @@ class Renderer:
     for dz in 0.5 * (edges[:-1] + edges[1:]):
       s = np.hypot(optics.grain_sigma_um, optics.defocus_slope * dz)
       s /= optics.pixel_um
-      # FT of d0 (s0/s)^2 exp(-r^2/2s^2): d0 2 pi s0^2 exp(-2 pi^2 s^2 f^2)
-      self.kernels.append(optics.grain_density * 2. * np.pi * s0 ** 2
+      # FT of d0 (s0/s)^p exp(-r^2/2s^2):
+      #   d0 2 pi s0^p s^(2-p) exp(-2 pi^2 s^2 f^2)
+      p = optics.defocus_power
+      self.kernels.append(optics.grain_density * 2. * np.pi
+                          * s0 ** p * s ** (2. - p)
                           * np.exp(-2. * np.pi ** 2 * s ** 2 * self.f2))
 
   def _splat(self, col, row, weight):

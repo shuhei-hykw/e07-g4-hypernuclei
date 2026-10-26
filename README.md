@@ -380,7 +380,16 @@ signal); a truth-free "compact" cut (below 0.2 of the peak at +-8
 slices) removes depth-extended structures in real and synthetic views
 alike. Compact grains: real held-out views FWHM 6.4-6.5 slices, model
 v19 5.4-5.5 (fog alone 5.0-5.2), i.e. the v19 defocus is ~20 % too
-sharp in depth; a `defocus_slope` scan is under way.
+sharp in depth (calibration views give the same 6.3-6.5).
+Lowering `defocus_slope` to 0.034 matches the depth width but, with the
+other parameters recalibrated (v21, kept in `output/image_model_v21_dz4.json`
+and `data/`), breaks the lateral statistics (held-out: 2 then 5 of 23
+beyond 3 spreads: dark component size, high-frequency power, contrast),
+since the slope sets depth width and lateral blur together. The optics
+therefore gained `defocus_power` p: a defocused grain has peak density
+d0 (s0/s)^p (p = 2, the default and all models up to v21, conserves the
+integrated density); p < 2 makes grains fade more slowly in depth at the
+same lateral blur (p = 1.4: compact FWHM 6.9-7.0, p = 1.0: 7.1-7.3).
 
 ### Embedding into real views (`--background`)
 

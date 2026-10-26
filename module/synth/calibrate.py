@@ -70,6 +70,7 @@ PARAMS = {
   "image_blur_px": ("optics", "image_blur_px", 0.5, 0.8, False),
   # Lower bound: defocus blur of an objective with NA >= ~0.1
   "defocus_slope": ("optics", "defocus_slope", 0.03, 0.5, True),
+  "defocus_power": ("optics", "defocus_power", 0.5, 2.5, False),
   "grain_density": ("optics", "grain_density", 0.03, 4., True),
   "fog_per_um3": ("emulsion", "fog_per_um3", 5e-4, 4e-2, True),
   "fog_weight": ("emulsion", "fog_weight", 0.5, 6., True),
@@ -274,7 +275,9 @@ def current_defaults():
           "fixed_noise_sigma": b.fixed_noise_sigma,
           "grain_sigma_um": o.grain_sigma_um,
           "image_blur_px": o.image_blur_px,
-          "defocus_slope": o.defocus_slope, "grain_density": o.grain_density,
+          "defocus_slope": o.defocus_slope,
+          "defocus_power": o.defocus_power,
+          "grain_density": o.grain_density,
           "fog_per_um3": e.fog_per_um3, "grain_spread": e.grain_spread,
           "fog_weight": e.fog_weight,
           "track_grain_scale": e.track_grain_scale,
