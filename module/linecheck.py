@@ -14,6 +14,7 @@ Needs the e07-fullscan environment (cv2, skimage), e.g. ~/work/.venv.
 """
 
 import argparse
+import importlib
 import random
 import subprocess
 import sys
@@ -36,23 +37,24 @@ def fullscan_commit():
                          "HEAD"], capture_output=True, text=True).stdout.strip()
 
 
-def import_fullscan():
-  """scripts/eval_pointcloud.py of e07-fullscan. Both projects name their
-  package `module`: ours is set aside while the full-scan one is
-  imported, then restored (the imported functions keep their own)."""
+def import_fullscan(name="eval_pointcloud"):
+  """A script of e07-fullscan/scripts (default eval_pointcloud.py). Both
+  projects name their package `module`: ours is set aside while the
+  full-scan one is imported, then restored (the imported functions keep
+  their own)."""
   ours = {m: sys.modules.pop(m) for m in list(sys.modules)
           if m == "module" or m.startswith("module.")}
   path = sys.path[:]
   sys.path[:0] = [str(FULLSCAN / "scripts"), str(FULLSCAN)]
   try:
-    import eval_pointcloud
+    mod = importlib.import_module(name)
   finally:
     for m in [m for m in sys.modules
               if m == "module" or m.startswith("module.")]:
       del sys.modules[m]
     sys.modules.update(ours)
     sys.path[:] = path
-  return eval_pointcloud
+  return mod
 
 
 def ridge_stats(img, ep):

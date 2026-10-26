@@ -372,6 +372,16 @@ a MIP signal track is only ~3 gray levels darker than random positions
 the persistence cut as often as the real dots, so no clean real beam
 sample is obtained; the MIP appearance stays unverified.
 
+`~/work/.venv/bin/python -m module.depthsplit <event dir | view.json>
+...` runs the isolated-grain depth profile of e07-fullscan
+(`scripts/grain_depth_profile.py`, DoG response vs slice offset, FWHM in
+slices) and splits synthetic grains by truth (fog, background track,
+signal); a truth-free "compact" cut (below 0.2 of the peak at +-8
+slices) removes depth-extended structures in real and synthetic views
+alike. Compact grains: real held-out views FWHM 6.4-6.5 slices, model
+v19 5.4-5.5 (fog alone 5.0-5.2), i.e. the v19 defocus is ~20 % too
+sharp in depth; a `defocus_slope` scan is under way.
+
 ### Embedding into real views (`--background`)
 
 Real views make the most faithful background (beam and cosmic tracks,
