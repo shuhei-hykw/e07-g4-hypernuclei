@@ -390,6 +390,16 @@ is tuned as well. Model v15 (`output/image_model_v15_dz4.json`) is v14
 recalibrated at dz 4.0 (held-out: 20 / 23 within 3 spreads,
 `output/realism_v15_dz4.md`).
 
+`~/work/.venv/bin/python -m module.linecheck --synth
+data/images/<dataset>` applies the oriented long-line detector of
+e07-fullscan (`ridge_response` / `line_mask` of
+`scripts/eval_pointcloud.py`, imported from ~/work/e07-fullscan, needs
+its cv2 / skimage environment) to held-out real views and synthetic
+views: centre-line pixels and lines per Mpx, line lengths and DoG
+points near lines (an unseen realism check; the commit is written into
+the report). v15: twice as many lines as real (z +7.5) and twice the
+DoG fraction near lines (`output/linecheck_v15.md`).
+
 `./run.py validate data/images/<dataset>` compares a synthetic dataset
 with 20 real views not used in the calibration (`output/realism.md`).
 For v14 all 23 statistics are within 3 spreads of the real views

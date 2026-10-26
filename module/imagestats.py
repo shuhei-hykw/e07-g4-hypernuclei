@@ -55,7 +55,14 @@ DOG_LEVEL = 4.
 
 
 def decode_png(data):
-  """Decode PNG bytes to a 2-D uint8 array (via ROOT TASImage)."""
+  """Decode PNG bytes to a 2-D uint8 array (OpenCV if available, else
+  ROOT TASImage)."""
+  try:
+    import cv2
+    return cv2.imdecode(np.frombuffer(data, np.uint8),
+                        cv2.IMREAD_GRAYSCALE)
+  except ImportError:
+    pass
   import ROOT
   ROOT.gROOT.SetBatch(True)
   with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:

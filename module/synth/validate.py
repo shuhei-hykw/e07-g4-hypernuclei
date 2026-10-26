@@ -36,6 +36,18 @@ def stats_of(path):
                                   c.OFFSETS))
 
 
+def holdout_views(n):
+  """Real views not used by the calibration nor labelled by hand, in a
+  fixed random order."""
+  used = set(json.loads((config.OUTPUT_DIR
+                         / "real_image_stats.json").read_text())["views"])
+  views = [v for v in sorted(Path(c.REAL_DIR).glob("V*.json"))
+           if str(v) not in used
+           and not v.name.startswith(c.EXCLUDED_VIEWS)]
+  random.Random(HOLDOUT_SEED).shuffle(views)
+  return views[:n]
+
+
 def main():
   parser = argparse.ArgumentParser(
     description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
@@ -45,13 +57,7 @@ def main():
                       default=str(config.OUTPUT_DIR / "realism.md"))
   args = parser.parse_args()
 
-  used = set(json.loads((config.OUTPUT_DIR
-                         / "real_image_stats.json").read_text())["views"])
-  views = [v for v in sorted(Path(c.REAL_DIR).glob("V*.json"))
-           if str(v) not in used
-           and not v.name.startswith(c.EXCLUDED_VIEWS)]
-  random.Random(HOLDOUT_SEED).shuffle(views)
-  real = [stats_of(v) for v in views[:args.views]]
+  real = [stats_of(v) for v in holdout_views(args.views)]
   synth = [stats_of(d / "image.json")
            for d in sorted(Path(args.dataset).glob("ev*"))]
   lines = [f"# Realism of {Path(args.dataset).name} on held-out real views",
