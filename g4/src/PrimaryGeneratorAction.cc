@@ -1,5 +1,8 @@
 #include "PrimaryGeneratorAction.hh"
 
+#include <fstream>
+#include <sstream>
+
 #include "DetectorConstruction.hh"
 #include "G4Event.hh"
 #include "G4PrimaryParticle.hh"
@@ -34,6 +37,9 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   fMessenger->DeclareProperty(
     "replayFile", fReplayFile,
     "Fixed momenta of the capture and decays (overrides /xi/channel)");
+  fMessenger->DeclareProperty(
+    "gunFile", fGunFile,
+    "Single tracks per event (overrides the capture generation)");
   fMessenger->DeclareProperty("target", fTarget, "12C, 14N or 16O");
   fMessenger->DeclareProperty("channel", fChannel,
                               "Products separated by commas");
@@ -46,12 +52,66 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
                                       "Capture point for the fixed mode");
 }
 
+void PrimaryGeneratorAction::LoadGun()
+{
+  std::ifstream in(fGunFile);
+  if (!in) {
+    G4Exception("PrimaryGeneratorAction", "Gen005", FatalException,
+                ("cannot open " + fGunFile).c_str());
+  }
+  std::string line;
+  std::getline(in, line);  // header
+  while (std::getline(in, line)) {
+    std::stringstream ss(line);
+    std::vector<std::string> c;
+    for (std::string f; std::getline(ss, f, ',');) c.push_back(f);
+    constexpr std::size_t kColumns = 8;
+    if (c.size() < kColumns) continue;
+    const int ev = std::stoi(c[0]);
+    const G4ThreeVector pos(std::stod(c[2]) * um, std::stod(c[3]) * um,
+                            std::stod(c[4]) * um);
+    if (c[1] == "center") {
+      fGunCenter[ev] = pos;
+      continue;
+    }
+    fGun[ev].push_back({c[1], pos,
+                        {std::stod(c[5]), std::stod(c[6]),
+                         std::stod(c[7])}});
+  }
+  G4cout << "Gun: " << fGun.size() << " events from " << fGunFile
+         << G4endl;
+}
+
+void PrimaryGeneratorAction::GenerateGun(G4Event* event)
+{
+  const int ev = event->GetEventID();
+  fVertex = fGunCenter.count(ev) ? fGunCenter[ev] : G4ThreeVector();
+  auto& table = SpeciesTable::Instance();
+  for (const auto& t : fGun[ev]) {
+    const auto info = table.Parse(t.name).at(0);
+    auto* vertex = new G4PrimaryVertex(t.position, 0.);
+    auto* particle = new G4PrimaryParticle(SpeciesTable::Definition(info));
+    particle->SetMass(info.mass * MeV);
+    particle->SetMomentum(t.momentum.x() * MeV, t.momentum.y() * MeV,
+                          t.momentum.z() * MeV);
+    vertex->SetPrimary(particle);
+    event->AddPrimaryVertex(vertex);
+  }
+}
+
 void PrimaryGeneratorAction::Initialize()
 {
   auto& table = SpeciesTable::Instance();
   table.LoadSpecies(fSpeciesFile);
   table.LoadTargets(fTargetsFile);
   table.LoadDecays(fDecaysFile);
+  if (!fGunFile.empty()) {
+    LoadGun();
+    fChannel = "gun";
+    G4Random::setTheSeed(fSeed);
+    fInitialized = true;
+    return;
+  }
   fInitialMass = table.InitialMass(fTarget);
   if (!fReplayFile.empty()) {
     table.LoadReplay(fReplayFile);
@@ -97,6 +157,10 @@ void PrimaryGeneratorAction::Initialize()
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
 {
   if (!fInitialized) Initialize();
+  if (!fGunFile.empty()) {
+    GenerateGun(event);
+    return;
+  }
 
   if (fVertexMode == "random") {
     const auto* detector = static_cast<const DetectorConstruction*>(

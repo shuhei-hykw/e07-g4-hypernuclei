@@ -312,6 +312,27 @@ Rendering takes about 70 s and 170 MB per event (`-j` renders events in
 parallel). `--tracks-only` writes only the two Geant4 track pictures for
 an existing dataset (the view placement is reproduced from the seed).
 
+### Single isolated tracks (`./run.py singletrack`)
+
+```
+./run.py singletrack --name single_eval --events 80 --tracks 25
+./run.py images data/sim/single_eval.root --events 0-79 --centered \
+  --background random --bg-split eval --dz 4.0 --name single_eval_dz4
+```
+
+For the point-cloud evaluation of e07-fullscan: 25 particles per event
+(p, pi+, pi-, alpha, 7Li, 12C; log-uniform momentum from nearly
+stopping to minimum ionizing; dip from the sheet plane drawn favouring
+flat (< 10 deg) and steep (> 60 deg) tracks) start at random points of
+one view, 60 um apart, in the middle thick layer chosen at random. The
+gun CSV (`output/gun/<name>.csv`; emulsim `/xi/gunFile`, one primary
+vertex per row, the row `center` sets the view / stack center) is
+simulated with Geant4, and `data/sim/<name>_tracks.csv` lists per track
+the event, Geant4 track id (instance id of the labels), species, dip,
+azimuth, momentum, kinetic energy, range, mean dE/dx and whether it
+stops in the module. The image dataset gets a copy as
+`single_tracks.csv`.
+
 ### Embedding into real views (`--background`)
 
 Real views make the most faithful background (beam and cosmic tracks,

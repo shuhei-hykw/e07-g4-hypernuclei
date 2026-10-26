@@ -47,6 +47,7 @@ def make_macro(args):
     f"/xi/target {args.target}",
     f"/xi/channel {args.channel}",
     *([f"/xi/replayFile {args.replay}"] if args.replay else []),
+    *([f"/xi/gunFile {args.gun}"] if args.gun else []),
     f"/xi/seed {args.seed}",
     f"/decay/policy {args.policy}",
   ]
@@ -73,6 +74,8 @@ def main():
                       help='extra macro command, e.g. "/emul/density 3.6"')
   parser.add_argument("--replay",
                       help="fixed kinematics CSV (output/replay/*.csv)")
+  parser.add_argument("--gun",
+                      help="single-track CSV (./run.py singletrack)")
   parser.add_argument("--events", type=int, default=DEFAULT_EVENTS)
   parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
   parser.add_argument("--name", help="output name (default: preset)")
@@ -84,6 +87,10 @@ def main():
       setattr(args, key, preset.get(key))
   if args.replay is None and "replay" in preset:
     args.replay = str(config.OUTPUT_DIR / "replay" / preset["replay"])
+  if args.gun:
+    # Target and channel are not used by the gun mode
+    args.target = args.target or "12C"
+    args.channel = args.channel or "LL6He,4He,t"
   args.policy = args.policy or "simple"
   args.fix = args.fix or []
   args.name = args.name or args.preset

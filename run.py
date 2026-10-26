@@ -24,6 +24,7 @@ Commands:
   specialsrank darkness ranking of B' points on real special events
   mipdensity   in-plane MIP grain density from flat tracks
   layerdepth   physical step from the emulsion layer extent
+  singletrack  isolated single tracks for the point-cloud evaluation
   efficiency   vertex-finding efficiency of candidates vs truth
   report       efficiency table over datasets and methods
   zbias        depth bias of candidate z_best vs truth
@@ -61,6 +62,7 @@ COMMANDS: dict[str, str] = {
   "beamgrains":  "module.beamgrains",
   "rankstudy":   "module.rankstudy",
   "mipdensity":  "module.mipdensity",
+  "singletrack": "module.singletrack",
   "layerdepth":  "module.layerdepth",
   "specialsrank": "module.specials_rank",
   "efficiency":  "module.efficiency",

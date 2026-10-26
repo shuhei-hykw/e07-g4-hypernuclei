@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -22,12 +23,25 @@ public:
   const G4ThreeVector& Vertex() const { return fVertex; }
 
 private:
+  struct GunTrack {
+    std::string name;
+    G4ThreeVector position;  // um
+    G4ThreeVector momentum;  // MeV/c
+  };
+
   void Initialize();
+  void LoadGun();
+  void GenerateGun(G4Event* event);
 
   std::string fSpeciesFile;
   std::string fTargetsFile;
   std::string fDecaysFile;
   std::string fReplayFile;  // fixed kinematics of an observed event
+  // Single-track gun: CSV event,name,x_um,y_um,z_um,px_mev,py_mev,pz_mev;
+  // the row named "center" of an event only sets its reference point
+  std::string fGunFile;
+  std::map<int, std::vector<GunTrack>> fGun;
+  std::map<int, G4ThreeVector> fGunCenter;
   std::string fTarget;
   std::string fChannel;  // comma separated, e.g. "LL6He,4He,t"
   int fSeed;

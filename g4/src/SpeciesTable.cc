@@ -8,6 +8,7 @@
 #include "G4Lambda.hh"
 #include "G4Neutron.hh"
 #include "G4PionMinus.hh"
+#include "G4PionPlus.hh"
 #include "G4PionZero.hh"
 #include "G4Proton.hh"
 #include "G4SystemOfUnits.hh"
@@ -62,7 +63,9 @@ SpeciesTable& SpeciesTable::Instance()
 
 SpeciesTable::SpeciesTable()
 {
-  // Pions appear only as weak-decay products
+  // Pions: weak-decay products, or single tracks of the gun mode
+  fSpecies["pi+"] = {"pi+", 0, 1, 0,
+                     G4PionPlus::Definition()->GetPDGMass() / MeV};
   fSpecies["pi-"] = {"pi-", 0, -1, 0,
                      G4PionMinus::Definition()->GetPDGMass() / MeV};
   fSpecies["pi0"] = {"pi0", 0, 0, 0,
@@ -170,6 +173,7 @@ G4ParticleDefinition* SpeciesTable::Definition(const SpeciesInfo& s)
 {
   if (s.a == 0) {
     if (s.z == -1) return G4PionMinus::Definition();
+    if (s.z == 1) return G4PionPlus::Definition();
     return G4PionZero::Definition();
   }
   if (s.a == 1) {
