@@ -301,7 +301,9 @@ Files per event:
 | `0000.png` ... | 8-bit grayscale slices |
 | `image.json` | full-scan JSON (`SpngReader`): `AffineP2S` in mm, stage z per slice (`--stage-dz`, default -0.003 mm as tohoku-v1), `Sh` |
 | `truth.json` | col / row / slice and `polyline` are image (developed) coordinates, `um` the Geant4 (undeveloped) position; vertices (`capture`, `HypernucleusDecay`, `hBertiniCaptureAtRest`, `Decay`) with col / row / slice and `in_view`; charged tracks with origin, start / end, `vertex_start` / `vertex_end`, 3-D `polyline` (2 um steps); dataset parameters |
-| `labels.npz` | per slice: `labels` class of in-focus grains (1 capture, 2 decay, 3 other secondary, 4 background track, 5 junk) and `instance` (track id; negative for background tracks and junk) |
+| `labels.npz` | per slice: `labels` class of in-focus grains (1 capture, 2 decay, 3 other secondary, 4 background track, 5 junk) and `instance` (track id; -1-i background track i, unique over beam / isotropic / flat tracks; -100001-i junk cluster i); grains within half a slice of the focal plane are painted as 2 px disks, lower classes win where disks overlap, fog is not labelled |
+| `grains.npz` | per-grain truth: `col`, `row`, `slice` (view coordinates), `x_um`, `y_um`, `z_um` (developed um from the view corner and slice 0), `weight` (darkness), `cls` / `instance` as in the labels (fog 0 / 0), `fog` flag, `focus_slice` |
+| `background_tracks.json` | straight background tracks: instance id, kind (beam, isotropic, flat), grains per um and straight segments [[col, row, slice] start, end], one per emulsion layer crossed, inside the emulsion near the view |
 | `preview.png` | minimum projection: crop around the capture point and the whole view |
 | `g4_tracks.png` | Geant4 event display before imaging (as `./run.py draw`) |
 | `g4_view.png` | Geant4 tracks in the image coordinates of the view (crop as `preview.png`, whole view, column vs slice) |

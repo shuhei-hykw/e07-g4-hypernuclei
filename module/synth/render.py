@@ -226,13 +226,15 @@ def view_count(view, per_mm2, rng, margin_um=0.):
 
 
 def straight_grains(view, emulsion, vertex_z, per_mm2, direction_fn,
-                    density_fn, rng, per_depth=False):
+                    density_fn, rng, per_depth=False, geometry=None):
   """Grains of straight tracks of fixed length around the view (original
   um) and the index of the track each grain belongs to.
 
   per_mm2 counts tracks per mm2 of view area; with per_depth it is per
   mm2 and per DEPTH_REF_UM of (undeveloped) depth, for tracks spread in
-  depth (flat, isotropic) rather than crossing the whole stack (beam)."""
+  depth (flat, isotropic) rather than crossing the whole stack (beam).
+  If geometry is a list, (start, end, grains per um) of every track in
+  original um is appended to it."""
   o = view.optics
   half = o.size_px * o.pixel_um / 2.
   lo, hi = view.zdev_range()
@@ -248,8 +250,11 @@ def straight_grains(view, emulsion, vertex_z, per_mm2, direction_fn,
                     vertex_z + rng.uniform(-span / 2., span / 2.)])
     d = direction_fn()
     p0 = mid - d * length / 2.
-    n = rng.poisson(density_fn() * length)
+    density = density_fn()
+    n = rng.poisson(density * length)
     g = p0 + rng.random(n)[:, None] * d * length
+    if geometry is not None:
+      geometry.append((p0, p0 + d * length, density))
     # Keep the grains near the view only (memory)
     near = (np.abs(g[:, 0] - view.cx) < half + o.pad_px * o.pixel_um) \
       & (np.abs(g[:, 1] - view.cy) < half + o.pad_px * o.pixel_um)
@@ -261,7 +266,7 @@ def straight_grains(view, emulsion, vertex_z, per_mm2, direction_fn,
   return np.vstack(grains), np.concatenate(owners)
 
 
-def beam_grains(view, background, emulsion, vertex_z, rng):
+def beam_grains(view, background, emulsion, vertex_z, rng, geometry=None):
   """Nearly parallel MIP tracks around a common beam axis close to z."""
   axis = rng.uniform(-background.beam_slope_max,
                      background.beam_slope_max, 2)
@@ -272,10 +277,12 @@ def beam_grains(view, background, emulsion, vertex_z, rng):
     return d / np.linalg.norm(d)
   return straight_grains(view, emulsion, vertex_z,
                          background.beam_per_mm2, direction,
-                         lambda: emulsion.grains_mip_per_um, rng)
+                         lambda: emulsion.grains_mip_per_um, rng,
+                         geometry=geometry)
 
 
-def random_track_grains(view, background, emulsion, vertex_z, rng):
+def random_track_grains(view, background, emulsion, vertex_z, rng,
+                        geometry=None):
   """Isotropic straight tracks of various ionization."""
   def direction():
     d = rng.normal(size=3)
@@ -284,10 +291,11 @@ def random_track_grains(view, background, emulsion, vertex_z, rng):
   return straight_grains(
     view, emulsion, vertex_z, background.random_per_mm2, direction,
     lambda: emulsion.grains_mip_per_um * rng.uniform(lo, hi), rng,
-    per_depth=True)
+    per_depth=True, geometry=geometry)
 
 
-def flat_track_grains(view, background, emulsion, vertex_z, rng):
+def flat_track_grains(view, background, emulsion, vertex_z, rng,
+                      geometry=None):
   """Straight tracks nearly parallel to the sheets, any azimuth."""
   def direction():
     a = rng.uniform(0., 2. * np.pi)
@@ -298,7 +306,7 @@ def flat_track_grains(view, background, emulsion, vertex_z, rng):
   return straight_grains(
     view, emulsion, vertex_z, background.flat_per_mm2, direction,
     lambda: emulsion.grains_mip_per_um * rng.uniform(lo, hi), rng,
-    per_depth=True)
+    per_depth=True, geometry=geometry)
 
 
 def blob_grains(view, background, rng):

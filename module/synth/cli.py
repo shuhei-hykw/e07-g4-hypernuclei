@@ -13,7 +13,19 @@ For every event a directory data/images/<name>/ev<NNNN>/ is written:
                  2 hypernuclear decay products, 3 other secondaries,
                  4 straight background tracks, 5 junk clusters, 0 none /
                  fog) and `instance` (track id; -1-i background track i,
-                 -100001-i junk cluster i, 0 none)
+                 -100001-i junk cluster i, 0 none); grains within
+                 label_radius_px (2 px) of a pixel paint it as a disk,
+                 lower classes win where disks overlap, and within a
+                 class the grain listed later wins; fog is not labelled
+  grains.npz     per-grain truth: col, row, slice (view coordinates),
+                 x_um, y_um, z_um (developed um from the view corner and
+                 slice 0), weight (darkness), cls / instance as in the
+                 labels (fog 0 / 0), fog flag and focus_slice
+  background_tracks.json  straight background tracks (beam, isotropic,
+                 flat): instance id, kind, grains per um and straight
+                 segments [[col, row, slice] start, end], one per
+                 emulsion layer crossed, inside the emulsion near the view
+                 (same pad and defocus margin as the rendered grains)
   preview.png    min projection: crop around the vertex | whole view
   g4_tracks.png  Geant4 event display before imaging (./run.py draw)
   g4_view.png    Geant4 tracks in the image coordinates of the view
@@ -62,6 +74,7 @@ STAGE_Z0_MM = 0.
 DEFAULT_STAGE_DZ_MM = -0.003
 BACKGROUND_ID0 = -1
 JUNK_ID0 = -100001
+BG_SAMPLE_STEP_UM = 1.  # sampling to find the segment ends
 
 
 def parse_events(spec, n_events):
@@ -77,8 +90,10 @@ def parse_events(spec, n_events):
 
 
 def collect_grains(ev, view, devz, emulsion, background, rng,
-                   signal_only=False):
-  """Labelled grains (view coords) with class and instance, and fog."""
+                   signal_only=False, tracks=None):
+  """Labelled grains (view coords) with class and instance, and fog.
+  If tracks is a list, (instance id, kind, start, end, grains per um) of
+  the straight background tracks (original um) is appended to it."""
   o = view.optics
   lo = -o.pad_px
   hi = o.size_px + o.pad_px
@@ -110,17 +125,20 @@ def collect_grains(ev, view, devz, emulsion, background, rng,
   if signal_only:
     return (np.vstack(grains), np.concatenate(classes),
             np.concatenate(instances), np.zeros((0, 3)), counts)
-  beam, owner = render.beam_grains(view, background, emulsion,
-                                   ev.vertex[2], rng)
-  add(beam, render.LABEL_BEAM, BACKGROUND_ID0 - owner)
-  rand, owner2 = render.random_track_grains(view, background, emulsion,
-                                            ev.vertex[2], rng)
-  offset = len(np.unique(owner))
-  add(rand, render.LABEL_BEAM, BACKGROUND_ID0 - offset - owner2)
-  flat, owner4 = render.flat_track_grains(view, background, emulsion,
-                                          ev.vertex[2], rng)
-  offset += len(np.unique(owner2))
-  add(flat, render.LABEL_BEAM, BACKGROUND_ID0 - offset - owner4)
+  # Instance ids of background tracks: BACKGROUND_ID0 - running index
+  # over beam, isotropic and flat tracks (unique across the three kinds)
+  offset = 0
+  for kind, fn in (("beam", render.beam_grains),
+                   ("isotropic", render.random_track_grains),
+                   ("flat", render.flat_track_grains)):
+    geometry = []
+    g, owner = fn(view, background, emulsion, ev.vertex[2], rng,
+                  geometry=geometry)
+    add(g, render.LABEL_BEAM, BACKGROUND_ID0 - offset - owner)
+    if tracks is not None:
+      tracks += [(BACKGROUND_ID0 - offset - i, kind) + geo
+                 for i, geo in enumerate(geometry)]
+    offset += len(geometry)
   blobs, owner3 = render.blob_grains(view, background, rng)
   grains.append(blobs)
   classes.append(np.full(len(blobs), render.LABEL_JUNK))
@@ -192,6 +210,52 @@ def truth_record(ev, view, counts):
           "tracks": tracks}
 
 
+def background_track_records(tracks, view, devz):
+  """Straight background tracks as straight segments [[col, row, slice]
+  start, end] (one per emulsion layer crossed) inside the emulsion and
+  near the view; tracks not reaching it are dropped."""
+  o = view.optics
+  lo, hi = -o.pad_px, o.size_px + o.pad_px
+  # Same depth margin as the grains kept by collect_grains
+  margin = render.max_defocus_um(o) / o.dz_um + 1.
+  out = []
+  for tid, kind, start, end, density in tracks:
+    length = np.linalg.norm(end - start)
+    n = max(2, int(np.ceil(length / BG_SAMPLE_STEP_UM)) + 1)
+    pts = start + np.linspace(0., 1., n)[:, None] * (end - start)
+    v = view.to_view(pts)
+    keep = devz.in_emulsion(pts[:, 2]) & (v[:, 0] >= lo) & (v[:, 0] < hi) \
+      & (v[:, 1] >= lo) & (v[:, 1] < hi) & (v[:, 2] > -margin) \
+      & (v[:, 2] < o.n_slices - 1 + margin)
+    if not keep.any():
+      continue
+    # Contiguous runs of kept samples: straight segments (one per layer)
+    edge = np.diff(np.r_[0, keep.astype(int), 0])
+    first, last = np.flatnonzero(edge == 1), np.flatnonzero(edge == -1) - 1
+    out.append({"id": int(tid), "kind": kind,
+                "grains_per_um": round(float(density), 5),
+                "segments": [np.round(v[[i, j]], 2).tolist()
+                             for i, j in zip(first, last)]})
+  return out
+
+
+def grain_table(grains, weights, classes, instances, n_fog, optics):
+  """Per-grain truth: view coordinates, developed um relative to the
+  view corner and slice 0, weight, class / instance (fog: 0 / 0)."""
+  n = len(grains)
+  return dict(
+    col=grains[:, 0].astype(np.float32), row=grains[:, 1].astype(np.float32),
+    slice=grains[:, 2].astype(np.float32),
+    x_um=(grains[:, 0] * optics.pixel_um).astype(np.float32),
+    y_um=(grains[:, 1] * optics.pixel_um).astype(np.float32),
+    z_um=(grains[:, 2] * optics.dz_um).astype(np.float32),
+    weight=weights.astype(np.float32),
+    cls=np.concatenate([classes, np.zeros(n_fog)]).astype(np.uint8),
+    instance=np.concatenate([instances, np.zeros(n_fog)]).astype(np.int32),
+    fog=np.arange(n) >= n - n_fog,
+    focus_slice=np.rint(grains[:, 2]).astype(np.int16))
+
+
 def view_json(view, stage_z_mm, out_dir):
   o = view.optics
   pix_mm = o.pixel_um / UM_PER_MM
@@ -258,10 +322,17 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
   draw_view(ev, view, out_dir / "g4_view.png")
   if args.tracks_only:
     return
+  bg_tracks = []
   labelled, classes, instances, fog, counts = collect_grains(
-    ev, view, devz, emulsion, background, rng, signal_only=bool(bg_json))
+    ev, view, devz, emulsion, background, rng, signal_only=bool(bg_json),
+    tracks=bg_tracks)
   all_grains = np.vstack([labelled, fog])
   weights = render.grain_weights(len(all_grains), emulsion, rng)
+  if not args.no_labels:
+    np.savez_compressed(out_dir / "grains.npz", **grain_table(
+      all_grains, weights, classes, instances, len(fog), optics))
+    (out_dir / "background_tracks.json").write_text(json.dumps(
+      background_track_records(bg_tracks, view, devz)))
   renderer = render.Renderer(optics)
   mottle = render.MottleVolume(optics, background, rng, view.slice_zdev(0),
                                view.slice_zdev(optics.n_slices - 1))

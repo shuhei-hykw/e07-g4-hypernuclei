@@ -1,4 +1,4 @@
-Best rank (ties averaged) of a B' branch point matching the clicked vertex, rank fraction in brackets (smaller is better), number of matching points and XY / z offset of the best one; control: median [16 %, 84 %] of the rank fraction over 20 random shifts of the truth (common to all scores; no match counts as 1, 'none' = such controls); p = fraction of controls at least as good as the truth.
+Best rank (ties averaged) of a B' branch point matching the clicked vertex, rank fraction in brackets (smaller is better), number of matching points and XY / z offset of the best one; control: median [16 %, 84 %] of the rank fraction over 20 random shifts of the truth (common to all scores; no match counts as 1, 'none' = such controls); p = fraction of controls at least as good as the truth. At the strict tolerance most controls have no matching point at all, so the comparison with the control median is weak there; the integer rank against the method-A rate (770 per view) is the more useful figure.
 
 Caveats: the darkness image model was checked against the IBUKI heavy tracks, so this is not a fully independent test; a match only means a high-ranked point near the vertex, not that the tracks of the vertex are connected to it (not checked here).
 
@@ -34,7 +34,7 @@ Caveats: the darkness image model was checked against the IBUKI heavy tracks, so
 | T011 | 12803 | darkness | 28 (0.0021), n=419, dXY 35 um, dz +20 um | 0.0071 [0.0030, 0.0182], none 0 | 0.15 |
 | T011 | 12803 | combined | 26 (0.0020), n=419, dXY 57 um, dz +9 um | 0.0042 [0.0007, 0.0068], none 0 | 0.35 |
 
-Better than the control median: multiplicity 7/9, darkness 8/9, combined 9/9
+Better than the control median: multiplicity 7/9, darkness 8/9, combined 9/9; true rank within the top 770: multiplicity 8/9, darkness 9/9, combined 9/9
 
 ### Tolerance 20 px (6 um) in XY, 30 um in z
 
@@ -68,5 +68,5 @@ Better than the control median: multiplicity 7/9, darkness 8/9, combined 9/9
 | T011 | 12803 | darkness | 413 (0.0322), n=9, dXY 4 um, dz +2 um | 0.4078 [0.1590, 0.5666], none 0 | 0.05 |
 | T011 | 12803 | combined | 392 (0.0305), n=9, dXY 4 um, dz -19 um | 0.2891 [0.1449, 0.5748], none 0 | 0.10 |
 
-Better than the control median: multiplicity 9/9, darkness 9/9, combined 9/9
+Better than the control median: multiplicity 9/9, darkness 9/9, combined 9/9; true rank within the top 770: multiplicity 6/9, darkness 7/9, combined 9/9
 
