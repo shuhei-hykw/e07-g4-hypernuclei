@@ -138,3 +138,22 @@ dz 4.0, starting from v14 with the depth scales rescaled by 4 / 1.5
 (defocus slope, beam slopes, fog and track densities per volume divided,
 mottle depth lengths and the flat-track dip multiplied): start loss 5.6
 against 277 for v14 used unchanged at dz 4.0.
+
+### Cross-check with the E07 theses (S. H. Hayakawa 2019, H. Ekawa 2021)
+
+- Thick-sheet emulsion layer: 450 um (Ekawa, Sec. 2) or 480 um
+  (Hayakawa, Sec. 2.7) per side on a 40 um base; thin sheet 100 | 180 |
+  100 um.
+- Shrinkage factor from the range of 212Po alpha tracks (8.78 MeV),
+  measured with oil-immersion objectives (stage z ~ developed depth):
+  2.079 +- 0.021 (module 47 sheet 10, Hayakawa) and 1.98 +- 0.02
+  (module 69 sheet 7, MINO, Ekawa); the image JSON carries Sh = 1.9.
+- Fuji GIF: AgBrI crystals 0.2 um, density 3.53 g/cm3 design, 3.486
+  measured (Ekawa).
+- No MIP grain density is quoted in either thesis.
+
+With these the developed thick layer is 216-242 um (450 / 2.08 to
+480 / 1.98), and the mean of 59.9 slices per layer measured above gives
+a physical step of 3.6-4.0 um per 3 um stage step. dz 4.0 um (v15, v16)
+lies at the upper end; 3.8 +- 0.2 um is the combined estimate. The
+1.5 um step stays excluded.
