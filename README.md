@@ -421,11 +421,24 @@ specification, agreed with the e07-fullscan analysis:
 - `./run.py beamgrains <view.json> ...`: grains per slice along
   perpendicular beam tracks, a step handle independent of the beam
   divergence and defocus (output/dz_comparison.md).
+- `./run.py layerdepth <image.json> ...`: physical step from the number
+  of slices spanned by whole emulsion layers in deep stacks (450 um / Sh
+  developed thickness); independent of the grain density. On the
+  200-slice special events it gives 3.6-4.4 um per slice (mean 4.0 um
+  for the 3 um stage step, `output/layerdepth.txt`), which excludes the
+  1.5 um step.
 - `./run.py rankstudy <dataset> <bprime.csv>`: ranking of point
   candidates by multiplicity, local density or image darkness at fixed
-  candidates per view (`output/bprime_ranking.md`).
+  candidates per view (`output/bprime_ranking.md`), with event-level
+  binomial uncertainties; ties are averaged in the rank fractions and
+  broken at random (fixed seed) at the top-K boundary.
 - `./run.py specialsrank`: the same rankings on the B' branch points of
-  the real special events (`output/specials_ranking.md`).
+  the real special events (`output/specials_ranking.md`): integer rank,
+  number of matching points and XY / z offset of the best one, control
+  distribution with positions common to all scores (no match = rank
+  fraction 1), at a loose (200 px) and a strict (20 px) XY tolerance.
+  The darkness model was checked on IBUKI, so these events are not a
+  fully independent test.
 - `./run.py zbias <dataset> <csv> --sim <root>`: offset z_best - z_true
   of the XY-nearest candidate, split by layer / stack position, daughter
   z asymmetry and n_tracks_max.

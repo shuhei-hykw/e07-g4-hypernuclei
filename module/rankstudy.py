@@ -16,10 +16,12 @@ Each candidate is scored by
                  tracks start at hypernuclear vertices, while most
                  background branch points are crossings of faint MIPs)
   combined       sum of the multiplicity and darkness rank fractions
+                 (ties averaged, independent of the order of the points)
 and only the top K per event are kept; the one-to-one efficiency at 6
 and 12 um and its chance level (shifted truths) are reported for each K,
 so that rankings can be compared at the candidate rate of method A
-(~770 per view).
+(~770 per view), with the event-level binomial uncertainty. Ties at
+the top-K boundary are broken at random (fixed seed).
 """
 
 import argparse
@@ -39,6 +41,7 @@ SCORES = ("multiplicity", "density", "mult_density", "darkness",
 DARK_HALF_SLICES = 3
 DARK_RADIUS_PX = 6
 BG_SIGMA_PX = 8.
+TIE_SEED = 0
 SHIFTS = eff.random_shifts(eff.DEFAULT_N_SHIFTS, eff.DEFAULT_SHIFT_MIN_PX,
                            eff.DEFAULT_SHIFT_MAX_PX, np.random.default_rng(0))
 
@@ -74,28 +77,54 @@ def neighbour_sums(xyz, weights, radius):
   return out
 
 
-def darkness_scores(event_dir, truth, cands):
-  """Mean background-subtracted darkness of the local minimum projection
-  around every candidate."""
-  path = Path(event_dir) / "image.json"
-  stack = np.array(st.read_stack(path)).astype(float)
+def local_darkness(stack, xy, slices):
+  """Mean background-subtracted darkness of the minimum projection over
+  +-DARK_HALF_SLICES slices around each point (x, y in px; slice index,
+  possibly fractional, rounded to the nearest slice)."""
   n = stack.shape[0]
-  z0, sdz = truth.get("stage_z0_mm", 0.), truth["stage_dz_mm"]
   r = DARK_RADIUS_PX
-  out = np.zeros(len(cands))
+  out = np.zeros(len(xy))
   # Minimum projections cached per central slice
   cache = {}
-  for i, c in enumerate(cands):
-    k = int(np.clip(round((c["z"][0] - z0) / sdz), 0, n - 1))
+  for i, ((x, y), k) in enumerate(zip(xy, slices)):
+    k = int(np.clip(round(k), 0, n - 1))
     if k not in cache:
       lo, hi = max(0, k - DARK_HALF_SLICES), min(n, k + DARK_HALF_SLICES + 1)
-      mp = stack[lo:hi].min(axis=0)
+      mp = stack[lo:hi].min(axis=0).astype(float)
       cache[k] = st.gaussian_blur(mp, BG_SIGMA_PX) - mp
     det = cache[k]
-    y, x = int(round(c["row"])), int(round(c["col"]))
-    win = det[max(0, y - r):y + r + 1, max(0, x - r):x + r + 1]
+    yi, xi = int(round(y)), int(round(x))
+    win = det[max(0, yi - r):yi + r + 1, max(0, xi - r):xi + r + 1]
     out[i] = win.mean() if win.size else 0.
   return out
+
+
+def rank_fraction(v):
+  """Rank fraction in [0, 1) of descending scores, ties averaged, so that
+  the result does not depend on the order of the points."""
+  order = np.argsort(-v, kind="stable")
+  sv = -v[order]
+  first = np.searchsorted(sv, sv, side="left")
+  last = np.searchsorted(sv, sv, side="right") - 1
+  out = np.empty(len(v))
+  out[order] = 0.5 * (first + last)
+  return out / len(v)
+
+
+def top_k(score, k, seed=TIE_SEED):
+  """Indices of the k highest scores; ties broken at random (fixed seed)
+  rather than by the input order, which may follow the position."""
+  key = np.random.default_rng(seed).random(len(score))
+  return np.lexsort((key, -np.asarray(score, dtype=float)))[:k]
+
+
+def darkness_scores(event_dir, truth, cands):
+  path = Path(event_dir) / "image.json"
+  # 8-bit stack; float only per minimum projection
+  stack = np.array(st.read_stack(path))
+  z0, sdz = truth.get("stage_z0_mm", 0.), truth["stage_dz_mm"]
+  xy = [(c["col"], c["row"]) for c in cands]
+  return local_darkness(stack, xy, [(c["z"][0] - z0) / sdz for c in cands])
 
 
 def main():
@@ -118,21 +147,22 @@ def main():
     dens = neighbour_sums(xyz, np.ones(len(cs)), args.radius)
     mdens = neighbour_sums(xyz, mult, args.radius)
     dark = darkness_scores(Path(args.dataset) / name, truth, cs)
-    rk = lambda v: np.argsort(np.argsort(-v)) / len(v)
-    comb = -(rk(mult) + rk(dark))
+    comb = -(rank_fraction(mult) + rank_fraction(dark))
     for s, val in (("multiplicity", mult), ("density", dens),
                    ("mult_density", mdens), ("darkness", dark),
                    ("combined", comb)):
       scored[s][name] = [dict(c, score=float(v)) for c, v in zip(cs, val)]
   print(f"{len(events)} events, radius {args.radius:g} um; cells: "
         "efficiency (chance) at <6 / <12 um, one-to-one")
-  print(f"{'score':<14} {'top K':>6} {'capture':>22} {'LL decay':>22}")
+  print(f"{'score':<14} {'top K':>6} {'capture':>30} {'LL decay':>30}")
   for s in SCORES:
     for k in [int(t) for t in args.top.split(",")]:
-      top = {n: sorted(v, key=lambda c: -c["score"])[:k]
+      top = {n: [v[i] for i in top_k([c["score"] for c in v], k)]
              for n, v in scored[s].items()}
       rows, _ = eff.evaluate(events, top, TOLS, SHIFTS, "developed")
       cells = []
+      # Event-level binomial uncertainty of the efficiency
+      err = lambda v: np.sqrt(np.mean(v) * (1. - np.mean(v)) / len(v))
       for vtype in ("capture", "HypernucleusDecay"):
         sel = [r for r in eff._select(rows, vtype, False)
                if vtype == "capture" or r["parent"].startswith("LL")]
@@ -140,9 +170,10 @@ def main():
                 if vtype == "capture" or r["parent"].startswith("LL")]
         cells.append(" / ".join(
           f"{np.mean([r[f'found_edge_{t:g}'] for r in sel]):.0%}"
+          f"+-{err([r[f'found_edge_{t:g}'] for r in sel]):.0%}"
           f"({np.mean([r[f'found_edge_{t:g}'] for r in ctrl]):.0%})"
           for t in TOLS))
-      print(f"{s:<14} {k:>6} {cells[0]:>22} {cells[1]:>22}", flush=True)
+      print(f"{s:<14} {k:>6} {cells[0]:>30} {cells[1]:>30}", flush=True)
 
 
 if __name__ == "__main__":

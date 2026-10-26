@@ -103,3 +103,38 @@ synthetic ratio (1.09) carries no information. The MIP grain density, and
 with it the final decision on the step, still needs an independent value
 (nominal sensitivity of the emulsion batch or a dedicated measurement,
 e.g. grain counting on flat MIP tracks at higher magnification).
+
+## Emulsion layer extent in deep stacks (`./run.py layerdepth`)
+
+A geometric measurement that needs neither the grain density nor the
+image model: the 200-slice stacks of the special events contain whole
+emulsion layers between the base and the surface. The fraction of dark
+background-subtracted pixels per slice drops to zero outside the
+emulsion; the half-height crossings bound each layer
+(`output/layerdepth.txt`):
+
+| stack | layer (slices) | stage (um) | physical step (um) | base gap (slices) |
+|---|---|---|---|---|
+| D005 | 54.2 | 163 | 4.37 | 7.0 |
+| D013 | 62.3 | 187 | 3.80 | 6.9 |
+| T004 | 59.0 | 177 | 4.01 | 6.8 |
+| T011_200 upper | 64.8 | 195 | 3.65 | 7.0 |
+| T011_200 lower | 59.5 | 178 | 3.98 | |
+
+With 450 um per side before development and Sh = 1.9 (237 um developed)
+the physical step is 4.0 +- 0.2 um per slice for the 3 um stage step
+(developed / stage 1.2-1.5, as the focal shift of a dry objective in a
+medium of index ~1.5); the 40 um base takes ~7 slices (21 um stage).
+The fullscan stacks of ~58 slices thus cover about one whole layer, as
+their profiles show (surface at slice ~5, emulsion to the end). A 1.5 um
+step would need ~160 slices per layer and is excluded; the beam-grain
+result above therefore means that the visible grain density along the
+perpendicular beam tracks is lower than the assumed 14.8 / 100 um, not a
+smaller step. Remaining assumption: nominal thickness 450 um and Sh 1.9
+(a layer 20 % thinner would give 3.2 um).
+
+Image model v15 (`output/image_model_v15_dz4.json`) is calibrated at
+dz 4.0, starting from v14 with the depth scales rescaled by 4 / 1.5
+(defocus slope, beam slopes, fog and track densities per volume divided,
+mottle depth lengths and the flat-track dip multiplied): start loss 5.6
+against 277 for v14 used unchanged at dz 4.0.

@@ -54,7 +54,7 @@ PARAMS = {
   "mottle_small_um": ("background", "mottle", 1.5, 15., True),
   "mottle_z_um": ("background", "mottle_z_um", 2., 200., True),
   "mottle_long_rel": ("background", "mottle_long", 0.0, 0.2, False),
-  "mottle_long_z_um": ("background", "mottle_long", 10., 200., True),
+  "mottle_long_z_um": ("background", "mottle_long", 10., 600., True),
   "min_transmission": ("background", "min_transmission", 0.0, 0.7, False),
   "noise_sigma": ("background", "noise_sigma", 0.3, 6., True),
   "fixed_noise_sigma": ("background", "fixed_noise_sigma", 0.0, 2., False),

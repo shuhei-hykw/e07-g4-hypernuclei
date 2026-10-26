@@ -1,0 +1,12 @@
+/home/hayakawa/work/specials_x20/D005/image.json: base gap 7.0 slices = 21 um stage -> geometric / stage 1.89
+/home/hayakawa/work/specials_x20/D005/image.json: layer 54.2 slices = 163 um stage -> physical step 4.37 um (developed / stage 1.46)
+/home/hayakawa/work/specials_x20/D013/image.json: base gap 6.9 slices = 21 um stage -> geometric / stage 1.93
+/home/hayakawa/work/specials_x20/D013/image.json: layer 62.3 slices = 187 um stage -> physical step 3.80 um (developed / stage 1.27)
+/home/hayakawa/work/specials_x20/T004/image.json: base gap 6.8 slices = 21 um stage -> geometric / stage 1.95
+/home/hayakawa/work/specials_x20/T004/image.json: layer 59.0 slices = 177 um stage -> physical step 4.01 um (developed / stage 1.34)
+/home/hayakawa/work/specials_x20/T004_3body/image.json: base gap 6.7 slices = 20 um stage -> geometric / stage 1.98
+/home/hayakawa/work/specials_x20/T004_3body/image.json: layer 59.1 slices = 177 um stage -> physical step 4.01 um (developed / stage 1.34)
+/home/hayakawa/work/specials_x20/T011_200/image.json: layer 64.8 slices = 195 um stage -> physical step 3.65 um (developed / stage 1.22)
+/home/hayakawa/work/specials_x20/T011_200/image.json: base gap 7.0 slices = 21 um stage -> geometric / stage 1.91
+/home/hayakawa/work/specials_x20/T011_200/image.json: layer 59.5 slices = 178 um stage -> physical step 3.98 um (developed / stage 1.33)
+physical step: mean 3.97 um, spread 0.22 um over 6 layers
