@@ -29,6 +29,7 @@ Commands:
   report       efficiency table over datasets and methods
   zbias        depth bias of candidate z_best vs truth
   evalreport   markdown summary of the full-scan evaluation
+  pipelinefig  Geant4 tracks -> grains -> microscope image (PNG)
   setup        channels + decays + build
 
 Typical:
@@ -69,6 +70,7 @@ COMMANDS: dict[str, str] = {
   "report":      "module.report",
   "zbias":       "module.zbias",
   "evalreport":  "module.evalreport",
+  "pipelinefig": "module.pipelinefig",
 }
 SEQUENCES: dict[str, list[str]] = {
   "setup": ["channels", "decays", "build"],

@@ -35,6 +35,7 @@ Everything is driven by `./run.py` (`./run.py --help`, `./run.py <command>
 | `flatfield` | `module/synth/flatfield.py` | `output/flatfield.npy` illumination profile |
 | `validate` | `module/synth/validate.py` | `output/realism.md` realism on held-out real views |
 | `efficiency` | `module/efficiency.py` | vertex-finding efficiency vs truth |
+| `pipelinefig` | `module/pipelinefig.py` | Geant4 tracks -> grains -> image figure |
 | `setup` | | `channels` + `decays` + `build` |
 
 Layout: `module/` Python package, `g4/` Geant4 application (C++),
@@ -268,6 +269,32 @@ tracks may end earlier by interactions or by leaving the module.
 ./run.py images data/sim/nagara.root --events 0-99 -j 20 --dz 1.5 \
   --name nagara_dz1.5
 ```
+
+From Geant4 tracks to a microscope image, for event 0 of
+`v20_embed_nagara_dz4` (12C -> LL6He + 4He + t; LL6He -> 5LHe + p + pi-;
+5LHe -> 4He + p + pi-) embedded into a real eval view:
+
+![pipeline](docs/pipeline_ev0000.png)
+
+(1), (2) Geant4 steps of the charged tracks around the capture point
+(circles: capture and the two weak-decay vertices; the 2.3 um 5LHe is
+barely visible). (3) Silver grains developed along the tracks, with the
+emulsion depth shrunk by 1.9. (4) Their transmission in the slice in
+focus at the capture point, including the blurred grains of the
+neighbouring depths. (5) The same slice of the real background view and
+(6) the synthetic slice = real x transmission. (7) The minimum projection
+of the whole synthetic stack, compared with (8) the real view alone:
+the event, clear in its own slice, is hard to pick out of the projection
+of the dark background. Made with
+
+```
+./run.py pipelinefig data/images/v20_embed_nagara_dz4/ev0000 \
+  --root data/sim/eval_nagara.root --model output/signal_model_v20.json \
+  -o docs/pipeline_ev0000.png
+```
+
+(needs a real background without `--bg-augment`; the transmission is
+recomputed from `grains.npz` with the given model).
 
 Each simulated event becomes one view of the E07 full scan
 (`module/synth/render.py` holds all model parameters):
