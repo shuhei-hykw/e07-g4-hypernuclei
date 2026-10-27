@@ -22,6 +22,14 @@ and 12 um and its chance level (shifted truths) are reported for each K,
 so that rankings can be compared at the candidate rate of method A
 (~770 per view), with the event-level binomial uncertainty. Ties at
 the top-K boundary are broken at random (fixed seed).
+
+Background control (--background-candidates): the same method run on
+the real views before embedding (truth.json background_view, same
+event names). Those candidates are scored and cut to the top K in the
+same way (darkness from the real view) and matched to the true
+positions; the efficiency there is the chance level with exactly the
+same background, given after the shifted-truth level. Only events
+present in both files are used.
 """
 
 import argparse
@@ -118,13 +126,26 @@ def top_k(score, k, seed=TIE_SEED):
   return np.lexsort((key, -np.asarray(score, dtype=float)))[:k]
 
 
-def darkness_scores(event_dir, truth, cands):
-  path = Path(event_dir) / "image.json"
+def darkness_scores(path, truth, cands):
   # 8-bit stack; float only per minimum projection
   stack = np.array(st.read_stack(path))
   z0, sdz = truth.get("stage_z0_mm", 0.), truth["stage_dz_mm"]
   xy = [(c["col"], c["row"]) for c in cands]
   return local_darkness(stack, xy, [(c["z"][0] - z0) / sdz for c in cands])
+
+
+def score_event(scored, name, truth, cs, image_json, radius):
+  """Every score of the candidates cs of one event, into scored."""
+  xyz = coords_um(truth, cs)
+  mult = np.array([c["score"] for c in cs])
+  dens = neighbour_sums(xyz, np.ones(len(cs)), radius)
+  mdens = neighbour_sums(xyz, mult, radius)
+  dark = darkness_scores(image_json, truth, cs)
+  comb = -(rank_fraction(mult) + rank_fraction(dark))
+  for s, val in (("multiplicity", mult), ("density", dens),
+                 ("mult_density", mdens), ("darkness", dark),
+                 ("combined", comb)):
+    scored[s][name] = [dict(c, score=float(v)) for c, v in zip(cs, val)]
 
 
 def main():
@@ -134,46 +155,53 @@ def main():
   parser.add_argument("candidates")
   parser.add_argument("--top", default=DEFAULT_TOP)
   parser.add_argument("--radius", type=float, default=DEFAULT_RADIUS_UM)
+  parser.add_argument("--background-candidates",
+                      help="same method on the real views before "
+                      "embedding (background control)")
   args = parser.parse_args()
 
   events = eff.load_truth(args.dataset)
   cands = eff.load_candidates(args.candidates)
-  events = {k: v for k, v in events.items() if k in cands}
+  bg = eff.load_candidates(args.background_candidates) \
+    if args.background_candidates else None
+  events = {k: v for k, v in events.items()
+            if k in cands and (bg is None or k in bg)}
   scored = {s: {} for s in SCORES}
+  bg_scored = {s: {} for s in SCORES}
   for name, truth in events.items():
-    cs = cands[name]
-    xyz = coords_um(truth, cs)
-    mult = np.array([c["score"] for c in cs])
-    dens = neighbour_sums(xyz, np.ones(len(cs)), args.radius)
-    mdens = neighbour_sums(xyz, mult, args.radius)
-    dark = darkness_scores(Path(args.dataset) / name, truth, cs)
-    comb = -(rank_fraction(mult) + rank_fraction(dark))
-    for s, val in (("multiplicity", mult), ("density", dens),
-                   ("mult_density", mdens), ("darkness", dark),
-                   ("combined", comb)):
-      scored[s][name] = [dict(c, score=float(v)) for c, v in zip(cs, val)]
+    score_event(scored, name, truth, cands[name],
+                Path(args.dataset) / name / "image.json", args.radius)
+    if bg is not None:
+      score_event(bg_scored, name, truth, bg[name],
+                  truth["background_view"], args.radius)
   print(f"{len(events)} events, radius {args.radius:g} um; cells: "
-        "efficiency (chance) at <6 / <12 um, one-to-one")
-  print(f"{'score':<14} {'top K':>6} {'capture':>30} {'LL decay':>30}")
+        "efficiency (chance" + ("; background only" if bg else "")
+        + ") at <6 / <12 um, one-to-one")
+  print(f"{'score':<14} {'top K':>6} {'capture':>36} {'LL decay':>36}")
   for s in SCORES:
     for k in [int(t) for t in args.top.split(",")]:
       top = {n: [v[i] for i in top_k([c["score"] for c in v], k)]
              for n, v in scored[s].items()}
-      rows, _ = eff.evaluate(events, top, TOLS, SHIFTS, "developed")
+      top_bg = {n: [v[i] for i in top_k([c["score"] for c in v], k)]
+                for n, v in bg_scored[s].items()} if bg else None
+      rows, _ = eff.evaluate(events, top, TOLS, SHIFTS, "developed",
+                             top_bg)
       cells = []
       # Event-level binomial uncertainty of the efficiency
       err = lambda v: np.sqrt(np.mean(v) * (1. - np.mean(v)) / len(v))
       for vtype in ("capture", "HypernucleusDecay"):
         sel = [r for r in eff._select(rows, vtype, False)
                if vtype == "capture" or r["parent"].startswith("LL")]
-        ctrl = [r for r in eff._select(rows, vtype, True)
-                if vtype == "capture" or r["parent"].startswith("LL")]
+        ctrls = [[r for r in eff._select(rows, vtype, c)
+                  if vtype == "capture" or r["parent"].startswith("LL")]
+                 for c in ((True, "background") if bg else (True,))]
+        frac = lambda rs, t: np.mean([r[f"found_edge_{t:g}"] for r in rs])
         cells.append(" / ".join(
-          f"{np.mean([r[f'found_edge_{t:g}'] for r in sel]):.0%}"
+          f"{frac(sel, t):.0%}"
           f"+-{err([r[f'found_edge_{t:g}'] for r in sel]):.0%}"
-          f"({np.mean([r[f'found_edge_{t:g}'] for r in ctrl]):.0%})"
+          f"({'; '.join(f'{frac(c, t):.0%}' for c in ctrls)})"
           for t in TOLS))
-      print(f"{s:<14} {k:>6} {cells[0]:>30} {cells[1]:>30}", flush=True)
+      print(f"{s:<14} {k:>6} {cells[0]:>36} {cells[1]:>36}", flush=True)
 
 
 if __name__ == "__main__":

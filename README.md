@@ -646,8 +646,10 @@ view the darkness ranking finds, with the v20 signal
 in 9 % / 26 % of the events and the LL decay vertex in 14 % / 26 %
 (chance 0-3 %), ahead of multiplicity and of the combined score; with
 the v19 signal (`output/rankstudy_v19_dz4.txt`) only 5 % / 10 % for
-the capture vertex and chance for the LL decay. A background-only
-control of B' (as for method A) is not yet run.
+the capture vertex and chance for the LL decay. `--background-candidates
+<csv>` adds the background-only control (B' on the real views before
+embedding, scored and cut the same way, darkness from the real view);
+it is being run in e07-fullscan.
 
 `./run.py report [--pattern 'v3_*']` evaluates every candidate file
 `<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis
