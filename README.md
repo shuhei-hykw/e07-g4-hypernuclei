@@ -551,6 +551,11 @@ point-cloud study (events of different sets do not overlap):
 (60-69, seed 9100, real eval-split backgrounds). Events 60-69 are also
 part of `v19_embed_nagara_dz4` (efficiency study), rendered there with
 other backgrounds and grains.
+`v19_synth_eval4_dz4` (seed 9200) and `v19_embed_eval4_dz4` (seed
+9300) use events 103, 105-107, 125, 135, 162, 202, 238, 283 (100-299 are
+in no image set), chosen for the most capture / decay charged tracks
+shorter than 15 um (4.7 per event vs 3.2 on average): a check of short
+heavily ionising tracks, not a random sample (`data/run_eval4.sh`).
 
 `./run.py validate data/images/<dataset>` compares a synthetic dataset
 with 20 real views not used in the calibration (`output/realism.md`).
