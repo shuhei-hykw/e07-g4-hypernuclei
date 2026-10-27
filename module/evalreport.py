@@ -400,7 +400,10 @@ def main():
           "the layer thickness and alpha-calibrated shrinkage of the E07 "
           "theses; output/dz_comparison.md). The 1.5 um step of the "
           "earlier version of this report is withdrawn; sections 1-5 "
-          "above were made at dz 1.5 / 3.0 and are kept for reference.",
+          "above were made at dz 1.5 / 3.0 and are kept for reference. "
+          "Adopted in e07-fullscan 0d368ce: the E07 graph-detector "
+          "runners use z_scale 3.8 / 0.29 (MATLAB_Z_SCALE 3.0 / 0.29 "
+          "unchanged; the B' runs here kept 3.0 for comparability).",
           "2. **Method A at dz 4.0** (section 0): with the v20 signal, "
           "whose lines match real lines of the same darkness, the capture "
           "and LL-decay vertices are found within 6-12 um clearly above "
