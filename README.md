@@ -542,6 +542,16 @@ DoG near lines) to +2.2 / +5.0 / +2.2 (`output/linecheck_v19.md`); the
 synthetic views still show more short lines than real ones. v16-v18
 (line / DoG targets, fog darkness, denser flat tracks) were not adopted.
 
+Model v19 sets of `data/sim/eval_nagara.root` for the e07-fullscan
+point-cloud study (events of different sets do not overlap):
+`v19_synth_tune_dz4` (events 0-9, seed 1000, tuning),
+`v19_synth_eval_dz4` (30-39, seed 6000, realism), `v19_synth_eval2_dz4`
+(40-49, seed 7000, held-out; spent), and the fresh held-out pair
+`v19_synth_eval3_dz4` (60-69, seed 9000) and `v19_embed_eval3_dz4`
+(60-69, seed 9100, real eval-split backgrounds). Events 60-69 are also
+part of `v19_embed_nagara_dz4` (efficiency study), rendered there with
+other backgrounds and grains.
+
 `./run.py validate data/images/<dataset>` compares a synthetic dataset
 with 20 real views not used in the calibration (`output/realism.md`).
 For v14 all 23 statistics are within 3 spreads of the real views
