@@ -640,11 +640,14 @@ cuts, inclusive depth) the capture vertex is found within 6 / 12 um in
 the LL decay vertex in 34 % / 48 % against 8 % / 36 %; the v19 signal
 gave no excess for the capture vertex, so the efficiency depends on
 the signal appearance.
-B' at dz 4.0 (`output/rankstudy_v19_dz4.txt`, `./run.py rankstudy`,
-v19 signal): at 770 points per view the darkness ranking finds the
-capture vertex within 6 / 12 um in 5 % / 10 % of the events (chance
-1 % / 4 %), ahead of multiplicity and of the combined score; the LL
-decay vertex stays at chance.
+B' at dz 4.0 (`./run.py rankstudy`, 100 events): at 770 points per
+view the darkness ranking finds, with the v20 signal
+(`output/rankstudy_v20_dz4.txt`), the capture vertex within 6 / 12 um
+in 9 % / 26 % of the events and the LL decay vertex in 14 % / 26 %
+(chance 0-3 %), ahead of multiplicity and of the combined score; with
+the v19 signal (`output/rankstudy_v19_dz4.txt`) only 5 % / 10 % for
+the capture vertex and chance for the LL decay. A background-only
+control of B' (as for method A) is not yet run.
 
 `./run.py report [--pattern 'v3_*']` evaluates every candidate file
 `<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis
