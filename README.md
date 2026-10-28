@@ -711,8 +711,14 @@ finds the capture vertex within 12 um (inclusive) in 71 % of the events
 against 51 % for A alone (real views 34 % / 33 %): G = +19 % [+12, +27];
 the LL event (both vertices) 54 % against 23 %, G = +31 %. The
 darkness-ranked B' was adopted as a complement to A; the frozen gate
-(lower 95 % bound of G for the capture vertex at 12 um > 0) is
-evaluated once on `v20_embed_evalU_dz4`.
+(lower 95 % bound of G for the capture vertex at 12 um > 0) was
+evaluated once on `v20_embed_evalU_dz4` (fullscan P0 at z 3.8,
+`output/unionstudy_evalU_v20_dz4.txt`) and passed: capture within 12 um
+inclusive 72 % for the union against 61 % for A (real views 35 % /
+33 %), G = +9 % [+3, +15], 11 A misses rescued and none lost; LL event
+52 % against 36 %, G = +13 % [+6, +21]. The gain is about half the
+development value (A alone found more here). The v19 and dz 3.6 sets
+give the sensitivity envelope.
 
 `./run.py report [--pattern 'v3_*']` evaluates every candidate file
 `<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis
