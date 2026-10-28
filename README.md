@@ -579,6 +579,11 @@ other backgrounds and grains.
 in no image set), chosen for the most capture / decay charged tracks
 shorter than 15 um (4.7 per event vs 3.2 on average): a check of short
 heavily ionising tracks, not a random sample (`data/run_eval4.sh`).
+v20-signal embed sets for point placement on streak-like signal (model
+`output/signal_model_v20.json`, eval-split real backgrounds, as
+`v20_embed_nagara_dz4`): `v20_embed_tune_dz4` (events 100-102, 104,
+108-113, seed 9400) and `v20_embed_evalA_dz4` (114-123, seed 9500), no
+overlap with eval4 (`data/run_v20_embed_sets.sh`).
 
 `./run.py validate data/images/<dataset>` compares a synthetic dataset
 with 20 real views not used in the calibration (`output/realism.md`).
