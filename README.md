@@ -648,8 +648,11 @@ in 9 % / 26 % of the events and the LL decay vertex in 14 % / 26 %
 the v19 signal (`output/rankstudy_v19_dz4.txt`) only 5 % / 10 % for
 the capture vertex and chance for the LL decay. `--background-candidates
 <csv>` adds the background-only control (B' on the real views before
-embedding, scored and cut the same way, darkness from the real view);
-it is being run in e07-fullscan.
+embedding, scored and cut the same way, darkness from the real view):
+for v20 it equals the shifted-truth level (darkness top 770: 0 % / 2 %
+capture, 0 % / 1 % LL decay; `output/rankstudy_v20_dz4_bgctrl.txt`), so
+the darkness-ranked B' gains about 24 points at 12 um over the real
+views alone, against about 18 for method A.
 
 `./run.py report [--pattern 'v3_*']` evaluates every candidate file
 `<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis
