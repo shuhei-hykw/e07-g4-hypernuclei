@@ -10,9 +10,13 @@ inspection workload a B' point is grouped with the nearest method-A
 candidate (3-D distance, then the first A in file order) within
 GROUP_XY_UM in XY and GROUP_Z_UM of its z_best (developed space), and
 the grouped candidates per view and the share of grouped B' points are
-reported. Every event of the dataset is kept: an event without rows in
-a candidate file counts as an empty view, and the number of such events
-per file is printed (missing runs must be excluded by the caller). The
+reported. Every event of the dataset is kept. Next to each candidate
+file <name>_methodA_production.csv / <name>_bprime.csv the fullscan run
+writes <name>_events.csv with one row per finished event: every event
+of the dataset must be listed there (otherwise the study stops), and a
+listed event without candidate rows is an empty view. Without that file
+(older runs) events without rows are counted as empty views and their
+number is printed. The
 same selection is made on the real views before
 embedding (--a-bg / --b-bg, darkness from the real view) and matched to
 the same true positions. Reported per vertex (capture, LL decay) and
@@ -26,6 +30,7 @@ with a 95 % interval from a paired bootstrap over events.
 """
 
 import argparse
+import csv
 from pathlib import Path
 
 import numpy as np
@@ -43,6 +48,28 @@ SETS = ("A", "B'", "union")
 NO_SHIFTS = []
 GROUP_XY_UM = 2.
 GROUP_Z_UM = 2.
+RUN_SUFFIXES = ("_methodA_production.csv", "_bprime.csv")
+
+
+def check_finished(path, events):
+  """Stop if the run of a candidate file has not finished every event;
+  False if the run left no per-event record."""
+  p = str(path)
+  for suffix in RUN_SUFFIXES:
+    if p.endswith(suffix):
+      ev_file = Path(p[:-len(suffix)] + "_events.csv")
+      break
+  else:
+    return False
+  if not ev_file.exists():
+    return False
+  with open(ev_file, newline="") as f:
+    done = {r["event"] for r in csv.DictReader(f)}
+  missing = sorted(set(events) - done)
+  if missing:
+    raise SystemExit(f"{ev_file}: {len(missing)} events not finished, "
+                     f"e.g. {missing[:5]}")
+  return True
 
 
 def stage_to_dev_um(truth, z_mm):
@@ -125,9 +152,12 @@ def main():
   events = eff.load_truth(args.dataset)
   inputs = [eff.load_candidates(p) for p in
             (args.a, args.b, args.a_bg, args.b_bg)]
-  for label, c in zip(("A", "B'", "A real", "B' real"), inputs):
-    n_missing = sum(k not in c for k in events)
-    print(f"events without {label} candidates: {n_missing}")
+  paths = (args.a, args.b, args.a_bg, args.b_bg)
+  for label, c, p in zip(("A", "B'", "A real", "B' real"), inputs, paths):
+    n_empty = sum(k not in c for k in events)
+    record = "run record checked" if check_finished(p, events) \
+      else "no run record"
+    print(f"{label}: {n_empty} events without candidates ({record})")
   a, b, a_bg, b_bg = [{k: c.get(k, []) for k in events} for c in inputs]
   b = bprime_top(events, b, args.top,
                  lambda n, t: Path(args.dataset) / n / "image.json")

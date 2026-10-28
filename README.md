@@ -659,6 +659,8 @@ specification, agreed with the e07-fullscan analysis:
   embedded and on the real views; per vertex and LL event the
   efficiencies, the rescued A misses and the gain G = (union - A)
   embedded - (union - A) real with a 95 % paired bootstrap interval.
+  The per-event run record `<name>_events.csv` of the fullscan run must
+  list every event (listed events without rows are empty views).
 - `./run.py specialsrank`: the same rankings on the B' branch points of
   the real special events (`output/specials_ranking.md`; at z 3.8 with
   the production placement `output/specials_ranking_dz38.md`, tolerances
