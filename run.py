@@ -21,6 +21,7 @@ Commands:
   validate     realism of synthetic stacks on held-out real views
   beamgrains   grains per slice on perpendicular beam tracks (step)
   rankstudy    ranking study for point candidates (B')
+  unionstudy   gain of method A + darkness-ranked B' over A alone
   specialsrank darkness ranking of B' points on real special events
   mipdensity   in-plane MIP grain density from flat tracks
   layerdepth   physical step from the emulsion layer extent
@@ -62,6 +63,7 @@ COMMANDS: dict[str, str] = {
   "validate":    "module.synth.validate",
   "beamgrains":  "module.beamgrains",
   "rankstudy":   "module.rankstudy",
+  "unionstudy":  "module.unionstudy",
   "mipdensity":  "module.mipdensity",
   "singletrack": "module.singletrack",
   "layerdepth":  "module.layerdepth",

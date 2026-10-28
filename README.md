@@ -35,6 +35,7 @@ Everything is driven by `./run.py` (`./run.py --help`, `./run.py <command>
 | `flatfield` | `module/synth/flatfield.py` | `output/flatfield.npy` illumination profile |
 | `validate` | `module/synth/validate.py` | `output/realism.md` realism on held-out real views |
 | `efficiency` | `module/efficiency.py` | vertex-finding efficiency vs truth |
+| `unionstudy` | `module/unionstudy.py` | gain of A + darkness-ranked B' over A |
 | `pipelinefig` | `module/pipelinefig.py` | Geant4 tracks -> grains -> image figure |
 | `setup` | | `channels` + `decays` + `build` |
 
@@ -466,7 +467,11 @@ random backgrounds from disjoint subsets of the 2025 views (1 in 5, by a
 hash of the view name, is kept for evaluation; the four hand-labelled
 views are never used), and `--bg-augment` rotates the background stack
 by a random multiple of 90 degrees and mirrors it at random (recorded
-as `background_transform` in truth.json).
+as `background_transform` in truth.json). `--bg-exclude d1,d2` drops
+the background views already used by the given image datasets and
+`--bg-unique` gives every event a different view (a permutation fixed
+by `--seed`, so two sets made with the same seed and exclusion list
+share their views event by event).
 
 ```
 ./run.py images data/sim/eval_nagara.root --events 0-4 -j 5 \
@@ -584,6 +589,12 @@ v20-signal embed sets for point placement on streak-like signal (model
 `v20_embed_nagara_dz4`): `v20_embed_tune_dz4` (events 100-102, 104,
 108-113, seed 9400) and `v20_embed_evalA_dz4` (114-123, seed 9500), no
 overlap with eval4 (`data/run_v20_embed_sets.sh`).
+Union evaluation sets (A + darkness-ranked B', `data/run_evalU.sh`):
+100 fresh events (124-227 without the eval4 events), one eval-split
+real view per event not used by any earlier image set, seed 9600, the
+same views in all three: `v20_embed_evalU_dz4` (primary),
+`v19_embed_evalU_dz4` (v19 signal, appearance sensitivity) and
+`v20_embed_evalU_dz3.6` (step bracket).
 
 `./run.py validate data/images/<dataset>` compares a synthetic dataset
 with 20 real views not used in the calibration (`output/realism.md`).
@@ -642,8 +653,16 @@ specification, agreed with the e07-fullscan analysis:
   candidates per view (`output/bprime_ranking.md`), with event-level
   binomial uncertainties; ties are averaged in the rank fractions and
   broken at random (fixed seed) at the top-K boundary.
+- `./run.py unionstudy <dataset> --a A.csv --b B.csv --a-bg A_bg.csv
+  --b-bg B_bg.csv [--top 770]`: union of all method-A candidates and the
+  top K B' points by darkness, ungrouped, against A alone on the
+  embedded and on the real views; per vertex and LL event the
+  efficiencies, the rescued A misses and the gain G = (union - A)
+  embedded - (union - A) real with a 95 % paired bootstrap interval.
 - `./run.py specialsrank`: the same rankings on the B' branch points of
-  the real special events (`output/specials_ranking.md`): integer rank,
+  the real special events (`output/specials_ranking.md`; at z 3.8 with
+  the production placement `output/specials_ranking_dz38.md`, tolerances
+  `--tols 200:30,20:30,200:24,20:24`): integer rank,
   number of matching points and XY / z offset of the best one, control
   distribution with positions common to all scores (no match = rank
   fraction 1), at a loose (200 px) and a strict (20 px) XY tolerance.
@@ -681,6 +700,17 @@ for v20 it equals the shifted-truth level (darkness top 770: 0 % / 2 %
 capture, 0 % / 1 % LL decay; `output/rankstudy_v20_dz4_bgctrl.txt`), so
 the darkness-ranked B' gains about 24 points at 12 um over the real
 views alone, against about 18 for method A.
+On the special events re-run at z 3.8 (production placement) the
+darkness still puts a branch point within 6 um XY of the clicked
+vertex into the top 770 in 7 / 9 events (combined 9 -> 7, multiplicity
+6). The union of A and the darkness top 770 (`./run.py unionstudy`,
+development set `v20_embed_nagara_dz4`, `output/unionstudy_v20_dz4.txt`)
+finds the capture vertex within 12 um (inclusive) in 71 % of the events
+against 51 % for A alone (real views 34 % / 33 %): G = +19 % [+12, +27];
+the LL event (both vertices) 54 % against 23 %, G = +31 %. The
+darkness-ranked B' was adopted as a complement to A; the frozen gate
+(lower 95 % bound of G for the capture vertex at 12 um > 0) is
+evaluated once on `v20_embed_evalU_dz4`.
 
 `./run.py report [--pattern 'v3_*']` evaluates every candidate file
 `<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis

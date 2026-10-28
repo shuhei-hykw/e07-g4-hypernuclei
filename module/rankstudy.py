@@ -12,7 +12,9 @@ Each candidate is scored by
                  radius
   darkness       image darkness around the candidate: background-
                  subtracted minimum projection over +-DARK_HALF_SLICES
-                 slices, averaged within DARK_RADIUS_PX (heavy, dark
+                 slices (Gaussian background of BG_SIGMA_PX minus the
+                 projection), mean over the square of +-DARK_RADIUS_PX
+                 clipped at the image edge (heavy, dark
                  tracks start at hypernuclear vertices, while most
                  background branch points are crossings of faint MIPs)
   combined       sum of the multiplicity and darkness rank fractions

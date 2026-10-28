@@ -311,7 +311,32 @@ def pick_background(args, rng):
   if args.background != "random":
     return Path(args.background)
   views = background_views(args.bg_split)
-  return views[int(rng.integers(len(views)))]
+  pick = views[int(rng.integers(len(views)))]
+  # A planned assignment (--bg-exclude / --bg-unique) overrides the draw
+  return getattr(args, "bg_assign", {}).get(
+    getattr(args, "event_index", None), pick)
+
+
+def plan_backgrounds(args, indices):
+  """Event index -> view for --bg-exclude / --bg-unique: views used by
+  the given datasets are removed; with --bg-unique every event gets a
+  different view (a permutation fixed by --seed)."""
+  views = background_views(args.bg_split)
+  used = set()
+  for d in filter(None, args.bg_exclude.split(",")):
+    for t in Path(d).glob("ev*/truth.json"):
+      view = json.loads(t.read_text()).get("background_view")
+      if view:
+        used.add(Path(view).name)
+  views = [v for v in views if v.name not in used]
+  rng = np.random.default_rng(args.seed)
+  if args.bg_unique:
+    if len(views) < len(indices):
+      raise SystemExit(f"only {len(views)} unused background views")
+    order = rng.permutation(len(views))
+  else:
+    order = rng.integers(len(views), size=len(indices))
+  return {i: views[k] for i, k in zip(indices, order)}
 
 
 def augment_stack(stack, rng):
@@ -451,6 +476,11 @@ def main():
   parser.add_argument("--bg-split", choices=("train", "eval", "all"),
                       default="all",
                       help="subset of real views for --background random")
+  parser.add_argument("--bg-exclude", default="",
+                      help="comma separated image datasets whose "
+                      "background views are not used again")
+  parser.add_argument("--bg-unique", action="store_true",
+                      help="a different background view for every event")
   parser.add_argument("--bg-augment", action="store_true",
                       help="random rot90 / mirror of the real background")
   parser.add_argument("--tracks-only", action="store_true",
@@ -484,6 +514,8 @@ def main():
 
   name = args.name or args.root_file.rsplit("/", 1)[-1].rsplit(".", 1)[0]
   indices = parse_events(args.events, len(EventFile(args.root_file)))
+  if args.background == "random" and (args.bg_exclude or args.bg_unique):
+    args.bg_assign = plan_backgrounds(args, indices)
   tasks = [(i, args, optics, emulsion, background, name) for i in indices]
   if args.jobs > 1:
     # spawn: ROOT state is not fork-safe
@@ -507,6 +539,7 @@ def _work(task):
   ev_file = _EVENT_FILE[args.root_file]
   start = time.time()
   out_dir = config.IMAGE_DIR / name / f"ev{i:04d}"
+  args.event_index = i
   render_event(ev_file.event(i), ev_file.layers, args, optics, emulsion,
                background, out_dir)
   print(f"event {i}: {out_dir} ({time.time() - start:.1f} s)",

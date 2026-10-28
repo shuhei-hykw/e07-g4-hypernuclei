@@ -322,12 +322,15 @@ def main():
   study = config.OUTPUT_DIR / "bprime_ranking.md"
   if study.exists():
     out += [study.read_text(), ""]
-  specials = config.OUTPUT_DIR / "specials_ranking.md"
+  specials = config.OUTPUT_DIR / "specials_ranking_dz38.md"
+  if not specials.exists():
+    specials = config.OUTPUT_DIR / "specials_ranking.md"
   if specials.exists():
     out += ["### Ranking of B' branch points on the real special events "
             "(`./run.py specialsrank`)", "",
-            "Match: 200 px in XY and 30 um in stage z of the clicked "
-            "vertex. On real events the multiplicity ranks well for most "
+            "Match: XY (px) and stage z (um) tolerances of the clicked "
+            "vertex as in the section headers (24 stage um = 30 um at "
+            "3.8 um per 3 um stage step). On real events the multiplicity ranks well for most "
             "events (unlike the simulation, where the simulated vertices "
             "rarely produce high-multiplicity branch points), the "
             "darkness for others, and their combination ranks the true "
@@ -428,9 +431,15 @@ def main():
           "(capture) and 0 % / 1 % (LL decay), so the excess of about 24 "
           "points at 12 um is real, against about 18 points for method A "
           "(51 % vs 33 %) at a far lower chance level. The darkness-ranked "
-          "B' is the stronger candidate for production; still missing is "
-          "a check that the ranking of the special events (combined best "
-          "there) holds at dz 3.8.",
+          "B' is the stronger candidate for production. On the real "
+          "special events re-run at z 3.8 (production placement, "
+          "output/specials_ranking_dz38.md) the darkness still puts a "
+          "branch point within 6 um of the clicked vertex into the top "
+          "770 in 7 / 9 events (unchanged), the combined score drops "
+          "from 9 / 9 to 7 / 9 and multiplicity stays at 6 / 9. The "
+          "user adopted the darkness-ranked B' as a complement to method "
+          "A (candidate union); the union rule is to be frozen before "
+          "it is evaluated on a fresh set.",
           "4. **Simulation**: matching 23 / 23 background statistics (image "
           "model v19) means the background is consistent, not that vertex "
           "or track shapes are; embedded efficiencies are values under the "
