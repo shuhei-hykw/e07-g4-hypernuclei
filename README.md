@@ -434,6 +434,29 @@ have fewer compact isolated grains (~26 % vs ~43 %) and more
 depth-extended ones, which points to more nearly perpendicular track
 structure (beam) than in the model rather than to the optics alone.
 
+Known gap (found by e07-fullscan on real views, 593f158): v19 renders
+tracks as chains of resolved grains, while real E07 tracks are
+continuous dark streaks, so a DoG point detector tuned on v19 sets
+fails on real data. The v20 grain settings (8x more, fainter grains)
+give streaks matching real lines of equal darkness (see the v20 signal
+below), but they cannot simply replace v19 for whole synthetic views:
+applied to the v19 background (`output/realism_v20full_dz4.md`) 14 of
+23 held-out statistics leave 3 spreads and there are 3x too many long
+lines (`output/linecheck_v20full.md`); recalibrating the background
+with the grain appearance, density, defocus and blur fixed (v23,
+`output/image_model_v23_dz4.json`, loss 25 vs 8 for v19) leaves 15 of
+23 beyond 3 spreads and too few long lines
+(`output/realism_v23_dz4.md`, `output/linecheck_v23.md`), with the fog
+weight at its bound and junk blobs 500x denser. In v19 the grain-chain
+tracks also supplied part of the dotted texture of real views, so the
+next renderer revision needs separate appearances for track grains and
+for fog / junk, and track-appearance targets (transverse profile, depth
+response, darkness variation and gaps along tracks, grain overlap)
+measured against real tracks of similar darkness, width and dip, not
+hit counts. Until then, whole synthetic views (`v19_*`) should not be
+used to tune detectors on point / grain appearance; embedded sets with
+the v20 signal are the closer stand-in.
+
 ### Embedding into real views (`--background`)
 
 Real views make the most faithful background (beam and cosmic tracks,
