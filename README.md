@@ -735,8 +735,13 @@ evaluated once on `v20_embed_evalU_dz4` (fullscan P0 at z 3.8,
 inclusive 72 % for the union against 61 % for A (real views 35 % /
 33 %), G = +9 % [+3, +15], 11 A misses rescued and none lost; LL event
 52 % against 36 %, G = +13 % [+6, +21]. The gain is about half the
-development value (A alone found more here). The v19 and dz 3.6 sets
-give the sensitivity envelope.
+development value (A alone found more here). The sensitivity sets
+keep the lower bound above zero: with the v19 signal appearance
+(`output/unionstudy_evalU_dz4_v19.txt`) union 48 % against A 40 %,
+G = +6 % [+2, +11] (LL event +8 % [+3, +14]); at a 3.6 um step
+(`output/unionstudy_evalU_dz3.6_v20.txt`) union 67 % against 55 %,
+G = +9 % [+2, +16] (LL event +21 % [+12, +31]). No A find is lost in
+either set.
 
 `./run.py report [--pattern 'v3_*']` evaluates every candidate file
 `<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis

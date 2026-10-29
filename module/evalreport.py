@@ -443,7 +443,8 @@ def main():
           "for the capture vertex at 12 um > 0) passed: union 72 % vs "
           "A 61 % (real views 35 % / 33 %), G = +9 % [+3, +15], none "
           "of A's finds lost; LL event G = +13 % [+6, +21] "
-          "(output/unionstudy_evalU_v20_dz4.txt).",
+          "(output/unionstudy_evalU_v20_dz4.txt). Sensitivity: v19 "
+          "signal G = +6 % [+2, +11], step 3.6 um G = +9 % [+2, +16].",
           "4. **Simulation**: matching 23 / 23 background statistics (image "
           "model v19) means the background is consistent, not that vertex "
           "or track shapes are; embedded efficiencies are values under the "
