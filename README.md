@@ -665,6 +665,12 @@ specification, agreed with the e07-fullscan analysis:
   embedded - (union - A) real with a 95 % paired bootstrap interval.
   The per-event run record `<name>_events.csv` of the fullscan run must
   list every event (listed events without rows are empty views).
+  Note: the darkness slice of a point is (z - z0) / stage_dz_mm with
+  float32 stage z, so B' points on exact half slices round by float
+  noise; the production merge of e07-fullscan (module/pipeline/union.py,
+  fdc74f4) snaps to 1e-6 and rounds half to even, and its top 770
+  differs from this one by 4-7 points per view (darkness values equal).
+  The frozen evalU scoring keeps the rounding used here.
 - `./run.py specialsrank`: the same rankings on the B' branch points of
   the real special events (`output/specials_ranking.md`; at z 3.8 with
   the production placement `output/specials_ranking_dz38.md`, tolerances
