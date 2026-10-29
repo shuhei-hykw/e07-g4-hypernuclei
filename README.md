@@ -448,7 +448,11 @@ with the grain appearance, density, defocus and blur fixed (v23,
 `output/image_model_v23_dz4.json`, loss 25 vs 8 for v19) leaves 15 of
 23 beyond 3 spreads and too few long lines
 (`output/realism_v23_dz4.md`, `output/linecheck_v23.md`), with the fog
-weight at its bound and junk blobs 500x denser. In v19 the grain-chain
+weight at its bound and junk blobs 500x denser. That v23 calibration
+rendered its patches with the background track grains 8x too dark (the
+division of the track grain weights by `track_grain_scale` was missing
+in `calibrate.render_patch`, fixed since), so v23 does not settle the
+question; v24 (`data/run_v24.sh`) redoes it with the fix. In v19 the grain-chain
 tracks also supplied part of the dotted texture of real views, so the
 next renderer revision needs separate appearances for track grains and
 for fog / junk, and track-appearance targets (transverse profile, depth

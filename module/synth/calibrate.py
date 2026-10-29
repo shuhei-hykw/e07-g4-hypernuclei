@@ -195,6 +195,9 @@ def render_patch(values, seed):
   allg = np.vstack(grains)
   weights = render.grain_weights(len(allg), emulsion, rng)
   weights[:n_fog] *= emulsion.fog_weight
+  # Track grains (not fog, not junk) are fainter by the density scale,
+  # as in the production rendering (cli.render_event)
+  weights[n_fog:len(allg) - len(blobs)] /= emulsion.track_grain_scale
   renderer = render.Renderer(optics)
   c = optics.n_slices // 2
   mottle = render.MottleVolume(optics, background, rng,
