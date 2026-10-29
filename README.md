@@ -452,7 +452,15 @@ weight at its bound and junk blobs 500x denser. That v23 calibration
 rendered its patches with the background track grains 8x too dark (the
 division of the track grain weights by `track_grain_scale` was missing
 in `calibrate.render_patch`, fixed since), so v23 does not settle the
-question; v24 (`data/run_v24.sh`) redoes it with the fix. In v19 the grain-chain
+question. v24 (`data/run_v24.sh`, `output/image_model_v24_dz4.json`)
+redoes it with the fix: calibration loss 10.8 (start 85, v23 start
+3366), 9 of 23 held-out statistics beyond 3 spreads
+(`output/realism_v24_dz4.md`: intensity skew -9.6, dark fraction +8.3,
+kurtosis -6.1, minimum-projection dark fraction -5.2) and 95 lines per
+Mpx against 62 real and 103 for v19 (`output/linecheck_v24.md`), with
+12x the beam tracks of v19 and the minimum transmission at its bound,
+i.e. faint streak tracks standing in for the dotted texture. The fix
+narrows the gap but does not close it. In v19 the grain-chain
 tracks also supplied part of the dotted texture of real views, so the
 next renderer revision needs separate appearances for track grains and
 for fog / junk, and track-appearance targets (transverse profile, depth
