@@ -436,6 +436,9 @@ rendered beam tracks (`output/beamlines_v24.md`). The real count is a
 finder-selected steep-line density, with unknown beam purity and
 recall; it is not a corrected beam flux and is not used in
 calibration.
+A targeted renderer revision built on this (beam tracks with the v20
+grain model, beam density fitted through the finder) is sketched in
+`output/renderer_note.md`; not started.
 
 `~/work/.venv/bin/python -m module.depthsplit <event dir | view.json>
 ...` runs the isolated-grain depth profile of e07-fullscan
