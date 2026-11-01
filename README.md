@@ -404,29 +404,38 @@ the persistence cut as often as the real dots, so no clean real beam
 sample is obtained this way.
 
 `~/work/.venv/bin/python -m module.beamlines <dataset> [--events 20]`
-finds the beam instead as straight 3-D lines: dark peaks of the even
+finds steep straight tracks as 3-D lines: dark peaks of the even
 slices inside the emulsion joined through anchor pairs (peaks within 2
 px in 60 % of the slices, drift below 8 px per slice); the odd slices
 alone measure darkness, gaps, radial width and depth correlation, also
 for the line shifted by 25 px. Real views (`output/beamlines_real.md`)
-hold ~2,370 such lines per 1024 px crop (~27,000 per mm2, 0.8-2.3 deg
-from the normal, darkness 46 against 11 shifted), and the scrambled
-control (selection slices from different views) gives none. The checks
-of `output/beamlines_checks.md` exclude a sensor pattern or stack
-artefact: unique slices, no stack shift, no coincidence of line
-positions across views, 100-250 lines left with the slice order
-permuted, and fading outside the emulsion. Perpendicular
-minimum-ionizing tracks rendered with signal model v20 into the same
-kind of views (`beam_eval_v20_dz4`) are found in 74 % of the cases and
-are, under the same selection, about 8 % fainter than the real lines
-(darkness 42 vs 45.5) and 1 px wider, with the same depth correlation:
-the v20 MIP appearance is consistent with the real beam. The
-whole-synthetic views are not: model v19 renders 620 beam tracks per
-mm2 too faint to be found (`output/beamlines_v19.md`), and v24 (7,700
-per mm2 after the fixed calibration) gives ~400 found beam lines per
-crop at 3.9 deg against ~2,370 real ones at 1.4 deg
-(`output/beamlines_v24.md`). The count is a detector-level density,
-not a corrected beam flux, so it is not fed into the calibration.
+hold ~2,370 such lines per 1024 px crop (~27,000 per mm2 of crop,
+0.8-2.3 deg from the normal, darkness 46 against 11 shifted), and the
+scrambled control (selection slices from different views) gives none.
+The checks of `output/beamlines_checks.md` argue against a fixed sensor
+pattern and simple stack artefacts: unique slices, no stack shift, no
+coincidence of line positions across views, 100-250 lines left with
+the slice order permuted, and fading outside the emulsion; the lines
+are consistent with the nearly perpendicular beam. Perpendicular
+minimum-ionizing tracks rendered with signal model v20 into real views
+(`beam_eval_v20_dz4`, `output/beamlines_beam_v20.md`): the finder
+recovers 109 distinct tracks of the 147 inside the crop. Among
+finder-selected tracks, v20 MIP tracks have median darkness 41.9
+against 45.5 for the real lines of the same views (8 % lower), median
+HWHM 3 against 2 px and a similar median depth autocorrelation (0.67
+vs 0.69). This suggests a broadly similar appearance within this
+selection; it does not establish agreement with an identified real
+beam sample: the real lines may include non-beam steep tracks, their
+finder recall is unknown, and all 147 v20 tracks measured at the truth
+line give a median of 38.9 (15 % below the real lines). In the
+whole-synthetic views no rendered beam track of model v19 (620 per
+mm2) is matched by this finder (`output/beamlines_v19.md`); v24 yields
+581 finder lines per crop before cuts against about 2,370 in real
+views, and after the edge cuts 397 lines per crop uniquely match
+rendered beam tracks (`output/beamlines_v24.md`). The real count is a
+finder-selected steep-line density, with unknown beam purity and
+recall; it is not a corrected beam flux and is not used in
+calibration.
 
 `~/work/.venv/bin/python -m module.depthsplit <event dir | view.json>
 ...` runs the isolated-grain depth profile of e07-fullscan

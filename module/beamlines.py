@@ -24,9 +24,10 @@ beam (rendered beam grains at the line) and other.
 
 Result (output/beamlines_real.md, output/beamlines_checks.md,
 output/beamlines_beam_v20.md): real views hold ~27,000 steep lines per
-mm2 (none in the scrambled control); perpendicular v20 minimum-ionizing
-tracks embedded into real views are about 8 % fainter and 1 px wider
-than the real lines under the same selection.
+mm2 of crop (none in the scrambled control; beam purity and recall
+unknown); among finder-selected tracks, perpendicular v20
+minimum-ionizing tracks embedded into real views are about 8 % fainter
+and 1 px wider than the real lines.
 """
 
 import argparse
@@ -216,6 +217,8 @@ def crossing_beams(g, lo, inside):
   r, c = g["row"][b] - lo, g["col"][b] - lo
   ink = (r >= 0) & (r < mc.CROP_PX) & (c >= 0) & (c < mc.CROP_PX)
   inst, sl = g["instance"][b][ink], g["focus_slice"][b][ink]
+  keep = np.isin(sl, inside)
+  inst, sl = inst[keep], sl[keep]
   return sum(len(np.unique(sl[inst == i])) >= len(inside) / 2.
              for i in np.unique(inst))
 
@@ -227,12 +230,18 @@ def event_rows(ev_dir, table, pixel_um, dz_um, synthetic):
   lines, k0 = find_lines(det, sel)
   tracks, srows, scols = signal_tracks(ev_dir, table, lo)
   g = np.load(ev_dir / "grains.npz") if synthetic else None
-  used = set()
+  used, used_signal = set(), set()
   out = []
   for line in lines:
+    # Edge cuts first, so that a rejected line reserves no truth track
+    m = measure(det, line, meas, k0)
+    c = measure(det, line, meas, k0, SHIFT_PX)
+    if m is None or c is None:
+      continue
     kind = None
-    for t, r, c, s in tracks:
-      if matched(line, k0, r, c, s):
+    for j, (t, r, c_, s) in enumerate(tracks):
+      if j not in used_signal and matched(line, k0, r, c_, s):
+        used_signal.add(j)
         kind = ("signal_mip" if float(t["dedx_mev_per_um"])
                 < MIP_DEDX_MAX else "signal_dense")
         break
@@ -243,10 +252,6 @@ def event_rows(ev_dir, table, pixel_um, dz_um, synthetic):
       if near_signal(line, k0, inside, srows, scols):
         continue
       kind = "real"
-    m = measure(det, line, meas, k0)
-    c = measure(det, line, meas, k0, SHIFT_PX)
-    if m is None or c is None:
-      continue
     out.append(dict(kind=kind, hits=line[4] / len(sel),
                     angle=drift_deg(line, pixel_um, dz_um), **m,
                     **{f"{key}_shift": v for key, v in c.items()}))

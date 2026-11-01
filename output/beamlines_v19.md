@@ -1,6 +1,6 @@
 # Steep lines in v19_synth_eval_dz4
 
-10 events; lines found per view (no cuts) 151.1 (1725 per mm2 of crop), scrambled-control lines per view 0.0 (4 views, same finder). Rendered beam tracks crossing half the layer in the crop: 47.1 per view, uniquely matched lines 0.0 per view (after the edge cuts). Table: lines inside the crop edges and away from signal grains; cells 16 / 50 / 84 %; measurement slices only; 'shifted' = the same line moved by 25 px.
+10 events; lines found per view (no cuts) 151.1 (1725 per mm2 of crop), scrambled-control lines per view 0.0 (4 views, same finder). Rendered beam tracks crossing half the layer in the crop: 43.7 per view, uniquely matched lines 0.0 per view (after the edge cuts). Table: lines inside the crop edges and away from signal grains; cells 16 / 50 / 84 %; measurement slices only; 'shifted' = the same line moved by 25 px.
 
 | sample | n | angle (deg) | hit fraction | darkness | shifted | gaps | shifted | contrast | HWHM (px) | lag-1 autocorr |
 |---|---|---|---|---|---|---|---|---|---|---|
