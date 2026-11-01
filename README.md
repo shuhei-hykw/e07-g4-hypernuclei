@@ -359,7 +359,10 @@ simulated with Geant4, and `data/sim/<name>_tracks.csv` lists per track
 the event, Geant4 track id (instance id of the labels), species, dip,
 azimuth, momentum, kinetic energy, range, mean dE/dx and whether it
 stops in the module. The image dataset gets a copy as
-`single_tracks.csv`.
+`single_tracks.csv`. With `--beam` every particle is a 1.8 GeV/c pi-
+starting at the bottom of the layer, tilted 0-3 deg from the normal
+(the nearly perpendicular minimum-ionizing beam; `data/run_beam.sh`
+renders `beam_eval_v20_dz4` with signal model v20).
 
 `~/work/.venv/bin/python -m module.trackprofile data/images/<single-track
 dataset>` compares, in the same embedded images, the centre lines of the
@@ -398,7 +401,32 @@ perpendicular). The result is inconclusive (`output/mipcheck_v20.md`):
 a MIP signal track is only ~3 gray levels darker than random positions
 (median 14 vs 11, window maximum per slice), and random positions pass
 the persistence cut as often as the real dots, so no clean real beam
-sample is obtained; the MIP appearance stays unverified.
+sample is obtained this way.
+
+`~/work/.venv/bin/python -m module.beamlines <dataset> [--events 20]`
+finds the beam instead as straight 3-D lines: dark peaks of the even
+slices inside the emulsion joined through anchor pairs (peaks within 2
+px in 60 % of the slices, drift below 8 px per slice); the odd slices
+alone measure darkness, gaps, radial width and depth correlation, also
+for the line shifted by 25 px. Real views (`output/beamlines_real.md`)
+hold ~2,370 such lines per 1024 px crop (~27,000 per mm2, 0.8-2.3 deg
+from the normal, darkness 46 against 11 shifted), and the scrambled
+control (selection slices from different views) gives none. The checks
+of `output/beamlines_checks.md` exclude a sensor pattern or stack
+artefact: unique slices, no stack shift, no coincidence of line
+positions across views, 100-250 lines left with the slice order
+permuted, and fading outside the emulsion. Perpendicular
+minimum-ionizing tracks rendered with signal model v20 into the same
+kind of views (`beam_eval_v20_dz4`) are found in 74 % of the cases and
+are, under the same selection, about 8 % fainter than the real lines
+(darkness 42 vs 45.5) and 1 px wider, with the same depth correlation:
+the v20 MIP appearance is consistent with the real beam. The
+whole-synthetic views are not: model v19 renders 620 beam tracks per
+mm2 too faint to be found (`output/beamlines_v19.md`), and v24 (7,700
+per mm2 after the fixed calibration) gives ~400 found beam lines per
+crop at 3.9 deg against ~2,370 real ones at 1.4 deg
+(`output/beamlines_v24.md`). The count is a detector-level density,
+not a corrected beam flux, so it is not fed into the calibration.
 
 `~/work/.venv/bin/python -m module.depthsplit <event dir | view.json>
 ...` runs the isolated-grain depth profile of e07-fullscan

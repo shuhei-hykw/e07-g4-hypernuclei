@@ -42,6 +42,13 @@ MAX_TRIES = 1000
 # Dip mixture: flat (|dip| < FLAT_DEG), steep (|dip| > STEEP_DEG), any
 FLAT_DEG, STEEP_DEG = 10., 60.
 MIX = (1 / 3, 1 / 3, 1 / 3)
+# --beam: minimum-ionizing beam particles crossing the whole layer nearly
+# perpendicularly (E07 K- / pi- beam, ~1.8 GeV/c), tilt from the normal
+# uniform up to BEAM_MAX_TILT_DEG (steep real lines: 0.8-2.3 deg)
+BEAM_SPECIES = "pi-"
+BEAM_P_MEV = 1800.
+BEAM_MAX_TILT_DEG = 3.
+BEAM_START_UM = 0.5      # above the bottom of the layer
 GEOMETRY_FILE = config.SIM_DIR / "eval_nagara.root"  # any emulsim output
 
 
@@ -75,7 +82,7 @@ def species_mass(name):
   raise KeyError(name)
 
 
-def make_gun(n_events, n_tracks, rng):
+def make_gun(n_events, n_tracks, rng, beam=False):
   layers = thick_layers()
   rows, meta = [], []
   for ev in range(n_events):
@@ -90,12 +97,19 @@ def make_gun(n_events, n_tracks, rng):
         if all(np.hypot(*(xy - s[:2])) >= MIN_SEPARATION_UM
                for s in starts):
           break
-      z = rng.uniform(l.zmin + LAYER_MARGIN_UM, l.zmax - LAYER_MARGIN_UM)
+      if beam:
+        z = l.zmin + BEAM_START_UM
+        name, p = BEAM_SPECIES, BEAM_P_MEV
+        dip = np.radians(90. - rng.uniform(0., BEAM_MAX_TILT_DEG))
+      else:
+        z = rng.uniform(l.zmin + LAYER_MARGIN_UM,
+                        l.zmax - LAYER_MARGIN_UM)
+        name = rng.choice(list(SPECIES))
+        p = np.exp(rng.uniform(*np.log(SPECIES[name])))
+        dip = np.radians(sample_dip(rng))
       pos = np.array([xy[0], xy[1], z])
       starts.append(pos)
-      name = rng.choice(list(SPECIES))
-      p = np.exp(rng.uniform(*np.log(SPECIES[name])))
-      dip, phi = np.radians(sample_dip(rng)), rng.uniform(0., 2. * np.pi)
+      phi = rng.uniform(0., 2. * np.pi)
       d = np.array([np.cos(dip) * np.cos(phi), np.cos(dip) * np.sin(phi),
                     np.sin(dip)])
       rows.append([ev, name, *pos, *(p * d)])
@@ -141,9 +155,11 @@ def main():
   parser.add_argument("--events", type=int, default=DEFAULT_EVENTS)
   parser.add_argument("--tracks", type=int, default=DEFAULT_TRACKS)
   parser.add_argument("--seed", type=int, default=1)
+  parser.add_argument("--beam", action="store_true",
+                      help="perpendicular minimum-ionizing beam tracks")
   args = parser.parse_args()
   rng = np.random.default_rng(args.seed)
-  rows, meta = make_gun(args.events, args.tracks, rng)
+  rows, meta = make_gun(args.events, args.tracks, rng, args.beam)
   gun = config.OUTPUT_DIR / "gun" / f"{args.name}.csv"
   gun.parent.mkdir(parents=True, exist_ok=True)
   with open(gun, "w", newline="") as f:
