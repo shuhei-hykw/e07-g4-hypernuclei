@@ -782,6 +782,15 @@ G = +6 % [+2, +11] (LL event +8 % [+3, +14]); at a 3.6 um step
 (`output/unionstudy_evalU_dz3.6_v20.txt`) union 67 % against 55 %,
 G = +9 % [+2, +16] (LL event +21 % [+12, +31]). No A find is lost in
 either set.
+The production union over all 2,025 full-scan views was audited
+read-only (`output/fullscan_union_audit.md`): neighbouring views overlap
+by 52 % per axis at a fixed step of 987.5 px (the stage fields stepping
+0.5 per view are not millimetres at 0.289 um/px), method A candidates
+reproduce weakly between two images of the same place (15 % within
+10 px against 5 % by chance; B' 43 % against 3 %), so plate-level
+efficiency needs a cross-view merge at matched global candidate
+density; and 12 % of the B' points pile up within 10 px of the image
+border, a candidate border margin to tune on a dev set.
 
 `./run.py report [--pattern 'v3_*']` evaluates every candidate file
 `<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis
