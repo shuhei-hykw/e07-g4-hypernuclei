@@ -1,0 +1,19 @@
+A: 0 events without candidates (no run record)
+B': 0 events without candidates (no run record)
+A real: 0 events without candidates (no run record)
+B' real: 0 events without candidates (no run record)
+100 events; candidates per view: A 770, B' top 770 (770), union 1540, grouped 1537 (0% of the B' points join an A candidate)
+cells: embedded (real views alone); rescued / lost = union found and A not / the reverse (embedded); G = gain of the union over A minus the same on the real views, 95 % bootstrap interval
+vertex    depth      tol           A          B'       union resc/lost  G
+capture   inclusive    6   27%(17%)    9%( 0%)   36%(17%)       9/0  +9% [+4%, +15%]
+capture   inclusive   12   51%(33%)   28%( 2%)   71%(34%)      20/0  +19% [+12%, +27%]
+capture   edge         6    6%( 2%)    9%( 0%)   15%( 2%)       9/0  +9% [+4%, +15%]
+capture   edge        12   14%( 6%)   28%( 2%)   40%( 8%)      26/0  +24% [+15%, +33%]
+LL decay  inclusive    6   34%( 8%)   15%( 0%)   44%( 8%)      10/0  +10% [+5%, +16%]
+LL decay  inclusive   12   48%(36%)   27%( 1%)   67%(36%)      19/0  +19% [+12%, +28%]
+LL decay  edge         6    4%( 1%)   15%( 0%)   19%( 1%)      15/0  +15% [+8%, +22%]
+LL decay  edge        12   11%( 5%)   27%( 1%)   40%( 5%)      28/0  +29% [+19%, +38%]
+LL event  inclusive    6    3%( 0%)    3%( 0%)   15%( 0%)      12/0  +12% [+6%, +19%]
+LL event  inclusive   12   23%(10%)   14%( 0%)   54%(10%)      30/0  +31% [+21%, +40%]
+LL event  edge         6    0%( 0%)    3%( 0%)    4%( 0%)       4/0  +4% [+1%, +8%]
+LL event  edge        12    4%( 0%)   14%( 0%)   26%( 0%)      21/0  +21% [+13%, +31%]

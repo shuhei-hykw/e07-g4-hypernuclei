@@ -92,10 +92,18 @@ def n_grouped(truth, a, b):
   return int(((dxy <= GROUP_XY_UM) & (dz <= GROUP_Z_UM)).any(axis=1).sum())
 
 
-def bprime_top(events, cands, k, image_of):
+def inside_border(cs, size, border):
+  """Points at least border px from every image edge."""
+  return [c for c in cs if border <= c["col"] < size - border
+          and border <= c["row"] < size - border]
+
+
+def bprime_top(events, cands, k, image_of, border=0):
   out = {}
   for name, truth in events.items():
     cs = cands.get(name, [])
+    if border:
+      cs = inside_border(cs, truth["size_px"], border)
     if not cs:
       out[name] = []
       continue
@@ -147,6 +155,9 @@ def main():
                       help="B' on the real views before embedding")
   parser.add_argument("--top", type=int, default=DEFAULT_TOP)
   parser.add_argument("--boot", type=int, default=DEFAULT_BOOT)
+  parser.add_argument("--border-px", type=int, default=0,
+                      help="drop B' points this close to the image edge "
+                      "before the darkness ranking")
   args = parser.parse_args()
 
   events = eff.load_truth(args.dataset)
@@ -160,9 +171,10 @@ def main():
     print(f"{label}: {n_empty} events without candidates ({record})")
   a, b, a_bg, b_bg = [{k: c.get(k, []) for k in events} for c in inputs]
   b = bprime_top(events, b, args.top,
-                 lambda n, t: Path(args.dataset) / n / "image.json")
+                 lambda n, t: Path(args.dataset) / n / "image.json",
+                 args.border_px)
   b_bg = bprime_top(events, b_bg, args.top,
-                    lambda n, t: t["background_view"])
+                    lambda n, t: t["background_view"], args.border_px)
   res = {}
   for label, ca, cb in (("embedded", a, b), ("real", a_bg, b_bg)):
     union = {n: ca[n] + cb[n] for n in events}

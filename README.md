@@ -711,6 +711,9 @@ specification, agreed with the e07-fullscan analysis:
   embedded and on the real views; per vertex and LL event the
   efficiencies, the rescued A misses and the gain G = (union - A)
   embedded - (union - A) real with a 95 % paired bootstrap interval.
+  `--border-px N` drops B' points within N px of the image edge before
+  the darkness ranking (dev set: +1-4 of 100 events in a few cells, no
+  cell worse; candidate only, `output/fullscan_union_audit.md`).
   The per-event run record `<name>_events.csv` of the fullscan run must
   list every event (listed events without rows are empty views).
   Note: the darkness slice of a point is (z - z0) / stage_dz_mm with

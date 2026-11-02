@@ -93,3 +93,13 @@ MIP grain density. The image model itself was calibrated on pixel
 statistics. Relative results (union against A on the same images) keep
 their sign, but absolute efficiencies and tolerances would need a
 re-render at the correct scale.
+
+## 6. Border margin on the dev set (candidate only)
+
+`./run.py unionstudy ... --border-px 10 | 25` on v20_embed_nagara_dz4
+(`output/unionstudy_v20_dz4_border10.txt`, `_border25.txt`; evalU
+untouched): B' alone at 12 um 26 -> 28 % (capture), LL event edge 22 ->
+26 %, LL decay edge 38 -> 40 %; union capture inclusive 12 um unchanged
+at 71 %, G unchanged at +19 % [+12, +27]; no cell worse, 10 and 25 px
+identical. A consistent but small gain (1-4 of 100 events, within the
+statistical uncertainty); adopting it would need a fresh unused set.
