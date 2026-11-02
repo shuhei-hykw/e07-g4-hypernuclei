@@ -791,6 +791,11 @@ reproduce weakly between two images of the same place (15 % within
 efficiency needs a cross-view merge at matched global candidate
 density; and 12 % of the B' points pile up within 10 px of the image
 border, a candidate border margin to tune on a dev set.
+The audit also leaves the full-scan pixel scale open: the full-scan
+station records none, and 0.289 um/px (the specials' station) would make
+the stage step 285 um instead of the recorded 0.5; image rulers do not
+settle it (`output/fullscan_union_audit.md`, section 5). Every um-based
+number here for full-scan views assumes 0.289 um/px.
 
 `./run.py report [--pattern 'v3_*']` evaluates every candidate file
 `<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis
