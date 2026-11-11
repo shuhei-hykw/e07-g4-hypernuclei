@@ -787,18 +787,21 @@ G = +9 % [+2, +16] (LL event +21 % [+12, +31]). No A find is lost in
 either set.
 The production union over all 2,025 full-scan views was audited
 read-only (`output/fullscan_union_audit.md`): neighbouring views overlap
-by 52 % per axis at a fixed step of 987.5 px (the stage fields stepping
-0.5 per view are not millimetres at 0.289 um/px), method A candidates
+by 52 % per axis at a fixed step of 987.5 px (0.5 mm of encoder travel), method A candidates
 reproduce weakly between two images of the same place (15 % within
 10 px against 5 % by chance; B' 43 % against 3 %), so plate-level
 efficiency needs a cross-view merge at matched global candidate
 density; and 12 % of the B' points pile up within 10 px of the image
 border, a candidate border margin to tune on a dev set.
-The audit also leaves the full-scan pixel scale open: the full-scan
-station records none, and 0.289 um/px (the specials' station) would make
-the stage step 285 um instead of the recorded 0.5; image rulers do not
-settle it (`output/fullscan_union_audit.md`, section 5). Every um-based
-number here for full-scan views assumes 0.289 um/px.
+The full-scan pixel scale, from the mover encoder (independent of the
+camera): the encoder readbacks of neighbouring views (`all.txt`, JSON
+`x` / `y`) and the phase-correlation image shift agree pair by pair,
+including off-nominal steps (0.488 -> 963.9 px, 0.494 -> 973 px, 0.509
+-> 1002.0 px, 0.500 -> 984-987 px), giving 0.507 um/px for an encoder
+in mm (z: 3 um slices, 147 um surface distance), 1.75 times the RIKEN
+0.289 um/px (`data/union_audit/encshift.py`, `output/
+fullscan_union_audit.md`, section 5). Every um-based number here for
+full-scan views still assumes 0.289 um/px.
 
 `./run.py report [--pattern 'v3_*']` evaluates every candidate file
 `<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis

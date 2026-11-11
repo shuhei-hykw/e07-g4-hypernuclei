@@ -94,6 +94,28 @@ statistics. Relative results (union against A on the same images) keep
 their sign, but absolute efficiencies and tolerances would need a
 re-render at the correct scale.
 
+### 5a. Encoder check (after the user's note)
+
+The stage coordinates are the mover encoder readbacks, independent of
+the camera. Pairs with off-nominal encoder steps shift the image by the
+matching amount (middle slice, sub-pixel phase correlation,
+`data/union_audit/encshift.py`):
+
+| pair | encoder step | image shift (px) | um / px (encoder in mm) |
+|---|---|---|---|
+| VX0 -> VX1, VY0 | 0.488 | 963.91 | 0.5063 |
+| VX1 -> VX2, VY0 | 0.509 | 1001.96 | 0.5080 |
+| VX5 -> VX6, VY5 | 0.500 | 984.30 | 0.5080 |
+| VX20 -> VX21, VY20 | 0.501 | 984.99 | 0.5086 |
+| VY0 -> VY1 (VX 3, 10, 17) | 0.494 | 972.9-973.7 | 0.5073-0.5077 |
+| VY10 -> VY11 (VX 3, 10, 17) | 0.501-0.502 | 986.7-987.1 | 0.5075-0.5088 |
+
+The image follows the encoder (a 21 um spread of encoder steps moves
+the image by 38 px), so the camera sees the encoder motion: 0.507 um/px
+for an encoder in millimetres (z also reads naturally in mm: 3 um
+slices, 147 um surface distance, `StageVelocity` 40). The view is then
+1.04 mm wide and 0.289 um/px (RIKEN value) is 1.75 times too small.
+
 ## 6. Border margin on the dev set (candidate only)
 
 `./run.py unionstudy ... --border-px 10 | 25` on v20_embed_nagara_dz4
