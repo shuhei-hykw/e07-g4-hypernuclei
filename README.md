@@ -811,6 +811,16 @@ G = +6 % [+2, +11] (LL event +8 % [+3, +14]); at a 3.6 um step
 (`output/unionstudy_evalU_dz3.6_v20.txt`) union 67 % against 55 %,
 G = +9 % [+2, +16] (LL event +21 % [+12, +31]). No A find is lost in
 either set.
+At the full-scan pixel (v25 = v20 signal at 0.507 um/px, same events,
+seeds and background views, production candidates, development set
+`v25_embed_nagara_dz4`, `output/unionstudy_v25_dz4.txt`) the union
+again finds the capture vertex within 12 um (inclusive) in 71 % of the
+events, but the split changes: A alone 40 % (real views 16 %; the 12 um
+tolerance is now 24 px instead of 42, so the chance level halves) and
+the darkness top 770 alone 54 % (v20: 26 %), the compact signal being
+darker per pixel; G = +31 % [+23, +41], 31 A misses rescued, none lost;
+LL event 59 % against 9 %, G = +50 % [+40, +59]. evalU (v25) is not
+scored yet.
 The production union over all 2,025 full-scan views was audited
 read-only (`output/fullscan_union_audit.md`): neighbouring views overlap
 by 52 % per axis at a fixed step of 987.5 px (0.5 mm of encoder travel), method A candidates
