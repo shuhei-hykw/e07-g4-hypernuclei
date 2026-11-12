@@ -539,6 +539,32 @@ follow the real view, `truth.json` records `background_view`, and the
 labels cover the signal only. Views used for CNN labels (V00000011,
 V00000991, V00001012, V00001339) are never picked.
 
+Pixel scale of embedded signals: the full-scan views are 0.507 um/px
+(`render.FULLSCAN_PIXEL_UM`, from the mover encoder, see the full-scan
+audit), while the image models up to v24 were fitted to the pixel
+statistics of the same views assuming 0.289 um/px. With `--background`
+the signal is drawn at 0.507 um/px by default (`--pixel-um` to change;
+the model scale is the model JSON's `pixel_um`, default 0.289): the
+grain image keeps its calibrated size in pixels and its growth per um
+of defocus (`grain_sigma_um` and `defocus_slope` scale by the pixel
+ratio), while grains per um of track and the Geant4 geometry stay
+physical, so the event is 1/1.754 smaller in pixels than in the v20
+sets. Synthetic (non-embedded) views are refused at a scale other than
+the model's (fog, mottle and track densities would need a
+recalibration). Embedded `image.json` is the real view JSON (stage x /
+y / z per slice, `DateTime`, `Stage`, ...) with the slices renamed to
+the PNGs (`SourcePath` keeps the original), `AffineP2S` set to the
+pixel scale in mm (`SourceAffineP2S` keeps the original) and a
+`Synthetic` block: commit, creation time, Geant4 file and event, seed,
+model and its pixel scale, pixel scale and its source, grain sigma,
+defocus slope, track grain scale, physical dz, Sh, background view and
+transform, view centre. `--bg-same-as <dataset>` reuses the background
+view of every event of an existing dataset (paired re-rendering).
+`data/run_v25.sh` re-renders the v20 embed sets this way as v25
+(`v25_embed_{tune,evalA,nagara,evalU}_dz4`, same events, seeds and
+views); all efficiencies of the v20 / v19 embed sets were made with the
+signal 1.75 times too large in xy.
+
 ### Calibration against real views
 
 `./run.py compare --real <view.json> --synth <event dir> -o cmp.png`
@@ -801,7 +827,7 @@ including off-nominal steps (0.488 -> 963.9 px, 0.494 -> 973 px, 0.509
 in mm (z: 3 um slices, 147 um surface distance), 1.75 times the RIKEN
 0.289 um/px (`data/union_audit/encshift.py`, `output/
 fullscan_union_audit.md`, section 5). Every um-based number here for
-full-scan views still assumes 0.289 um/px.
+full-scan views before the v25 sets assumes 0.289 um/px.
 
 `./run.py report [--pattern 'v3_*']` evaluates every candidate file
 `<dataset>_<method>_<cuts>.csv` of the e07-fullscan analysis

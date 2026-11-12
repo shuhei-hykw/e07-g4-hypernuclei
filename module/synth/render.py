@@ -30,9 +30,14 @@ LABEL_OF_ORIGIN = {"capture": LABEL_CAPTURE, "decay": LABEL_DECAY,
                    "other": LABEL_OTHER}
 
 
+# Full-scan pixel (NLAB-PC13): mover encoder step / image shift
+FULLSCAN_PIXEL_UM = 0.507
+
+
 @dataclass(frozen=True)
 class Optics:
-  pixel_um: float = 0.289      # E07 full scan, 20x objective
+  pixel_um: float = 0.289      # scale assumed by the image models
+                               # (real full scan: FULLSCAN_PIXEL_UM)
   size_px: int = 2048
   n_slices: int = 60
   dz_um: float = 4.0           # focal step in the developed emulsion

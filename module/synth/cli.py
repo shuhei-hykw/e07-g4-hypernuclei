@@ -40,12 +40,18 @@ are used when present (--model none for the built-in defaults).
 view instead: only the Geant4 tracks are rendered and their transmission
 multiplies the real slices (fog, beam tracks, junk and noise are real);
 the stack size and stage z follow the real view and the labels cover the
-signal only.
+signal only. Embedded signals are drawn at the full-scan pixel (0.507
+um/px, --pixel-um), with the grain image kept at its calibrated size in
+pixels; image.json is then the real view JSON (stage x / y / z per
+slice) with AffineP2S set to the pixel scale and a "Synthetic" block
+recording how the view was made. --bg-same-as reuses the background
+views of an existing dataset event by event.
 """
 
 import argparse
 import json
 import multiprocessing
+import subprocess
 import sys
 import time
 import zlib
@@ -258,6 +264,35 @@ def grain_table(grains, weights, classes, instances, n_fog, optics):
     focus_slice=np.rint(grains[:, 2]).astype(np.int16))
 
 
+def git_commit():
+  """Commit of this repository (with a mark when modified), or None."""
+  root = Path(__file__).resolve().parents[2]
+  try:
+    head = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"],
+                          capture_output=True, text=True, check=True)
+    dirty = subprocess.run(["git", "-C", str(root), "status",
+                            "--porcelain", "--untracked-files=no"],
+                           capture_output=True, text=True, check=True)
+  except (OSError, subprocess.CalledProcessError):
+    return None
+  return head.stdout.strip() + ("+modified" if dirty.stdout.strip() else "")
+
+
+def embedded_json(bg_json, n_slices, pixel_um, info, out_dir):
+  """The real view JSON with the slices renamed to the written PNGs, the
+  pixel scale in AffineP2S (the original is kept) and the provenance."""
+  meta = json.loads(Path(bg_json).read_text())
+  pix_mm = pixel_um / UM_PER_MM
+  meta["SourceAffineP2S"] = meta.get("AffineP2S")
+  meta["AffineP2S"] = [pix_mm, 0., 0., pix_mm, 0., 0.]
+  images = []
+  for k, im in enumerate(meta["Images"][:n_slices]):
+    images.append(dict(im, Path=f"{k:04d}.png", SourcePath=im.get("Path")))
+  meta["Images"] = images
+  meta["Synthetic"] = info
+  (out_dir / "image.json").write_text(json.dumps(meta, indent=1))
+
+
 def view_json(view, stage_z_mm, out_dir):
   o = view.optics
   pix_mm = o.pixel_um / UM_PER_MM
@@ -312,7 +347,8 @@ def pick_background(args, rng):
     return Path(args.background)
   views = background_views(args.bg_split)
   pick = views[int(rng.integers(len(views)))]
-  # A planned assignment (--bg-exclude / --bg-unique) overrides the draw
+  # A planned assignment (--bg-exclude / --bg-unique / --bg-same-as)
+  # overrides the draw
   return getattr(args, "bg_assign", {}).get(
     getattr(args, "event_index", None), pick)
 
@@ -337,6 +373,19 @@ def plan_backgrounds(args, indices):
   else:
     order = rng.integers(len(views), size=len(indices))
   return {i: views[k] for i, k in zip(indices, order)}
+
+
+def same_backgrounds(dataset, indices):
+  """Event index -> background view of an existing dataset."""
+  out = {}
+  for i in indices:
+    t = Path(dataset) / f"ev{i:04d}" / "truth.json"
+    view = json.loads(t.read_text()).get("background_view") \
+      if t.exists() else None
+    if not view:
+      raise SystemExit(f"{t}: no background view")
+    out[i] = Path(view)
+  return out
 
 
 def augment_stack(stack, rng):
@@ -423,7 +472,27 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
   if cls_stack:
     np.savez_compressed(out_dir / "labels.npz", labels=np.array(cls_stack),
                         instance=np.array(ins_stack))
-  view_json(view, stage_z, out_dir)
+  if bg_json:
+    embedded_json(bg_json, optics.n_slices, optics.pixel_um, dict(
+      generator="e07-g4-hypernuclei module.synth.cli (embedded signal)",
+      commit=git_commit(),
+      created=time.strftime("%Y%m%dT%H%M%S"),
+      root_file=str(args.root_file), event=ev.index,
+      seed=args.seed + ev.index, model=args.model,
+      model_pixel_um=args.model_pixel_um, pixel_um=optics.pixel_um,
+      pixel_um_source="mover encoder step / image shift of neighbouring "
+      "full-scan views (output/fullscan_union_audit.md, section 5a)",
+      grain_sigma_um=optics.grain_sigma_um,
+      defocus_slope=optics.defocus_slope,
+      track_grain_scale=emulsion.track_grain_scale,
+      physical_dz_um=optics.dz_um, shrink=optics.shrink,
+      background_view=str(bg_json),
+      background_transform=bg_transform,
+      view_center_um=[round(view.cx, 3), round(view.cy, 3)],
+      truth="truth.json (pixel / slice coordinates of this view)"),
+      out_dir)
+  else:
+    view_json(view, stage_z, out_dir)
   truth = truth_record(ev, view, counts)
   truth.update(
     n_track_grains=int(len(labelled)), n_fog_grains=int(len(fog)),
@@ -433,6 +502,7 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
     background_view=str(bg_json) if bg_json else None,
     background_transform=bg_transform if bg_json else None,
     shrink=optics.shrink, pixel_um=optics.pixel_um,
+    model_pixel_um=args.model_pixel_um,
     size_px=optics.size_px, n_slices=optics.n_slices,
     view_center_um=[round(view.cx, 3), round(view.cy, 3)],
     dead_pixels=dead.tolist())
@@ -481,6 +551,13 @@ def main():
                       "background views are not used again")
   parser.add_argument("--bg-unique", action="store_true",
                       help="a different background view for every event")
+  parser.add_argument("--bg-same-as",
+                      help="image dataset whose background view of each "
+                      "event is used again (paired re-rendering)")
+  parser.add_argument("--pixel-um", type=float,
+                      help="pixel scale (default: full scan "
+                      f"{render.FULLSCAN_PIXEL_UM} um/px with "
+                      "--background, else the model's)")
   parser.add_argument("--bg-augment", action="store_true",
                       help="random rot90 / mirror of the real background")
   parser.add_argument("--tracks-only", action="store_true",
@@ -500,10 +577,24 @@ def main():
                    shrink=args.shrink)
   emulsion = replace(render.Emulsion(), fog_per_um3=args.fog)
   background = render.Background()
+  args.model_pixel_um = render.Optics.pixel_um
   if args.model != "none" and Path(args.model).exists():
     optics, emulsion, background = calibrate.apply_values(
       calibrate.load_model(args.model), optics, emulsion, background)
+    args.model_pixel_um = calibrate.model_pixel_um(args.model)
     print(f"model parameters from {args.model}", file=sys.stderr)
+  pixel_um = args.pixel_um or (render.FULLSCAN_PIXEL_UM if args.background
+                               else args.model_pixel_um)
+  if pixel_um != args.model_pixel_um:
+    if not args.background:
+      # Fog, mottle and track densities would need a recalibration
+      raise SystemExit("synthetic views only at the model pixel scale "
+                       f"({args.model_pixel_um} um/px)")
+    optics = calibrate.rescale_optics(optics, pixel_um,
+                                      args.model_pixel_um)
+    print(f"pixel {pixel_um} um/px (model {args.model_pixel_um}): grain "
+          f"sigma {optics.grain_sigma_um:.3f} um, defocus slope "
+          f"{optics.defocus_slope:.4f}", file=sys.stderr)
   if args.track_grain_scale:
     emulsion = replace(emulsion, track_grain_scale=args.track_grain_scale)
   for field, value in (("beam_per_mm2", args.beam_density),
@@ -514,7 +605,11 @@ def main():
 
   name = args.name or args.root_file.rsplit("/", 1)[-1].rsplit(".", 1)[0]
   indices = parse_events(args.events, len(EventFile(args.root_file)))
-  if args.background == "random" and (args.bg_exclude or args.bg_unique):
+  if args.bg_same_as:
+    if args.background != "random":
+      raise SystemExit("--bg-same-as needs --background random")
+    args.bg_assign = same_backgrounds(args.bg_same_as, indices)
+  elif args.background == "random" and (args.bg_exclude or args.bg_unique):
     args.bg_assign = plan_backgrounds(args, indices)
   tasks = [(i, args, optics, emulsion, background, name) for i in indices]
   if args.jobs > 1:

@@ -161,6 +161,25 @@ def load_model(path):
   return json.loads(open(path).read())["params"]
 
 
+def model_pixel_um(path):
+  """Pixel scale the model was calibrated at (models up to v24 assumed
+  0.289 um/px for the full-scan views)."""
+  return json.loads(open(path).read()).get("pixel_um",
+                                           render.Optics.pixel_um)
+
+
+def rescale_optics(optics, pixel_um, calib_pixel_um):
+  """Optics at another pixel scale. The image models were fitted to
+  pixel statistics, so the grain image keeps its size in pixels and its
+  growth per um of defocus (grain_sigma_um and defocus_slope scale with
+  the pixel); physical densities per um (grains along tracks, jitter)
+  stay, so the Geant4 geometry shrinks in pixels."""
+  r = pixel_um / calib_pixel_um
+  return replace(optics, pixel_um=pixel_um,
+                 grain_sigma_um=optics.grain_sigma_um * r,
+                 defocus_slope=optics.defocus_slope * r)
+
+
 DZ_UM = render.Optics.dz_um  # physical focal step (set by --dz)
 
 
