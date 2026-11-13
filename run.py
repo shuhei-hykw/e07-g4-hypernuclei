@@ -26,6 +26,7 @@ Commands:
   candrank     ranking of A + B' candidates per view for review
   candleak     leak check of the ranking features (embedded vs real)
   specialsrank darkness ranking of B' points on real special events
+  specialsveto veto check of candidate arms on the specials at 0.507
   mipdensity   in-plane MIP grain density from flat tracks
   layerdepth   physical step from the emulsion layer extent
   singletrack  isolated single tracks for the point-cloud evaluation
@@ -74,6 +75,7 @@ COMMANDS: dict[str, str] = {
   "singletrack": "module.singletrack",
   "layerdepth":  "module.layerdepth",
   "specialsrank": "module.specials_rank",
+  "specialsveto": "module.specials_veto",
   "efficiency":  "module.efficiency",
   "report":      "module.report",
   "zbias":       "module.zbias",

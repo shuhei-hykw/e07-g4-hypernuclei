@@ -757,6 +757,14 @@ specification, agreed with the e07-fullscan analysis:
   fraction 1), at a loose (200 px) and a strict (20 px) XY tolerance.
   The darkness model was checked on IBUKI, so these events are not a
   fully independent test.
+- `./run.py specialsveto [--arm name:A.csv:B.csv ...]`: veto check of
+  candidate arms on the specials resampled by e07-fullscan to 0.507
+  um/px (`results/specials_0507`, clicked vertex within tol_xy_um 30 um
+  in XY and 30 um in stage z; union of all A and the darkness top 770
+  scaled by image area, 250 per 1167 px view;
+  `output/specials_veto_0507.md`): production, zfix and alen each find
+  9 of 9 with none lost, but random positions are found 78-83 % of the
+  time at this tolerance, so the check only vetoes, it does not rank.
 - `./run.py zbias <dataset> <csv> --sim <root>`: offset z_best - z_true
   of the XY-nearest candidate, split by layer / stack position, daughter
   z asymmetry and n_tracks_max.
