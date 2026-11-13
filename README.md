@@ -828,6 +828,38 @@ views 11 % / 11 %), B' alone 45 %, G = +31 % [+22, +40], 31 A misses
 rescued and none lost; LL event 50 % against 6 %, G = +44 % [+34, +54].
 The v19 / v20 evalU numbers above are superseded (signal 1.75 times too
 large in xy).
+`./run.py unionstudy ... --per-event FILE` writes the found flags per
+event and cell; `./run.py armcompare base.csv arm.csv ...` compares
+candidate variants (arms, e.g. a corrected B' z scale or a shorter
+method-A minimum length) with the production candidates on the same
+events (paired bootstrap; embedded views only) and applies the decision
+rule fixed with the fullscan session beforehand: union capture at 12 um
+paired difference >= 0 with a lower 95 % bound > -5 %, and neither the
+B'-only rescues nor the LL-event capture fall. A fresh frozen gate set,
+`v25_embed_evalV_dz4` (100 new Geant4 events, `data/sim/
+evalV_nagara.root`, seed 31; image seed 9700; eval-split real views
+used by no other dataset; `data/run_evalV.sh`), is kept unopened until
+an arm is fixed.
+
+Review ranking (`./run.py candrank`, run in ~/work/.venv): the full scan
+can only review a few candidates per view (5,000 on the plate, 2.5-4 per
+view), so every method-A candidate and every B' point of a view (about
+770 + 30,000) is put in one pool and ranked; the capture vertex counts
+as found at budget K when one of the top K lies within the tolerance.
+Rankers: random, darkness, A by n_tracks_max, A and B' interleaved, and
+learned (logistic regression, gradient-boosted trees) on the fullscan
+feature table (`<dataset>_features.parquet`, key event / source /
+cand_id), out of fold with folds grouped by background view; edge_px
+(synthetic capture points stay 100 px from the edge) and the slice are
+excluded. On `v25_embed_nagara_dz4` (`output/candrank_v25_nagara.md`;
+27 of 100 events have no candidate within 6 um at all) capture within
+6 um at K = 1 / 2 / 4 / 8: darkness 0 / 1 / 2 / 3 %, logistic 5 / 6 /
+10 / 13 % (paired against darkness +8 % [+3, +14] at K = 4), boosted
+trees no better than darkness; at K = 1540 interleaved 57 % against
+logistic 52 %. With a budget of a few per view only about a tenth of
+the captures would be reviewed. Not yet checked: whether the learned
+features separate embedded from real views (needs the feature table of
+the real views), and real stars in the real views count as negatives.
 The production union over all 2,025 full-scan views was audited
 read-only (`output/fullscan_union_audit.md`): neighbouring views overlap
 by 52 % per axis at a fixed step of 987.5 px (0.5 mm of encoder travel), method A candidates

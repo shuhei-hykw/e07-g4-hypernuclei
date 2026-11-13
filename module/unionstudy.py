@@ -27,6 +27,9 @@ union and of A finds lost by it (greedy one-to-one matching is not
 monotonic), and the gain
   G = (union - A)_embedded - (union - A)_real
 with a 95 % interval from a paired bootstrap over events.
+--per-event FILE writes the found flags per event, vertex, depth and
+tolerance (A, B' and union, embedded and real) for paired comparisons
+of candidate variants (./run.py armcompare).
 """
 
 import argparse
@@ -143,6 +146,20 @@ def gain_ci(a_e, u_e, a_r, u_r, n_boot, rng):
   return diff.mean(), np.percentile(boot, CI_PCT)
 
 
+def write_per_event(path, res):
+  """One row per event and cell with the found flags of every set."""
+  cols = [f"{lab}_{s}" for lab in ("embedded", "real") for s in SETS]
+  with open(path, "w", newline="") as f:
+    w = csv.writer(f)
+    w.writerow(["event", "vertex", "depth", "tol_um"] + cols)
+    for key in sorted(res[("embedded", "A")]):
+      vtype, m, t = key
+      for n in sorted(res[("embedded", "A")][key]):
+        w.writerow([n, vtype, m, f"{t:g}"] + [
+          int(bool(res[(lab, s)][key][n]))
+          for lab in ("embedded", "real") for s in SETS])
+
+
 def main():
   parser = argparse.ArgumentParser(
     description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
@@ -158,6 +175,8 @@ def main():
   parser.add_argument("--border-px", type=int, default=0,
                       help="drop B' points this close to the image edge "
                       "before the darkness ranking")
+  parser.add_argument("--per-event",
+                      help="CSV of the found flags per event and cell")
   args = parser.parse_args()
 
   events = eff.load_truth(args.dataset)
@@ -190,6 +209,8 @@ def main():
   print("cells: embedded (real views alone); rescued / lost = union "
         "found and A not / the reverse (embedded); G = gain of the union over A minus the same on "
         "the real views, 95 % bootstrap interval")
+  if args.per_event:
+    write_per_event(args.per_event, res)
   rng = np.random.default_rng(BOOT_SEED)
   head = f"{'vertex':<9} {'depth':<9} {'tol':>4}" + "".join(
     f"{s:>12}" for s in SETS) + f"{'resc/lost':>10}  G"
