@@ -1,4 +1,6 @@
 #!/bin/sh
+# WITHDRAWN: alen was rejected on the dev set (chance-subtracted
+# criterion, output/arms/armcompare_alen_realalen.txt); not to be run.
 # One-shot gate of the alen arm on v25_embed_evalV_dz4, fixed before the
 # evalV candidates were opened. Decision: ./run.py armcompare rule
 # (union capture 12 um inclusive diff >= 0, lower 95 % > -5 %, B'-only
