@@ -884,8 +884,8 @@ judge.
 First arm (`output/arms/armcompare_alen.txt`): method-A minimum length
 29 px passes the rule on the dev set, union capture 12 um 71 -> 77 %,
 +6 % [+0, +13], all from A, with 8 % more A candidates per view (833
-against 773), and no gain at 6 um. The B' detector z scale fixed to 3.8 / 0.507
-(zfix) is rejected: union capture 12 um 71 -> 64 %, -7 % [-16, +2],
+against 773), and no gain at 6 um. The B' detector z scale fixed to
+3.8 / 0.507 (zfix) is rejected: union capture 12 um 71 -> 64 %, -7 % [-16, +2],
 B' alone -9 %, rescues 31 -> 24, LL event -13 % [-23, -3]; zfix B'
 with alen A (both) is rejected too (+3 % [-6, +13], LL event -11 %).
 alen passed that rule only on the embedded views: on the real views
@@ -900,6 +900,25 @@ zfix does not just prune B': 18 % fewer points, only 46 % of them
 have a production point within 2 px, and matched pairs differ in z by
 -32 to +42 um (5-95 %), i.e. the polylines are re-shaped (e07-fullscan
 check).
+Chance-subtracted ranking (`./run.py candchance`, real views of the
+same events with their own features; `output/candchance_v25_nagara.md`):
+at K <= 16 the real views give no chance match, so G equals the
+embedded rate; logistic - darkness at capture 6 um is +5 / +5 / +9 /
++10 / +8 % at K = 1 / 2 / 4 / 8 / 16 (K x 2,025 views per plate before
+cross-view dedup). The gain rests on mean_intens of method A (largest
+coefficient, and the feature most shifted by the rendered signal in the
+leak check): without it (`--drop mean_intens`,
+`output/candchance_v25_nagara_no_mean_intens.md`) logistic is within
++3 % of darkness. A candidates within 6 um of an embedded capture sit
+at the 95th percentile of mean_intens in their view (30 um: 89th),
+those matching the clicked vertex of the real specials at 0.507 near
+the 50th, so the rendered signal tracks may be darker than real ones
+and the mean_intens gain may not carry over. Frozen models for scoring
+the full scan (`./run.py candscore fit / apply`, JSON with columns,
+transforms, standardisation, coefficients):
+`output/models/review_logistic_v25.json` and
+`output/models/review_logistic_v25_no_mean_intens.json` (nagara +
+tune).
 The production union over all 2,025 full-scan views was audited
 read-only (`output/fullscan_union_audit.md`): neighbouring views overlap
 by 52 % per axis at a fixed step of 987.5 px (0.5 mm of encoder travel), method A candidates
