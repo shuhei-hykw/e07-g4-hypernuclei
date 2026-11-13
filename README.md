@@ -866,6 +866,13 @@ reaches AUC 0.516 beyond 200 um from the capture point, where the
 pixels are identical (0.638 with dark_rank_view), and 0.630 within
 6-50 um, where the rendered tracks change the image (A mean_intens
 0.71 alone). Real stars in the real views still count as negatives.
+With `--extra` (more datasets in the pool) on nagara + tune (110
+events, `output/candrank_v25_nagara_tune.md`) logistic against darkness
+at K = 8 is +10 % [+5, +16] at 6 um and +13 % [+5, +20] at 12 um
+(capture 6 um K = 1 / 2 / 4 / 8: 3 / 5 / 8 / 13 %); `--holdout` fits on
+the pool and scores another set, on evalA
+(`output/candrank_v25_evalA_holdout.md`) only 10 events, too few to
+judge.
 First arm (`output/arms/armcompare_alen.txt`): method-A minimum length
 29 px passes the rule on the dev set, union capture 12 um 71 -> 77 %,
 +6 % [+0, +13], all from A, with 8 % more A candidates per view (833

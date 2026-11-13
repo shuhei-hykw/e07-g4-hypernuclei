@@ -1,7 +1,8 @@
 """Ranking of the full-scan candidates (method A and B') for review.
 
   ./run.py candrank data/images/<dataset> --a A.csv --b B.csv
-    --features F.parquet [-o output/candrank_<name>.md]
+    --features F.parquet [--extra DS A B F ...] [--holdout DS A B F]
+    [-o output/candrank_<name>.md]
 
 The review budget of the full scan is a few candidates per view, so the
 question is which K candidates of a view to look at. Candidates of both
@@ -24,6 +25,10 @@ VERTEX_MARGIN_PX from the edge, a leak), slice (absolute depth in the
 stack) and dark_rank_view (with darkness it encodes the number of B'
 points of the view, which differs between runs of the same view;
 ./run.py candleak). The training label is the capture vertex within LABEL_UM.
+--extra adds datasets to the pool (event names prefixed by the dataset).
+With --holdout the learned rankers are fitted on the whole pool (minus
+events whose background view is also in the holdout set) and every
+ranker is evaluated on the holdout set only.
 Efficiencies have a 95 % interval from a bootstrap over events; the
 learned rankers are compared with darkness paired per event.
 """
@@ -115,25 +120,42 @@ def design(df):
   return x
 
 
-def learned_scores(df, model):
-  """Out-of-fold scores, folds grouped by background view."""
-  x, y = design(df), (df["d_cap"] <= LABEL_UM).to_numpy()
+def fit_predict(x_tr, y_tr, x_te, model, rng):
+  """Fit on all positives and NEG_FRACTION of the negatives."""
+  keep = y_tr | (rng.random(len(y_tr)) < NEG_FRACTION)
+  x_tr, y_tr = x_tr[keep], y_tr[keep]
+  if model == "logistic":
+    sc = StandardScaler().fit(x_tr)
+    m = LogisticRegression(max_iter=LR_MAX_ITER, class_weight="balanced")
+    m.fit(sc.transform(x_tr), y_tr)
+    return m.decision_function(sc.transform(x_te))
+  m = HistGradientBoostingClassifier(
+    max_iter=GBDT_ITER, learning_rate=GBDT_LR, random_state=SEED,
+    class_weight="balanced")
+  m.fit(x_tr, y_tr)
+  return m.predict_proba(x_te)[:, 1]
+
+
+def learned_scores(df, model, test=None):
+  """Out-of-fold scores (folds grouped by background view), or scores
+  of the test pool from a fit on df minus the views of test."""
+  x, y = design(df).to_numpy(), (df["d_cap"] <= LABEL_UM).to_numpy()
   rng = np.random.default_rng(SEED)
+  if test is not None:
+    tr = ~df["view"].isin(set(test["view"])).to_numpy()
+    return fit_predict(x[tr], y[tr], design(test).to_numpy(), model, rng)
   scores = np.zeros(len(df))
   for tr, te in GroupKFold(N_FOLDS).split(x, y, df["view"]):
-    keep = tr[y[tr] | (rng.random(len(tr)) < NEG_FRACTION)]
-    if model == "logistic":
-      sc = StandardScaler().fit(x.iloc[keep])
-      m = LogisticRegression(max_iter=LR_MAX_ITER, class_weight="balanced")
-      m.fit(sc.transform(x.iloc[keep]), y[keep])
-      scores[te] = m.decision_function(sc.transform(x.iloc[te]))
-    else:
-      m = HistGradientBoostingClassifier(
-        max_iter=GBDT_ITER, learning_rate=GBDT_LR, random_state=SEED,
-        class_weight="balanced")
-      m.fit(x.iloc[keep], y[keep])
-      scores[te] = m.predict_proba(x.iloc[te])[:, 1]
+    scores[te] = fit_predict(x[tr], y[tr], x[te], model, rng)
   return scores
+
+
+def load_set(dataset, a, b, features, prefix):
+  df = pool(eff.load_truth(dataset), eff.load_candidates(a),
+            eff.load_candidates(b), pd.read_parquet(features))
+  if prefix:
+    df["event"] = Path(dataset).name + "/" + df["event"]
+  return df
 
 
 def interleaved(df):
@@ -171,23 +193,34 @@ def main():
   parser.add_argument("--a", required=True)
   parser.add_argument("--b", required=True)
   parser.add_argument("--features", required=True)
+  parser.add_argument("--extra", nargs=4, action="append", default=[],
+                      metavar=("DS", "A", "B", "F"))
+  parser.add_argument("--holdout", nargs=4, metavar=("DS", "A", "B", "F"))
   parser.add_argument("-o", "--output")
   args = parser.parse_args()
 
-  events = eff.load_truth(args.dataset)
-  a, b = eff.load_candidates(args.a), eff.load_candidates(args.b)
-  feats = pd.read_parquet(args.features)
-  df = pool(events, a, b, feats)
+  sets = [(args.dataset, args.a, args.b, args.features)] + args.extra
+  prefix = len(sets) > 1
+  df = pd.concat([load_set(*s, prefix) for s in sets], ignore_index=True)
+  test = load_set(*args.holdout, True) if args.holdout else None
+  learned = {m: learned_scores(df, m, test) for m in ("logistic", "gbdt")}
+  if test is not None:
+    shared = df["view"].isin(set(test["view"]))
+    print(f"{df.loc[shared, 'event'].nunique()} pool events share a view "
+          "with the holdout set, left out of the fit")
+    df = test
   rng = np.random.default_rng(SEED)
   rankers = {
     "random": rng.random(len(df)),
     "darkness": df["darkness"].to_numpy(),
     "A tracks": np.where(df["source"] == "A", df["n_tracks_max"], -np.inf),
     "interleaved": interleaved(df),
-    "logistic": learned_scores(df, "logistic"),
-    "gbdt": learned_scores(df, "gbdt"),
+    "logistic": learned["logistic"],
+    "gbdt": learned["gbdt"],
   }
-  name = Path(args.dataset).name
+  name = " + ".join(Path(s[0]).name for s in sets)
+  if args.holdout:
+    name = f"{Path(args.holdout[0]).name} (fit on {name})"
   n_ev = df["event"].nunique()
   per_view = df.groupby("event")["source"].value_counts().unstack().mean()
   pos = df.groupby("event")["d_cap"].apply(lambda d: (d <= LABEL_UM).sum())
