@@ -1,0 +1,1185 @@
+event,vertex,depth,tol_um,embedded_A,embedded_B',embedded_union,real_A,real_B',real_union
+ev0000,LL decay,edge,6,0,0,0,0,0,0
+ev0001,LL decay,edge,6,0,0,0,0,0,0
+ev0002,LL decay,edge,6,0,0,0,0,0,0
+ev0003,LL decay,edge,6,0,0,0,0,0,0
+ev0004,LL decay,edge,6,0,0,0,0,0,0
+ev0005,LL decay,edge,6,0,0,0,0,0,0
+ev0006,LL decay,edge,6,0,0,0,0,0,0
+ev0007,LL decay,edge,6,0,1,1,0,0,0
+ev0008,LL decay,edge,6,0,0,0,0,0,0
+ev0009,LL decay,edge,6,0,0,0,0,0,0
+ev0010,LL decay,edge,6,0,0,0,0,0,0
+ev0011,LL decay,edge,6,0,0,0,0,0,0
+ev0012,LL decay,edge,6,0,0,0,0,0,0
+ev0013,LL decay,edge,6,0,0,0,0,0,0
+ev0014,LL decay,edge,6,0,0,0,0,0,0
+ev0015,LL decay,edge,6,0,0,0,0,0,0
+ev0016,LL decay,edge,6,0,1,1,0,0,0
+ev0017,LL decay,edge,6,0,0,0,0,0,0
+ev0018,LL decay,edge,6,0,0,0,0,0,0
+ev0019,LL decay,edge,6,0,0,0,0,0,0
+ev0020,LL decay,edge,6,0,1,1,0,0,0
+ev0021,LL decay,edge,6,0,0,0,0,0,0
+ev0022,LL decay,edge,6,1,0,1,0,0,0
+ev0023,LL decay,edge,6,0,0,0,0,0,0
+ev0024,LL decay,edge,6,0,0,0,0,0,0
+ev0025,LL decay,edge,6,0,0,0,0,0,0
+ev0026,LL decay,edge,6,0,0,0,0,0,0
+ev0027,LL decay,edge,6,0,0,0,0,0,0
+ev0028,LL decay,edge,6,0,0,0,0,0,0
+ev0029,LL decay,edge,6,0,0,0,0,0,0
+ev0030,LL decay,edge,6,0,1,1,0,0,0
+ev0031,LL decay,edge,6,0,0,0,0,0,0
+ev0032,LL decay,edge,6,0,0,0,0,0,0
+ev0033,LL decay,edge,6,0,0,0,0,0,0
+ev0034,LL decay,edge,6,0,0,0,0,0,0
+ev0035,LL decay,edge,6,0,0,0,0,0,0
+ev0036,LL decay,edge,6,0,0,0,0,0,0
+ev0037,LL decay,edge,6,0,0,0,0,0,0
+ev0038,LL decay,edge,6,0,0,0,0,0,0
+ev0039,LL decay,edge,6,0,0,0,0,0,0
+ev0040,LL decay,edge,6,0,0,0,0,0,0
+ev0041,LL decay,edge,6,0,0,0,0,0,0
+ev0042,LL decay,edge,6,0,0,0,0,0,0
+ev0043,LL decay,edge,6,0,0,0,0,0,0
+ev0044,LL decay,edge,6,0,0,0,0,0,0
+ev0045,LL decay,edge,6,0,0,0,0,0,0
+ev0046,LL decay,edge,6,0,0,0,0,0,0
+ev0047,LL decay,edge,6,0,0,0,0,0,0
+ev0048,LL decay,edge,6,0,0,0,0,0,0
+ev0049,LL decay,edge,6,0,0,0,0,0,0
+ev0050,LL decay,edge,6,0,1,1,0,0,0
+ev0051,LL decay,edge,6,0,0,0,0,0,0
+ev0052,LL decay,edge,6,0,0,0,0,0,0
+ev0053,LL decay,edge,6,0,0,0,0,0,0
+ev0054,LL decay,edge,6,0,1,1,0,0,0
+ev0055,LL decay,edge,6,0,0,0,0,0,0
+ev0056,LL decay,edge,6,0,0,0,0,0,0
+ev0057,LL decay,edge,6,0,0,0,0,0,0
+ev0058,LL decay,edge,6,0,0,0,0,0,0
+ev0059,LL decay,edge,6,0,0,0,0,0,0
+ev0060,LL decay,edge,6,0,0,0,0,0,0
+ev0061,LL decay,edge,6,0,0,0,0,0,0
+ev0062,LL decay,edge,6,0,0,0,0,0,0
+ev0063,LL decay,edge,6,0,0,0,0,0,0
+ev0064,LL decay,edge,6,0,0,0,0,0,0
+ev0065,LL decay,edge,6,0,0,0,0,0,0
+ev0066,LL decay,edge,6,0,0,0,0,0,0
+ev0067,LL decay,edge,6,0,0,0,0,0,0
+ev0068,LL decay,edge,6,0,0,0,0,0,0
+ev0069,LL decay,edge,6,0,0,0,0,0,0
+ev0070,LL decay,edge,6,0,0,0,0,0,0
+ev0071,LL decay,edge,6,0,0,0,0,0,0
+ev0072,LL decay,edge,6,0,0,0,0,0,0
+ev0073,LL decay,edge,6,0,1,1,0,0,0
+ev0074,LL decay,edge,6,0,0,0,0,0,0
+ev0075,LL decay,edge,6,0,0,0,0,0,0
+ev0076,LL decay,edge,6,0,0,0,0,0,0
+ev0077,LL decay,edge,6,0,1,1,0,0,0
+ev0078,LL decay,edge,6,0,0,0,0,0,0
+ev0079,LL decay,edge,6,0,1,1,0,0,0
+ev0080,LL decay,edge,6,0,0,0,0,0,0
+ev0081,LL decay,edge,6,0,0,0,0,0,0
+ev0082,LL decay,edge,6,0,1,1,0,0,0
+ev0083,LL decay,edge,6,0,0,0,0,0,0
+ev0085,LL decay,edge,6,0,0,0,0,0,0
+ev0086,LL decay,edge,6,0,1,1,0,0,0
+ev0087,LL decay,edge,6,0,0,0,0,0,0
+ev0088,LL decay,edge,6,0,0,0,0,0,0
+ev0089,LL decay,edge,6,0,0,0,0,0,0
+ev0090,LL decay,edge,6,0,0,0,0,0,0
+ev0091,LL decay,edge,6,0,1,1,0,0,0
+ev0092,LL decay,edge,6,0,0,0,0,0,0
+ev0093,LL decay,edge,6,1,0,1,0,0,0
+ev0094,LL decay,edge,6,0,0,0,0,0,0
+ev0095,LL decay,edge,6,0,1,1,0,0,0
+ev0096,LL decay,edge,6,0,0,0,0,0,0
+ev0097,LL decay,edge,6,0,0,0,0,0,0
+ev0098,LL decay,edge,6,0,0,0,0,0,0
+ev0000,LL decay,edge,12,1,0,1,0,0,0
+ev0001,LL decay,edge,12,0,0,0,0,0,0
+ev0002,LL decay,edge,12,0,0,0,0,0,0
+ev0003,LL decay,edge,12,0,0,0,0,0,0
+ev0004,LL decay,edge,12,0,0,0,0,0,0
+ev0005,LL decay,edge,12,0,0,0,0,0,0
+ev0006,LL decay,edge,12,0,0,0,0,0,0
+ev0007,LL decay,edge,12,1,1,1,0,0,0
+ev0008,LL decay,edge,12,0,1,1,0,0,0
+ev0009,LL decay,edge,12,0,0,0,0,0,0
+ev0010,LL decay,edge,12,0,0,0,0,0,0
+ev0011,LL decay,edge,12,0,1,1,0,0,0
+ev0012,LL decay,edge,12,0,0,0,0,0,0
+ev0013,LL decay,edge,12,0,1,1,0,0,0
+ev0014,LL decay,edge,12,0,1,1,0,0,0
+ev0015,LL decay,edge,12,0,0,0,0,0,0
+ev0016,LL decay,edge,12,0,1,1,0,0,0
+ev0017,LL decay,edge,12,0,1,1,0,0,0
+ev0018,LL decay,edge,12,0,0,0,0,0,0
+ev0019,LL decay,edge,12,1,0,1,0,0,0
+ev0020,LL decay,edge,12,0,1,1,0,0,0
+ev0021,LL decay,edge,12,0,1,1,0,0,0
+ev0022,LL decay,edge,12,1,0,1,0,0,0
+ev0023,LL decay,edge,12,0,0,0,0,0,0
+ev0024,LL decay,edge,12,0,1,1,0,0,0
+ev0025,LL decay,edge,12,0,0,0,0,0,0
+ev0026,LL decay,edge,12,0,1,1,0,0,0
+ev0027,LL decay,edge,12,0,0,0,0,0,0
+ev0028,LL decay,edge,12,0,0,0,0,0,0
+ev0029,LL decay,edge,12,1,0,1,0,0,0
+ev0030,LL decay,edge,12,0,1,1,0,0,0
+ev0031,LL decay,edge,12,0,0,0,0,0,0
+ev0032,LL decay,edge,12,0,0,0,0,0,0
+ev0033,LL decay,edge,12,0,0,0,0,0,0
+ev0034,LL decay,edge,12,0,0,0,0,0,0
+ev0035,LL decay,edge,12,0,0,0,0,0,0
+ev0036,LL decay,edge,12,0,1,1,0,0,0
+ev0037,LL decay,edge,12,0,0,0,0,0,0
+ev0038,LL decay,edge,12,0,0,0,0,0,0
+ev0039,LL decay,edge,12,0,0,0,0,0,0
+ev0040,LL decay,edge,12,0,0,0,0,0,0
+ev0041,LL decay,edge,12,0,0,0,1,0,1
+ev0042,LL decay,edge,12,0,0,0,0,0,0
+ev0043,LL decay,edge,12,0,0,0,0,0,0
+ev0044,LL decay,edge,12,0,0,0,0,0,0
+ev0045,LL decay,edge,12,0,0,0,0,0,0
+ev0046,LL decay,edge,12,0,0,0,0,0,0
+ev0047,LL decay,edge,12,0,0,0,0,0,0
+ev0048,LL decay,edge,12,0,1,1,0,0,0
+ev0049,LL decay,edge,12,0,1,1,0,0,0
+ev0050,LL decay,edge,12,0,1,1,0,0,0
+ev0051,LL decay,edge,12,0,0,0,0,0,0
+ev0052,LL decay,edge,12,0,0,0,1,0,1
+ev0053,LL decay,edge,12,0,0,0,0,0,0
+ev0054,LL decay,edge,12,0,1,1,0,0,0
+ev0055,LL decay,edge,12,0,1,1,0,0,0
+ev0056,LL decay,edge,12,0,1,1,0,0,0
+ev0057,LL decay,edge,12,0,0,0,0,0,0
+ev0058,LL decay,edge,12,0,1,1,0,0,0
+ev0059,LL decay,edge,12,0,0,0,0,0,0
+ev0060,LL decay,edge,12,0,0,0,0,0,0
+ev0061,LL decay,edge,12,0,0,0,0,0,0
+ev0062,LL decay,edge,12,0,1,1,0,0,0
+ev0063,LL decay,edge,12,0,0,0,0,0,0
+ev0064,LL decay,edge,12,0,0,0,1,0,1
+ev0065,LL decay,edge,12,0,0,0,0,0,0
+ev0066,LL decay,edge,12,0,0,0,0,0,0
+ev0067,LL decay,edge,12,0,0,0,0,0,0
+ev0068,LL decay,edge,12,0,0,0,0,0,0
+ev0069,LL decay,edge,12,0,0,0,0,0,0
+ev0070,LL decay,edge,12,0,1,1,0,0,0
+ev0071,LL decay,edge,12,0,1,1,0,0,0
+ev0072,LL decay,edge,12,0,0,0,1,0,1
+ev0073,LL decay,edge,12,0,1,1,0,0,0
+ev0074,LL decay,edge,12,0,1,1,0,0,0
+ev0075,LL decay,edge,12,0,0,0,0,0,0
+ev0076,LL decay,edge,12,0,0,0,0,0,0
+ev0077,LL decay,edge,12,0,1,1,0,0,0
+ev0078,LL decay,edge,12,0,1,1,0,0,0
+ev0079,LL decay,edge,12,0,1,1,0,0,0
+ev0080,LL decay,edge,12,0,0,0,0,0,0
+ev0081,LL decay,edge,12,0,0,0,0,0,0
+ev0082,LL decay,edge,12,0,1,1,0,0,0
+ev0083,LL decay,edge,12,0,0,0,0,0,0
+ev0085,LL decay,edge,12,0,0,0,0,0,0
+ev0086,LL decay,edge,12,0,1,1,0,0,0
+ev0087,LL decay,edge,12,0,0,0,0,0,0
+ev0088,LL decay,edge,12,0,0,0,0,0,0
+ev0089,LL decay,edge,12,0,1,1,0,0,0
+ev0090,LL decay,edge,12,0,1,1,0,0,0
+ev0091,LL decay,edge,12,0,1,1,0,0,0
+ev0092,LL decay,edge,12,0,0,0,0,0,0
+ev0093,LL decay,edge,12,1,0,1,0,0,0
+ev0094,LL decay,edge,12,0,0,0,0,0,0
+ev0095,LL decay,edge,12,0,1,1,0,0,0
+ev0096,LL decay,edge,12,0,0,0,0,0,0
+ev0097,LL decay,edge,12,0,1,1,0,0,0
+ev0098,LL decay,edge,12,0,0,0,0,0,0
+ev0000,LL decay,inclusive,6,0,0,0,0,0,0
+ev0001,LL decay,inclusive,6,0,0,0,0,0,0
+ev0002,LL decay,inclusive,6,0,0,0,0,0,0
+ev0003,LL decay,inclusive,6,0,0,0,0,0,0
+ev0004,LL decay,inclusive,6,1,0,1,0,0,0
+ev0005,LL decay,inclusive,6,0,0,0,0,0,0
+ev0006,LL decay,inclusive,6,0,0,0,0,0,0
+ev0007,LL decay,inclusive,6,1,1,1,0,0,0
+ev0008,LL decay,inclusive,6,0,0,0,0,0,0
+ev0009,LL decay,inclusive,6,0,0,0,0,0,0
+ev0010,LL decay,inclusive,6,1,0,1,0,0,0
+ev0011,LL decay,inclusive,6,0,0,0,0,0,0
+ev0012,LL decay,inclusive,6,0,0,0,0,0,0
+ev0013,LL decay,inclusive,6,0,0,0,0,0,0
+ev0014,LL decay,inclusive,6,0,0,0,0,0,0
+ev0015,LL decay,inclusive,6,0,0,0,0,0,0
+ev0016,LL decay,inclusive,6,1,1,1,0,0,0
+ev0017,LL decay,inclusive,6,1,0,1,0,0,0
+ev0018,LL decay,inclusive,6,0,0,0,0,0,0
+ev0019,LL decay,inclusive,6,0,0,0,0,0,0
+ev0020,LL decay,inclusive,6,0,1,1,0,0,0
+ev0021,LL decay,inclusive,6,0,0,0,0,0,0
+ev0022,LL decay,inclusive,6,1,0,1,0,0,0
+ev0023,LL decay,inclusive,6,0,0,0,0,0,0
+ev0024,LL decay,inclusive,6,1,0,1,0,0,0
+ev0025,LL decay,inclusive,6,0,0,0,0,0,0
+ev0026,LL decay,inclusive,6,0,0,0,0,0,0
+ev0027,LL decay,inclusive,6,0,0,0,0,0,0
+ev0028,LL decay,inclusive,6,0,0,0,0,0,0
+ev0029,LL decay,inclusive,6,0,0,0,0,0,0
+ev0030,LL decay,inclusive,6,0,1,1,0,0,0
+ev0031,LL decay,inclusive,6,1,0,1,0,0,0
+ev0032,LL decay,inclusive,6,0,0,0,0,0,0
+ev0033,LL decay,inclusive,6,0,0,0,0,0,0
+ev0034,LL decay,inclusive,6,0,0,0,0,0,0
+ev0035,LL decay,inclusive,6,0,0,0,0,0,0
+ev0036,LL decay,inclusive,6,0,0,0,0,0,0
+ev0037,LL decay,inclusive,6,0,0,0,0,0,0
+ev0038,LL decay,inclusive,6,0,0,0,0,0,0
+ev0039,LL decay,inclusive,6,0,0,0,0,0,0
+ev0040,LL decay,inclusive,6,0,0,0,0,0,0
+ev0041,LL decay,inclusive,6,0,0,0,0,0,0
+ev0042,LL decay,inclusive,6,0,0,0,0,0,0
+ev0043,LL decay,inclusive,6,0,0,0,0,0,0
+ev0044,LL decay,inclusive,6,0,0,0,0,0,0
+ev0045,LL decay,inclusive,6,0,0,0,0,0,0
+ev0046,LL decay,inclusive,6,0,0,0,0,0,0
+ev0047,LL decay,inclusive,6,0,0,0,0,0,0
+ev0048,LL decay,inclusive,6,0,0,0,0,0,0
+ev0049,LL decay,inclusive,6,0,0,0,0,0,0
+ev0050,LL decay,inclusive,6,0,1,1,0,0,0
+ev0051,LL decay,inclusive,6,0,0,0,0,0,0
+ev0052,LL decay,inclusive,6,0,0,0,0,0,0
+ev0053,LL decay,inclusive,6,0,0,0,0,0,0
+ev0054,LL decay,inclusive,6,0,1,1,0,0,0
+ev0055,LL decay,inclusive,6,1,0,1,0,0,0
+ev0056,LL decay,inclusive,6,0,0,1,0,0,0
+ev0057,LL decay,inclusive,6,1,0,1,0,0,0
+ev0058,LL decay,inclusive,6,0,0,0,0,0,0
+ev0059,LL decay,inclusive,6,0,0,0,0,0,0
+ev0060,LL decay,inclusive,6,0,0,0,0,0,0
+ev0061,LL decay,inclusive,6,0,0,0,0,0,0
+ev0062,LL decay,inclusive,6,0,0,0,0,0,0
+ev0063,LL decay,inclusive,6,0,0,0,0,0,0
+ev0064,LL decay,inclusive,6,0,0,0,0,0,0
+ev0065,LL decay,inclusive,6,0,0,0,0,0,0
+ev0066,LL decay,inclusive,6,1,0,1,0,0,0
+ev0067,LL decay,inclusive,6,0,0,0,0,0,0
+ev0068,LL decay,inclusive,6,0,0,0,0,0,0
+ev0069,LL decay,inclusive,6,0,0,0,0,0,0
+ev0070,LL decay,inclusive,6,1,0,1,0,0,0
+ev0071,LL decay,inclusive,6,1,0,1,0,0,0
+ev0072,LL decay,inclusive,6,1,0,1,0,0,0
+ev0073,LL decay,inclusive,6,0,1,1,0,0,0
+ev0074,LL decay,inclusive,6,0,0,0,0,0,0
+ev0075,LL decay,inclusive,6,1,0,1,0,0,0
+ev0076,LL decay,inclusive,6,0,0,0,0,0,0
+ev0077,LL decay,inclusive,6,0,1,1,0,0,0
+ev0078,LL decay,inclusive,6,0,0,0,0,0,0
+ev0079,LL decay,inclusive,6,0,1,1,1,0,1
+ev0080,LL decay,inclusive,6,0,0,0,0,0,0
+ev0081,LL decay,inclusive,6,0,0,0,0,0,0
+ev0082,LL decay,inclusive,6,0,1,1,0,0,0
+ev0083,LL decay,inclusive,6,0,0,0,0,0,0
+ev0085,LL decay,inclusive,6,1,0,1,0,0,0
+ev0086,LL decay,inclusive,6,0,1,1,0,0,0
+ev0087,LL decay,inclusive,6,1,0,1,1,0,1
+ev0088,LL decay,inclusive,6,1,0,1,0,0,0
+ev0089,LL decay,inclusive,6,1,0,1,0,0,0
+ev0090,LL decay,inclusive,6,0,0,0,0,0,0
+ev0091,LL decay,inclusive,6,0,1,1,0,0,0
+ev0092,LL decay,inclusive,6,0,0,0,0,0,0
+ev0093,LL decay,inclusive,6,1,0,1,0,0,0
+ev0094,LL decay,inclusive,6,0,0,0,0,0,0
+ev0095,LL decay,inclusive,6,0,1,1,0,0,0
+ev0096,LL decay,inclusive,6,0,0,0,0,0,0
+ev0097,LL decay,inclusive,6,1,0,1,0,0,0
+ev0098,LL decay,inclusive,6,0,0,0,0,0,0
+ev0000,LL decay,inclusive,12,1,0,1,0,0,0
+ev0001,LL decay,inclusive,12,0,0,1,0,0,0
+ev0002,LL decay,inclusive,12,1,0,1,0,0,0
+ev0003,LL decay,inclusive,12,0,0,0,0,0,0
+ev0004,LL decay,inclusive,12,1,0,1,0,0,0
+ev0005,LL decay,inclusive,12,0,0,0,0,0,0
+ev0006,LL decay,inclusive,12,0,0,1,0,0,0
+ev0007,LL decay,inclusive,12,1,1,1,0,0,0
+ev0008,LL decay,inclusive,12,0,1,1,0,0,0
+ev0009,LL decay,inclusive,12,0,0,0,0,0,0
+ev0010,LL decay,inclusive,12,1,0,1,0,0,0
+ev0011,LL decay,inclusive,12,0,1,1,0,0,0
+ev0012,LL decay,inclusive,12,0,0,0,0,0,0
+ev0013,LL decay,inclusive,12,1,1,1,1,0,1
+ev0014,LL decay,inclusive,12,0,1,1,0,0,0
+ev0015,LL decay,inclusive,12,0,0,0,0,0,0
+ev0016,LL decay,inclusive,12,1,1,1,1,0,1
+ev0017,LL decay,inclusive,12,1,1,1,0,0,0
+ev0018,LL decay,inclusive,12,1,0,1,1,0,1
+ev0019,LL decay,inclusive,12,1,0,1,0,0,0
+ev0020,LL decay,inclusive,12,0,1,1,1,0,1
+ev0021,LL decay,inclusive,12,0,1,1,0,0,0
+ev0022,LL decay,inclusive,12,1,0,1,0,0,0
+ev0023,LL decay,inclusive,12,0,0,0,0,0,0
+ev0024,LL decay,inclusive,12,1,1,1,0,0,0
+ev0025,LL decay,inclusive,12,0,0,0,0,0,0
+ev0026,LL decay,inclusive,12,0,1,1,0,0,0
+ev0027,LL decay,inclusive,12,0,0,0,0,0,0
+ev0028,LL decay,inclusive,12,1,0,1,0,0,0
+ev0029,LL decay,inclusive,12,0,0,0,0,0,0
+ev0030,LL decay,inclusive,12,0,1,1,0,0,0
+ev0031,LL decay,inclusive,12,1,0,1,0,0,0
+ev0032,LL decay,inclusive,12,0,0,0,0,0,0
+ev0033,LL decay,inclusive,12,0,0,0,0,0,0
+ev0034,LL decay,inclusive,12,0,0,1,0,0,0
+ev0035,LL decay,inclusive,12,1,0,1,0,0,0
+ev0036,LL decay,inclusive,12,0,1,1,0,0,0
+ev0037,LL decay,inclusive,12,1,0,1,0,0,0
+ev0038,LL decay,inclusive,12,1,0,1,0,0,0
+ev0039,LL decay,inclusive,12,0,0,0,0,0,0
+ev0040,LL decay,inclusive,12,0,0,1,1,0,1
+ev0041,LL decay,inclusive,12,0,0,0,1,0,1
+ev0042,LL decay,inclusive,12,0,0,0,0,0,0
+ev0043,LL decay,inclusive,12,0,0,0,0,0,0
+ev0044,LL decay,inclusive,12,0,0,0,0,0,0
+ev0045,LL decay,inclusive,12,0,0,0,0,0,0
+ev0046,LL decay,inclusive,12,1,0,1,0,0,0
+ev0047,LL decay,inclusive,12,0,0,0,0,0,0
+ev0048,LL decay,inclusive,12,0,1,1,0,0,0
+ev0049,LL decay,inclusive,12,0,1,1,0,0,0
+ev0050,LL decay,inclusive,12,0,1,1,0,0,0
+ev0051,LL decay,inclusive,12,0,0,1,0,0,0
+ev0052,LL decay,inclusive,12,1,0,1,1,0,1
+ev0053,LL decay,inclusive,12,0,0,0,0,0,0
+ev0054,LL decay,inclusive,12,1,1,1,1,0,1
+ev0055,LL decay,inclusive,12,1,1,1,0,0,0
+ev0056,LL decay,inclusive,12,0,1,1,0,0,0
+ev0057,LL decay,inclusive,12,1,0,1,0,0,0
+ev0058,LL decay,inclusive,12,0,1,1,0,0,0
+ev0059,LL decay,inclusive,12,0,0,0,0,0,0
+ev0060,LL decay,inclusive,12,0,0,1,0,0,0
+ev0061,LL decay,inclusive,12,0,0,0,0,0,0
+ev0062,LL decay,inclusive,12,0,1,1,0,0,0
+ev0063,LL decay,inclusive,12,0,0,0,0,0,0
+ev0064,LL decay,inclusive,12,0,0,1,1,0,1
+ev0065,LL decay,inclusive,12,1,0,1,0,0,0
+ev0066,LL decay,inclusive,12,1,0,1,0,0,0
+ev0067,LL decay,inclusive,12,1,0,1,1,0,1
+ev0068,LL decay,inclusive,12,0,0,0,0,0,0
+ev0069,LL decay,inclusive,12,0,0,0,0,0,0
+ev0070,LL decay,inclusive,12,1,1,1,0,0,0
+ev0071,LL decay,inclusive,12,1,1,1,0,0,0
+ev0072,LL decay,inclusive,12,1,0,1,1,0,1
+ev0073,LL decay,inclusive,12,0,1,1,0,0,0
+ev0074,LL decay,inclusive,12,0,1,1,0,0,0
+ev0075,LL decay,inclusive,12,1,0,1,0,0,0
+ev0076,LL decay,inclusive,12,0,0,0,0,0,0
+ev0077,LL decay,inclusive,12,0,1,1,0,0,0
+ev0078,LL decay,inclusive,12,0,1,1,0,0,0
+ev0079,LL decay,inclusive,12,1,1,1,1,0,1
+ev0080,LL decay,inclusive,12,0,0,0,0,0,0
+ev0081,LL decay,inclusive,12,0,0,0,0,0,0
+ev0082,LL decay,inclusive,12,0,1,1,0,0,0
+ev0083,LL decay,inclusive,12,0,0,1,0,0,0
+ev0085,LL decay,inclusive,12,1,0,1,0,0,0
+ev0086,LL decay,inclusive,12,0,1,1,0,0,0
+ev0087,LL decay,inclusive,12,1,0,1,1,0,1
+ev0088,LL decay,inclusive,12,1,0,1,0,0,0
+ev0089,LL decay,inclusive,12,1,1,1,0,0,0
+ev0090,LL decay,inclusive,12,1,1,1,0,0,0
+ev0091,LL decay,inclusive,12,0,1,1,0,0,0
+ev0092,LL decay,inclusive,12,0,0,0,0,0,0
+ev0093,LL decay,inclusive,12,1,0,1,0,0,0
+ev0094,LL decay,inclusive,12,0,0,0,0,0,0
+ev0095,LL decay,inclusive,12,0,1,1,1,0,1
+ev0096,LL decay,inclusive,12,0,0,0,0,0,0
+ev0097,LL decay,inclusive,12,1,1,1,0,0,0
+ev0098,LL decay,inclusive,12,0,0,0,0,0,0
+ev0000,LL event,edge,6,0,0,0,0,0,0
+ev0001,LL event,edge,6,0,0,0,0,0,0
+ev0002,LL event,edge,6,0,0,0,0,0,0
+ev0003,LL event,edge,6,0,0,0,0,0,0
+ev0004,LL event,edge,6,0,0,0,0,0,0
+ev0005,LL event,edge,6,0,0,0,0,0,0
+ev0006,LL event,edge,6,0,0,0,0,0,0
+ev0007,LL event,edge,6,0,0,0,0,0,0
+ev0008,LL event,edge,6,0,0,0,0,0,0
+ev0009,LL event,edge,6,0,0,0,0,0,0
+ev0010,LL event,edge,6,0,0,0,0,0,0
+ev0011,LL event,edge,6,0,0,0,0,0,0
+ev0012,LL event,edge,6,0,0,0,0,0,0
+ev0013,LL event,edge,6,0,0,0,0,0,0
+ev0014,LL event,edge,6,0,0,0,0,0,0
+ev0015,LL event,edge,6,0,0,0,0,0,0
+ev0016,LL event,edge,6,0,1,1,0,0,0
+ev0017,LL event,edge,6,0,0,0,0,0,0
+ev0018,LL event,edge,6,0,0,0,0,0,0
+ev0019,LL event,edge,6,0,0,0,0,0,0
+ev0020,LL event,edge,6,0,0,0,0,0,0
+ev0021,LL event,edge,6,0,0,0,0,0,0
+ev0022,LL event,edge,6,0,0,0,0,0,0
+ev0023,LL event,edge,6,0,0,0,0,0,0
+ev0024,LL event,edge,6,0,0,0,0,0,0
+ev0025,LL event,edge,6,0,0,0,0,0,0
+ev0026,LL event,edge,6,0,0,0,0,0,0
+ev0027,LL event,edge,6,0,0,0,0,0,0
+ev0028,LL event,edge,6,0,0,0,0,0,0
+ev0029,LL event,edge,6,0,0,0,0,0,0
+ev0030,LL event,edge,6,0,0,0,0,0,0
+ev0031,LL event,edge,6,0,0,0,0,0,0
+ev0032,LL event,edge,6,0,0,0,0,0,0
+ev0033,LL event,edge,6,0,0,0,0,0,0
+ev0034,LL event,edge,6,0,0,0,0,0,0
+ev0035,LL event,edge,6,0,0,0,0,0,0
+ev0036,LL event,edge,6,0,0,0,0,0,0
+ev0037,LL event,edge,6,0,0,0,0,0,0
+ev0038,LL event,edge,6,0,0,0,0,0,0
+ev0039,LL event,edge,6,0,0,0,0,0,0
+ev0040,LL event,edge,6,0,0,0,0,0,0
+ev0041,LL event,edge,6,0,0,0,0,0,0
+ev0042,LL event,edge,6,0,0,0,0,0,0
+ev0043,LL event,edge,6,0,0,0,0,0,0
+ev0044,LL event,edge,6,0,0,0,0,0,0
+ev0045,LL event,edge,6,0,0,0,0,0,0
+ev0046,LL event,edge,6,0,0,0,0,0,0
+ev0047,LL event,edge,6,0,0,0,0,0,0
+ev0048,LL event,edge,6,0,0,0,0,0,0
+ev0049,LL event,edge,6,0,0,0,0,0,0
+ev0050,LL event,edge,6,0,1,1,0,0,0
+ev0051,LL event,edge,6,0,0,0,0,0,0
+ev0052,LL event,edge,6,0,0,0,0,0,0
+ev0053,LL event,edge,6,0,0,0,0,0,0
+ev0054,LL event,edge,6,0,0,0,0,0,0
+ev0055,LL event,edge,6,0,0,0,0,0,0
+ev0056,LL event,edge,6,0,0,0,0,0,0
+ev0057,LL event,edge,6,0,0,0,0,0,0
+ev0058,LL event,edge,6,0,0,0,0,0,0
+ev0059,LL event,edge,6,0,0,0,0,0,0
+ev0060,LL event,edge,6,0,0,0,0,0,0
+ev0061,LL event,edge,6,0,0,0,0,0,0
+ev0062,LL event,edge,6,0,0,0,0,0,0
+ev0063,LL event,edge,6,0,0,0,0,0,0
+ev0064,LL event,edge,6,0,0,0,0,0,0
+ev0065,LL event,edge,6,0,0,0,0,0,0
+ev0066,LL event,edge,6,0,0,0,0,0,0
+ev0067,LL event,edge,6,0,0,0,0,0,0
+ev0068,LL event,edge,6,0,0,0,0,0,0
+ev0069,LL event,edge,6,0,0,0,0,0,0
+ev0070,LL event,edge,6,0,0,0,0,0,0
+ev0071,LL event,edge,6,0,0,0,0,0,0
+ev0072,LL event,edge,6,0,0,0,0,0,0
+ev0073,LL event,edge,6,0,0,0,0,0,0
+ev0074,LL event,edge,6,0,0,0,0,0,0
+ev0075,LL event,edge,6,0,0,0,0,0,0
+ev0076,LL event,edge,6,0,0,0,0,0,0
+ev0077,LL event,edge,6,0,0,0,0,0,0
+ev0078,LL event,edge,6,0,0,0,0,0,0
+ev0079,LL event,edge,6,0,0,0,0,0,0
+ev0080,LL event,edge,6,0,0,0,0,0,0
+ev0081,LL event,edge,6,0,0,0,0,0,0
+ev0082,LL event,edge,6,0,0,0,0,0,0
+ev0083,LL event,edge,6,0,0,0,0,0,0
+ev0085,LL event,edge,6,0,0,0,0,0,0
+ev0086,LL event,edge,6,0,0,0,0,0,0
+ev0087,LL event,edge,6,0,0,0,0,0,0
+ev0088,LL event,edge,6,0,0,0,0,0,0
+ev0089,LL event,edge,6,0,0,0,0,0,0
+ev0090,LL event,edge,6,0,0,0,0,0,0
+ev0091,LL event,edge,6,0,0,0,0,0,0
+ev0092,LL event,edge,6,0,0,0,0,0,0
+ev0093,LL event,edge,6,0,0,0,0,0,0
+ev0094,LL event,edge,6,0,0,0,0,0,0
+ev0095,LL event,edge,6,0,0,0,0,0,0
+ev0096,LL event,edge,6,0,0,0,0,0,0
+ev0097,LL event,edge,6,0,0,0,0,0,0
+ev0098,LL event,edge,6,0,0,0,0,0,0
+ev0000,LL event,edge,12,0,0,0,0,0,0
+ev0001,LL event,edge,12,0,0,0,0,0,0
+ev0002,LL event,edge,12,0,0,0,0,0,0
+ev0003,LL event,edge,12,0,0,0,0,0,0
+ev0004,LL event,edge,12,0,0,0,0,0,0
+ev0005,LL event,edge,12,0,0,0,0,0,0
+ev0006,LL event,edge,12,0,0,0,0,0,0
+ev0007,LL event,edge,12,0,0,0,0,0,0
+ev0008,LL event,edge,12,0,0,0,0,0,0
+ev0009,LL event,edge,12,0,0,0,0,0,0
+ev0010,LL event,edge,12,0,0,0,0,0,0
+ev0011,LL event,edge,12,0,1,1,0,0,0
+ev0012,LL event,edge,12,0,0,0,0,0,0
+ev0013,LL event,edge,12,0,1,1,0,0,0
+ev0014,LL event,edge,12,0,0,0,0,0,0
+ev0015,LL event,edge,12,0,0,0,0,0,0
+ev0016,LL event,edge,12,0,1,1,0,0,0
+ev0017,LL event,edge,12,0,1,1,0,0,0
+ev0018,LL event,edge,12,0,0,0,0,0,0
+ev0019,LL event,edge,12,0,0,1,0,0,0
+ev0020,LL event,edge,12,0,1,1,0,0,0
+ev0021,LL event,edge,12,0,0,0,0,0,0
+ev0022,LL event,edge,12,0,0,0,0,0,0
+ev0023,LL event,edge,12,0,0,0,0,0,0
+ev0024,LL event,edge,12,0,0,0,0,0,0
+ev0025,LL event,edge,12,0,0,0,0,0,0
+ev0026,LL event,edge,12,0,0,0,0,0,0
+ev0027,LL event,edge,12,0,0,0,0,0,0
+ev0028,LL event,edge,12,0,0,0,0,0,0
+ev0029,LL event,edge,12,0,0,0,0,0,0
+ev0030,LL event,edge,12,0,0,0,0,0,0
+ev0031,LL event,edge,12,0,0,0,0,0,0
+ev0032,LL event,edge,12,0,0,0,0,0,0
+ev0033,LL event,edge,12,0,0,0,0,0,0
+ev0034,LL event,edge,12,0,0,0,0,0,0
+ev0035,LL event,edge,12,0,0,0,0,0,0
+ev0036,LL event,edge,12,0,1,1,0,0,0
+ev0037,LL event,edge,12,0,0,0,0,0,0
+ev0038,LL event,edge,12,0,0,0,0,0,0
+ev0039,LL event,edge,12,0,0,0,0,0,0
+ev0040,LL event,edge,12,0,0,0,0,0,0
+ev0041,LL event,edge,12,0,0,0,0,0,0
+ev0042,LL event,edge,12,0,0,0,0,0,0
+ev0043,LL event,edge,12,0,0,0,0,0,0
+ev0044,LL event,edge,12,0,0,0,0,0,0
+ev0045,LL event,edge,12,0,0,0,0,0,0
+ev0046,LL event,edge,12,0,0,0,0,0,0
+ev0047,LL event,edge,12,0,0,0,0,0,0
+ev0048,LL event,edge,12,0,1,1,0,0,0
+ev0049,LL event,edge,12,0,0,0,0,0,0
+ev0050,LL event,edge,12,0,1,1,0,0,0
+ev0051,LL event,edge,12,0,0,0,0,0,0
+ev0052,LL event,edge,12,0,0,0,0,0,0
+ev0053,LL event,edge,12,0,0,0,0,0,0
+ev0054,LL event,edge,12,0,1,1,0,0,0
+ev0055,LL event,edge,12,0,1,1,0,0,0
+ev0056,LL event,edge,12,0,1,1,0,0,0
+ev0057,LL event,edge,12,0,0,0,0,0,0
+ev0058,LL event,edge,12,0,1,1,0,0,0
+ev0059,LL event,edge,12,0,0,0,0,0,0
+ev0060,LL event,edge,12,0,0,0,0,0,0
+ev0061,LL event,edge,12,0,0,0,0,0,0
+ev0062,LL event,edge,12,0,0,1,0,0,0
+ev0063,LL event,edge,12,0,0,0,0,0,0
+ev0064,LL event,edge,12,0,0,0,0,0,0
+ev0065,LL event,edge,12,0,0,0,0,0,0
+ev0066,LL event,edge,12,0,0,0,0,0,0
+ev0067,LL event,edge,12,0,0,0,0,0,0
+ev0068,LL event,edge,12,0,0,0,0,0,0
+ev0069,LL event,edge,12,0,0,0,0,0,0
+ev0070,LL event,edge,12,0,0,0,0,0,0
+ev0071,LL event,edge,12,0,1,1,0,0,0
+ev0072,LL event,edge,12,0,0,0,0,0,0
+ev0073,LL event,edge,12,0,1,1,0,0,0
+ev0074,LL event,edge,12,0,0,0,0,0,0
+ev0075,LL event,edge,12,0,0,0,0,0,0
+ev0076,LL event,edge,12,0,0,0,0,0,0
+ev0077,LL event,edge,12,0,0,0,0,0,0
+ev0078,LL event,edge,12,0,0,0,0,0,0
+ev0079,LL event,edge,12,0,0,0,0,0,0
+ev0080,LL event,edge,12,0,0,0,0,0,0
+ev0081,LL event,edge,12,0,0,0,0,0,0
+ev0082,LL event,edge,12,0,1,1,0,0,0
+ev0083,LL event,edge,12,0,0,0,0,0,0
+ev0085,LL event,edge,12,0,0,0,0,0,0
+ev0086,LL event,edge,12,0,0,0,0,0,0
+ev0087,LL event,edge,12,0,0,0,0,0,0
+ev0088,LL event,edge,12,0,0,0,0,0,0
+ev0089,LL event,edge,12,0,0,0,0,0,0
+ev0090,LL event,edge,12,0,0,0,0,0,0
+ev0091,LL event,edge,12,0,0,0,0,0,0
+ev0092,LL event,edge,12,0,0,0,0,0,0
+ev0093,LL event,edge,12,0,0,1,0,0,0
+ev0094,LL event,edge,12,0,0,0,0,0,0
+ev0095,LL event,edge,12,0,1,1,0,0,0
+ev0096,LL event,edge,12,0,0,0,0,0,0
+ev0097,LL event,edge,12,0,0,0,0,0,0
+ev0098,LL event,edge,12,0,0,0,0,0,0
+ev0000,LL event,inclusive,6,0,0,0,0,0,0
+ev0001,LL event,inclusive,6,0,0,0,0,0,0
+ev0002,LL event,inclusive,6,0,0,0,0,0,0
+ev0003,LL event,inclusive,6,0,0,0,0,0,0
+ev0004,LL event,inclusive,6,0,0,0,0,0,0
+ev0005,LL event,inclusive,6,0,0,0,0,0,0
+ev0006,LL event,inclusive,6,0,0,0,0,0,0
+ev0007,LL event,inclusive,6,0,0,1,0,0,0
+ev0008,LL event,inclusive,6,0,0,0,0,0,0
+ev0009,LL event,inclusive,6,0,0,0,0,0,0
+ev0010,LL event,inclusive,6,0,0,0,0,0,0
+ev0011,LL event,inclusive,6,0,0,0,0,0,0
+ev0012,LL event,inclusive,6,0,0,0,0,0,0
+ev0013,LL event,inclusive,6,0,0,0,0,0,0
+ev0014,LL event,inclusive,6,0,0,0,0,0,0
+ev0015,LL event,inclusive,6,0,0,0,0,0,0
+ev0016,LL event,inclusive,6,0,1,1,0,0,0
+ev0017,LL event,inclusive,6,0,0,1,0,0,0
+ev0018,LL event,inclusive,6,0,0,0,0,0,0
+ev0019,LL event,inclusive,6,0,0,0,0,0,0
+ev0020,LL event,inclusive,6,0,0,0,0,0,0
+ev0021,LL event,inclusive,6,0,0,0,0,0,0
+ev0022,LL event,inclusive,6,0,0,0,0,0,0
+ev0023,LL event,inclusive,6,0,0,0,0,0,0
+ev0024,LL event,inclusive,6,0,0,0,0,0,0
+ev0025,LL event,inclusive,6,0,0,0,0,0,0
+ev0026,LL event,inclusive,6,0,0,0,0,0,0
+ev0027,LL event,inclusive,6,0,0,0,0,0,0
+ev0028,LL event,inclusive,6,0,0,0,0,0,0
+ev0029,LL event,inclusive,6,0,0,0,0,0,0
+ev0030,LL event,inclusive,6,0,0,0,0,0,0
+ev0031,LL event,inclusive,6,0,0,0,0,0,0
+ev0032,LL event,inclusive,6,0,0,0,0,0,0
+ev0033,LL event,inclusive,6,0,0,0,0,0,0
+ev0034,LL event,inclusive,6,0,0,0,0,0,0
+ev0035,LL event,inclusive,6,0,0,0,0,0,0
+ev0036,LL event,inclusive,6,0,0,0,0,0,0
+ev0037,LL event,inclusive,6,0,0,0,0,0,0
+ev0038,LL event,inclusive,6,0,0,0,0,0,0
+ev0039,LL event,inclusive,6,0,0,0,0,0,0
+ev0040,LL event,inclusive,6,0,0,0,0,0,0
+ev0041,LL event,inclusive,6,0,0,0,0,0,0
+ev0042,LL event,inclusive,6,0,0,0,0,0,0
+ev0043,LL event,inclusive,6,0,0,0,0,0,0
+ev0044,LL event,inclusive,6,0,0,0,0,0,0
+ev0045,LL event,inclusive,6,0,0,0,0,0,0
+ev0046,LL event,inclusive,6,0,0,0,0,0,0
+ev0047,LL event,inclusive,6,0,0,0,0,0,0
+ev0048,LL event,inclusive,6,0,0,0,0,0,0
+ev0049,LL event,inclusive,6,0,0,0,0,0,0
+ev0050,LL event,inclusive,6,0,1,1,0,0,0
+ev0051,LL event,inclusive,6,0,0,0,0,0,0
+ev0052,LL event,inclusive,6,0,0,0,0,0,0
+ev0053,LL event,inclusive,6,0,0,0,0,0,0
+ev0054,LL event,inclusive,6,0,0,0,0,0,0
+ev0055,LL event,inclusive,6,0,0,1,0,0,0
+ev0056,LL event,inclusive,6,0,0,1,0,0,0
+ev0057,LL event,inclusive,6,0,0,0,0,0,0
+ev0058,LL event,inclusive,6,0,0,0,0,0,0
+ev0059,LL event,inclusive,6,0,0,0,0,0,0
+ev0060,LL event,inclusive,6,0,0,0,0,0,0
+ev0061,LL event,inclusive,6,0,0,0,0,0,0
+ev0062,LL event,inclusive,6,0,0,0,0,0,0
+ev0063,LL event,inclusive,6,0,0,0,0,0,0
+ev0064,LL event,inclusive,6,0,0,0,0,0,0
+ev0065,LL event,inclusive,6,0,0,0,0,0,0
+ev0066,LL event,inclusive,6,0,0,0,0,0,0
+ev0067,LL event,inclusive,6,0,0,0,0,0,0
+ev0068,LL event,inclusive,6,0,0,0,0,0,0
+ev0069,LL event,inclusive,6,0,0,0,0,0,0
+ev0070,LL event,inclusive,6,0,0,0,0,0,0
+ev0071,LL event,inclusive,6,0,0,0,0,0,0
+ev0072,LL event,inclusive,6,0,0,0,0,0,0
+ev0073,LL event,inclusive,6,0,0,0,0,0,0
+ev0074,LL event,inclusive,6,0,0,0,0,0,0
+ev0075,LL event,inclusive,6,0,0,1,0,0,0
+ev0076,LL event,inclusive,6,0,0,0,0,0,0
+ev0077,LL event,inclusive,6,0,0,0,0,0,0
+ev0078,LL event,inclusive,6,0,0,0,0,0,0
+ev0079,LL event,inclusive,6,0,0,0,0,0,0
+ev0080,LL event,inclusive,6,0,0,0,0,0,0
+ev0081,LL event,inclusive,6,0,0,0,0,0,0
+ev0082,LL event,inclusive,6,0,0,0,0,0,0
+ev0083,LL event,inclusive,6,0,0,0,0,0,0
+ev0085,LL event,inclusive,6,0,0,0,0,0,0
+ev0086,LL event,inclusive,6,0,0,0,0,0,0
+ev0087,LL event,inclusive,6,0,0,0,0,0,0
+ev0088,LL event,inclusive,6,0,0,0,0,0,0
+ev0089,LL event,inclusive,6,0,0,0,0,0,0
+ev0090,LL event,inclusive,6,0,0,0,0,0,0
+ev0091,LL event,inclusive,6,0,0,0,0,0,0
+ev0092,LL event,inclusive,6,0,0,0,0,0,0
+ev0093,LL event,inclusive,6,0,0,0,0,0,0
+ev0094,LL event,inclusive,6,0,0,0,0,0,0
+ev0095,LL event,inclusive,6,0,0,0,0,0,0
+ev0096,LL event,inclusive,6,0,0,0,0,0,0
+ev0097,LL event,inclusive,6,0,0,0,0,0,0
+ev0098,LL event,inclusive,6,0,0,0,0,0,0
+ev0000,LL event,inclusive,12,0,0,0,0,0,0
+ev0001,LL event,inclusive,12,0,0,1,0,0,0
+ev0002,LL event,inclusive,12,0,0,1,0,0,0
+ev0003,LL event,inclusive,12,0,0,0,0,0,0
+ev0004,LL event,inclusive,12,0,0,0,0,0,0
+ev0005,LL event,inclusive,12,0,0,0,0,0,0
+ev0006,LL event,inclusive,12,0,0,1,0,0,0
+ev0007,LL event,inclusive,12,1,0,1,0,0,0
+ev0008,LL event,inclusive,12,0,0,1,0,0,0
+ev0009,LL event,inclusive,12,0,0,0,0,0,0
+ev0010,LL event,inclusive,12,0,0,1,0,0,0
+ev0011,LL event,inclusive,12,0,1,1,0,0,0
+ev0012,LL event,inclusive,12,0,0,0,0,0,0
+ev0013,LL event,inclusive,12,0,1,1,0,0,0
+ev0014,LL event,inclusive,12,0,0,0,0,0,0
+ev0015,LL event,inclusive,12,0,0,0,0,0,0
+ev0016,LL event,inclusive,12,0,1,1,0,0,0
+ev0017,LL event,inclusive,12,0,1,1,0,0,0
+ev0018,LL event,inclusive,12,1,0,1,0,0,0
+ev0019,LL event,inclusive,12,0,0,1,0,0,0
+ev0020,LL event,inclusive,12,0,1,1,0,0,0
+ev0021,LL event,inclusive,12,0,0,1,0,0,0
+ev0022,LL event,inclusive,12,0,0,0,0,0,0
+ev0023,LL event,inclusive,12,0,0,0,0,0,0
+ev0024,LL event,inclusive,12,0,0,0,0,0,0
+ev0025,LL event,inclusive,12,0,0,0,0,0,0
+ev0026,LL event,inclusive,12,0,0,0,0,0,0
+ev0027,LL event,inclusive,12,0,0,0,0,0,0
+ev0028,LL event,inclusive,12,0,0,1,0,0,0
+ev0029,LL event,inclusive,12,0,0,0,0,0,0
+ev0030,LL event,inclusive,12,0,0,1,0,0,0
+ev0031,LL event,inclusive,12,0,0,0,0,0,0
+ev0032,LL event,inclusive,12,0,0,0,0,0,0
+ev0033,LL event,inclusive,12,0,0,0,0,0,0
+ev0034,LL event,inclusive,12,0,0,1,0,0,0
+ev0035,LL event,inclusive,12,1,0,1,0,0,0
+ev0036,LL event,inclusive,12,0,1,1,0,0,0
+ev0037,LL event,inclusive,12,0,0,0,0,0,0
+ev0038,LL event,inclusive,12,1,0,1,0,0,0
+ev0039,LL event,inclusive,12,0,0,0,0,0,0
+ev0040,LL event,inclusive,12,0,0,1,0,0,0
+ev0041,LL event,inclusive,12,0,0,0,0,0,0
+ev0042,LL event,inclusive,12,0,0,0,0,0,0
+ev0043,LL event,inclusive,12,0,0,0,0,0,0
+ev0044,LL event,inclusive,12,0,0,0,0,0,0
+ev0045,LL event,inclusive,12,0,0,0,0,0,0
+ev0046,LL event,inclusive,12,1,0,1,0,0,0
+ev0047,LL event,inclusive,12,0,0,0,0,0,0
+ev0048,LL event,inclusive,12,0,1,1,0,0,0
+ev0049,LL event,inclusive,12,0,0,0,0,0,0
+ev0050,LL event,inclusive,12,0,1,1,0,0,0
+ev0051,LL event,inclusive,12,0,0,1,0,0,0
+ev0052,LL event,inclusive,12,0,0,0,0,0,0
+ev0053,LL event,inclusive,12,0,0,0,0,0,0
+ev0054,LL event,inclusive,12,0,1,1,0,0,0
+ev0055,LL event,inclusive,12,1,1,1,0,0,0
+ev0056,LL event,inclusive,12,0,1,1,0,0,0
+ev0057,LL event,inclusive,12,1,0,1,0,0,0
+ev0058,LL event,inclusive,12,0,1,1,0,0,0
+ev0059,LL event,inclusive,12,0,0,0,0,0,0
+ev0060,LL event,inclusive,12,0,0,1,0,0,0
+ev0061,LL event,inclusive,12,0,0,0,0,0,0
+ev0062,LL event,inclusive,12,0,0,1,0,0,0
+ev0063,LL event,inclusive,12,0,0,0,0,0,0
+ev0064,LL event,inclusive,12,0,0,1,0,0,0
+ev0065,LL event,inclusive,12,0,0,0,0,0,0
+ev0066,LL event,inclusive,12,0,0,0,0,0,0
+ev0067,LL event,inclusive,12,1,0,1,0,0,0
+ev0068,LL event,inclusive,12,0,0,0,0,0,0
+ev0069,LL event,inclusive,12,0,0,0,0,0,0
+ev0070,LL event,inclusive,12,0,0,0,0,0,0
+ev0071,LL event,inclusive,12,0,1,1,0,0,0
+ev0072,LL event,inclusive,12,0,0,0,0,0,0
+ev0073,LL event,inclusive,12,0,1,1,0,0,0
+ev0074,LL event,inclusive,12,0,0,0,0,0,0
+ev0075,LL event,inclusive,12,0,0,1,0,0,0
+ev0076,LL event,inclusive,12,0,0,0,0,0,0
+ev0077,LL event,inclusive,12,0,0,0,0,0,0
+ev0078,LL event,inclusive,12,0,0,0,0,0,0
+ev0079,LL event,inclusive,12,0,0,1,0,0,0
+ev0080,LL event,inclusive,12,0,0,0,0,0,0
+ev0081,LL event,inclusive,12,0,0,0,0,0,0
+ev0082,LL event,inclusive,12,0,1,1,0,0,0
+ev0083,LL event,inclusive,12,0,0,1,0,0,0
+ev0085,LL event,inclusive,12,1,0,1,0,0,0
+ev0086,LL event,inclusive,12,0,0,0,0,0,0
+ev0087,LL event,inclusive,12,0,0,1,0,0,0
+ev0088,LL event,inclusive,12,0,0,1,0,0,0
+ev0089,LL event,inclusive,12,0,0,0,0,0,0
+ev0090,LL event,inclusive,12,0,0,0,0,0,0
+ev0091,LL event,inclusive,12,0,0,0,0,0,0
+ev0092,LL event,inclusive,12,0,0,0,0,0,0
+ev0093,LL event,inclusive,12,0,0,1,0,0,0
+ev0094,LL event,inclusive,12,0,0,0,0,0,0
+ev0095,LL event,inclusive,12,0,1,1,0,0,0
+ev0096,LL event,inclusive,12,0,0,0,0,0,0
+ev0097,LL event,inclusive,12,0,0,0,0,0,0
+ev0098,LL event,inclusive,12,0,0,0,0,0,0
+ev0000,capture,edge,6,0,0,0,0,0,0
+ev0001,capture,edge,6,0,0,0,0,0,0
+ev0002,capture,edge,6,0,1,1,0,0,0
+ev0003,capture,edge,6,0,0,0,0,0,0
+ev0004,capture,edge,6,0,0,0,0,0,0
+ev0005,capture,edge,6,0,0,0,0,0,0
+ev0006,capture,edge,6,0,0,0,0,0,0
+ev0007,capture,edge,6,0,0,0,0,0,0
+ev0008,capture,edge,6,0,0,0,0,0,0
+ev0009,capture,edge,6,0,0,0,0,0,0
+ev0010,capture,edge,6,0,0,0,0,0,0
+ev0011,capture,edge,6,0,1,1,0,0,0
+ev0012,capture,edge,6,0,0,0,0,0,0
+ev0013,capture,edge,6,0,0,0,0,0,0
+ev0014,capture,edge,6,0,0,0,0,0,0
+ev0015,capture,edge,6,0,0,0,0,0,0
+ev0016,capture,edge,6,0,1,1,0,0,0
+ev0017,capture,edge,6,0,1,1,0,0,0
+ev0018,capture,edge,6,0,0,0,0,0,0
+ev0019,capture,edge,6,0,1,1,0,0,0
+ev0020,capture,edge,6,0,0,0,0,0,0
+ev0021,capture,edge,6,0,0,0,0,0,0
+ev0022,capture,edge,6,0,0,0,0,0,0
+ev0023,capture,edge,6,0,0,0,0,0,0
+ev0024,capture,edge,6,0,0,0,0,0,0
+ev0025,capture,edge,6,0,0,0,0,0,0
+ev0026,capture,edge,6,0,0,0,0,0,0
+ev0027,capture,edge,6,0,0,0,0,0,0
+ev0028,capture,edge,6,0,1,1,0,0,0
+ev0029,capture,edge,6,0,0,0,0,0,0
+ev0030,capture,edge,6,0,0,0,0,0,0
+ev0031,capture,edge,6,0,0,0,0,0,0
+ev0032,capture,edge,6,0,0,0,0,0,0
+ev0033,capture,edge,6,0,0,0,0,0,0
+ev0034,capture,edge,6,0,0,0,0,0,0
+ev0035,capture,edge,6,0,0,0,0,0,0
+ev0036,capture,edge,6,0,0,0,0,0,0
+ev0037,capture,edge,6,0,0,0,0,0,0
+ev0038,capture,edge,6,0,0,0,0,0,0
+ev0039,capture,edge,6,0,0,0,0,0,0
+ev0040,capture,edge,6,0,1,1,0,0,0
+ev0041,capture,edge,6,0,0,0,0,0,0
+ev0042,capture,edge,6,0,0,0,0,0,0
+ev0043,capture,edge,6,0,1,1,0,0,0
+ev0044,capture,edge,6,0,0,0,0,0,0
+ev0045,capture,edge,6,0,0,0,0,0,0
+ev0046,capture,edge,6,0,1,1,0,0,0
+ev0047,capture,edge,6,0,0,0,0,0,0
+ev0048,capture,edge,6,0,0,0,0,0,0
+ev0049,capture,edge,6,0,0,0,0,0,0
+ev0050,capture,edge,6,0,1,1,0,0,0
+ev0051,capture,edge,6,0,0,0,0,0,0
+ev0052,capture,edge,6,0,0,0,0,0,0
+ev0053,capture,edge,6,0,0,0,0,0,0
+ev0054,capture,edge,6,0,0,0,0,0,0
+ev0055,capture,edge,6,0,1,1,0,0,0
+ev0056,capture,edge,6,0,1,1,0,0,0
+ev0057,capture,edge,6,0,0,0,0,0,0
+ev0058,capture,edge,6,0,0,0,0,0,0
+ev0059,capture,edge,6,0,0,0,0,0,0
+ev0060,capture,edge,6,0,0,0,0,0,0
+ev0061,capture,edge,6,0,1,1,0,0,0
+ev0062,capture,edge,6,0,0,0,0,0,0
+ev0063,capture,edge,6,0,0,0,0,0,0
+ev0064,capture,edge,6,0,1,1,0,0,0
+ev0065,capture,edge,6,0,0,0,0,0,0
+ev0066,capture,edge,6,0,0,0,0,0,0
+ev0067,capture,edge,6,0,0,0,0,0,0
+ev0068,capture,edge,6,0,0,0,0,0,0
+ev0069,capture,edge,6,0,0,0,0,0,0
+ev0070,capture,edge,6,0,0,0,0,0,0
+ev0071,capture,edge,6,0,0,0,0,0,0
+ev0072,capture,edge,6,0,0,0,0,0,0
+ev0073,capture,edge,6,0,0,0,0,0,0
+ev0074,capture,edge,6,0,0,0,0,0,0
+ev0075,capture,edge,6,0,1,1,0,0,0
+ev0076,capture,edge,6,0,0,0,0,0,0
+ev0077,capture,edge,6,0,0,0,0,0,0
+ev0078,capture,edge,6,0,0,0,0,0,0
+ev0079,capture,edge,6,0,0,0,0,0,0
+ev0080,capture,edge,6,0,0,0,0,0,0
+ev0081,capture,edge,6,0,0,0,0,0,0
+ev0082,capture,edge,6,0,0,0,0,0,0
+ev0083,capture,edge,6,0,1,1,0,0,0
+ev0084,capture,edge,6,1,0,1,0,0,0
+ev0085,capture,edge,6,0,0,0,0,0,0
+ev0086,capture,edge,6,0,0,0,0,0,0
+ev0087,capture,edge,6,0,0,0,0,0,0
+ev0088,capture,edge,6,0,0,0,0,0,0
+ev0089,capture,edge,6,0,0,0,0,0,0
+ev0090,capture,edge,6,0,0,0,0,0,0
+ev0091,capture,edge,6,0,0,0,0,0,0
+ev0092,capture,edge,6,0,1,1,0,0,0
+ev0093,capture,edge,6,0,0,0,0,0,0
+ev0094,capture,edge,6,0,0,0,0,0,0
+ev0095,capture,edge,6,0,0,0,0,0,0
+ev0096,capture,edge,6,0,0,0,0,0,0
+ev0097,capture,edge,6,0,0,0,0,0,0
+ev0098,capture,edge,6,0,0,0,0,0,0
+ev0099,capture,edge,6,1,0,1,0,0,0
+ev0000,capture,edge,12,0,0,0,0,0,0
+ev0001,capture,edge,12,0,1,1,0,0,0
+ev0002,capture,edge,12,0,1,1,0,0,0
+ev0003,capture,edge,12,0,0,0,0,0,0
+ev0004,capture,edge,12,0,0,0,0,0,0
+ev0005,capture,edge,12,0,0,0,0,0,0
+ev0006,capture,edge,12,0,1,1,0,0,0
+ev0007,capture,edge,12,0,0,0,0,0,0
+ev0008,capture,edge,12,0,0,0,0,0,0
+ev0009,capture,edge,12,0,0,0,0,0,0
+ev0010,capture,edge,12,0,1,1,0,0,0
+ev0011,capture,edge,12,0,1,1,0,0,0
+ev0012,capture,edge,12,0,0,0,0,0,0
+ev0013,capture,edge,12,0,1,1,0,0,0
+ev0014,capture,edge,12,0,0,0,0,0,0
+ev0015,capture,edge,12,0,0,0,0,0,0
+ev0016,capture,edge,12,0,1,1,0,0,0
+ev0017,capture,edge,12,0,1,1,0,0,0
+ev0018,capture,edge,12,0,1,1,0,0,0
+ev0019,capture,edge,12,0,1,1,0,0,0
+ev0020,capture,edge,12,0,1,1,0,0,0
+ev0021,capture,edge,12,0,0,0,0,0,0
+ev0022,capture,edge,12,0,0,0,0,0,0
+ev0023,capture,edge,12,0,0,0,0,0,0
+ev0024,capture,edge,12,0,0,0,0,0,0
+ev0025,capture,edge,12,0,0,0,0,0,0
+ev0026,capture,edge,12,0,0,0,0,0,0
+ev0027,capture,edge,12,0,0,0,0,0,0
+ev0028,capture,edge,12,0,1,1,0,0,0
+ev0029,capture,edge,12,0,0,0,0,0,0
+ev0030,capture,edge,12,0,0,0,0,0,0
+ev0031,capture,edge,12,0,0,0,0,0,0
+ev0032,capture,edge,12,0,0,0,0,0,0
+ev0033,capture,edge,12,0,1,1,0,0,0
+ev0034,capture,edge,12,0,1,1,0,0,0
+ev0035,capture,edge,12,0,0,0,1,0,1
+ev0036,capture,edge,12,0,1,1,0,0,0
+ev0037,capture,edge,12,0,0,0,0,0,0
+ev0038,capture,edge,12,0,0,0,0,0,0
+ev0039,capture,edge,12,1,0,1,0,0,0
+ev0040,capture,edge,12,0,1,1,0,0,0
+ev0041,capture,edge,12,0,1,1,0,0,0
+ev0042,capture,edge,12,0,0,0,0,0,0
+ev0043,capture,edge,12,0,1,1,0,0,0
+ev0044,capture,edge,12,0,1,1,0,0,0
+ev0045,capture,edge,12,0,1,1,0,0,0
+ev0046,capture,edge,12,0,1,1,0,0,0
+ev0047,capture,edge,12,0,0,0,0,0,0
+ev0048,capture,edge,12,0,1,1,0,0,0
+ev0049,capture,edge,12,0,0,0,0,0,0
+ev0050,capture,edge,12,0,1,1,0,0,0
+ev0051,capture,edge,12,0,1,1,1,0,1
+ev0052,capture,edge,12,0,0,0,0,0,0
+ev0053,capture,edge,12,0,0,0,0,0,0
+ev0054,capture,edge,12,0,1,1,0,0,0
+ev0055,capture,edge,12,0,1,1,0,0,0
+ev0056,capture,edge,12,0,1,1,0,0,0
+ev0057,capture,edge,12,0,0,0,0,0,0
+ev0058,capture,edge,12,1,1,1,0,0,0
+ev0059,capture,edge,12,0,0,0,0,0,0
+ev0060,capture,edge,12,0,1,1,0,0,0
+ev0061,capture,edge,12,0,1,1,0,0,0
+ev0062,capture,edge,12,1,0,1,0,0,0
+ev0063,capture,edge,12,0,0,0,0,0,0
+ev0064,capture,edge,12,0,1,1,0,0,0
+ev0065,capture,edge,12,0,0,0,0,0,0
+ev0066,capture,edge,12,0,0,0,0,0,0
+ev0067,capture,edge,12,0,0,0,0,0,0
+ev0068,capture,edge,12,0,1,1,0,0,0
+ev0069,capture,edge,12,0,0,0,0,0,0
+ev0070,capture,edge,12,0,0,0,0,0,0
+ev0071,capture,edge,12,0,1,1,0,0,0
+ev0072,capture,edge,12,0,0,0,0,0,0
+ev0073,capture,edge,12,0,1,1,0,0,0
+ev0074,capture,edge,12,0,0,0,0,0,0
+ev0075,capture,edge,12,0,1,1,0,0,0
+ev0076,capture,edge,12,0,0,0,0,0,0
+ev0077,capture,edge,12,0,0,0,0,0,0
+ev0078,capture,edge,12,0,0,0,0,0,0
+ev0079,capture,edge,12,0,0,0,0,0,0
+ev0080,capture,edge,12,0,1,1,0,0,0
+ev0081,capture,edge,12,0,0,0,0,0,0
+ev0082,capture,edge,12,0,1,1,0,0,0
+ev0083,capture,edge,12,0,1,1,0,0,0
+ev0084,capture,edge,12,1,1,1,1,0,1
+ev0085,capture,edge,12,0,0,0,0,0,0
+ev0086,capture,edge,12,0,0,0,0,0,0
+ev0087,capture,edge,12,0,1,1,0,0,0
+ev0088,capture,edge,12,0,1,1,0,0,0
+ev0089,capture,edge,12,0,0,0,0,0,0
+ev0090,capture,edge,12,0,0,0,0,0,0
+ev0091,capture,edge,12,0,0,0,0,0,0
+ev0092,capture,edge,12,0,1,1,0,0,0
+ev0093,capture,edge,12,0,1,1,0,0,0
+ev0094,capture,edge,12,0,0,0,0,0,0
+ev0095,capture,edge,12,0,1,1,0,0,0
+ev0096,capture,edge,12,0,0,0,0,0,0
+ev0097,capture,edge,12,0,0,0,0,0,0
+ev0098,capture,edge,12,0,0,0,0,0,0
+ev0099,capture,edge,12,1,1,1,0,0,0
+ev0000,capture,inclusive,6,0,0,0,0,0,0
+ev0001,capture,inclusive,6,0,0,0,0,0,0
+ev0002,capture,inclusive,6,0,1,1,0,0,0
+ev0003,capture,inclusive,6,0,0,0,0,0,0
+ev0004,capture,inclusive,6,0,0,0,0,0,0
+ev0005,capture,inclusive,6,0,0,0,0,0,0
+ev0006,capture,inclusive,6,1,0,1,0,0,0
+ev0007,capture,inclusive,6,0,0,1,0,0,0
+ev0008,capture,inclusive,6,1,0,1,0,0,0
+ev0009,capture,inclusive,6,0,0,0,0,0,0
+ev0010,capture,inclusive,6,0,0,0,0,0,0
+ev0011,capture,inclusive,6,0,1,1,0,0,0
+ev0012,capture,inclusive,6,0,0,0,0,0,0
+ev0013,capture,inclusive,6,0,0,0,0,0,0
+ev0014,capture,inclusive,6,0,0,0,0,0,0
+ev0015,capture,inclusive,6,0,0,0,0,0,0
+ev0016,capture,inclusive,6,0,1,1,0,0,0
+ev0017,capture,inclusive,6,0,1,1,0,0,0
+ev0018,capture,inclusive,6,1,0,1,0,0,0
+ev0019,capture,inclusive,6,0,1,1,0,0,0
+ev0020,capture,inclusive,6,0,0,0,0,0,0
+ev0021,capture,inclusive,6,1,0,1,0,0,0
+ev0022,capture,inclusive,6,0,0,0,0,0,0
+ev0023,capture,inclusive,6,0,0,0,0,0,0
+ev0024,capture,inclusive,6,0,0,0,0,0,0
+ev0025,capture,inclusive,6,1,0,1,1,0,1
+ev0026,capture,inclusive,6,0,0,0,0,0,0
+ev0027,capture,inclusive,6,1,0,1,0,0,0
+ev0028,capture,inclusive,6,0,1,1,0,0,0
+ev0029,capture,inclusive,6,0,0,0,0,0,0
+ev0030,capture,inclusive,6,0,0,0,0,0,0
+ev0031,capture,inclusive,6,0,0,0,0,0,0
+ev0032,capture,inclusive,6,0,0,0,0,0,0
+ev0033,capture,inclusive,6,0,0,0,0,0,0
+ev0034,capture,inclusive,6,1,0,1,0,0,0
+ev0035,capture,inclusive,6,1,0,1,0,0,0
+ev0036,capture,inclusive,6,1,0,1,1,0,1
+ev0037,capture,inclusive,6,0,0,0,0,0,0
+ev0038,capture,inclusive,6,1,0,1,0,0,0
+ev0039,capture,inclusive,6,1,0,1,0,0,0
+ev0040,capture,inclusive,6,0,1,1,0,0,0
+ev0041,capture,inclusive,6,1,0,1,0,0,0
+ev0042,capture,inclusive,6,1,0,1,0,0,0
+ev0043,capture,inclusive,6,0,1,1,0,0,0
+ev0044,capture,inclusive,6,0,0,0,0,0,0
+ev0045,capture,inclusive,6,0,0,0,0,0,0
+ev0046,capture,inclusive,6,1,1,1,0,0,0
+ev0047,capture,inclusive,6,0,0,0,0,0,0
+ev0048,capture,inclusive,6,0,0,0,0,0,0
+ev0049,capture,inclusive,6,0,0,0,0,0,0
+ev0050,capture,inclusive,6,0,1,1,0,0,0
+ev0051,capture,inclusive,6,1,0,1,0,0,0
+ev0052,capture,inclusive,6,0,0,0,0,0,0
+ev0053,capture,inclusive,6,0,0,0,0,0,0
+ev0054,capture,inclusive,6,0,0,0,0,0,0
+ev0055,capture,inclusive,6,0,1,1,0,0,0
+ev0056,capture,inclusive,6,1,1,1,0,0,0
+ev0057,capture,inclusive,6,0,0,0,0,0,0
+ev0058,capture,inclusive,6,0,0,0,0,0,0
+ev0059,capture,inclusive,6,0,0,0,0,0,0
+ev0060,capture,inclusive,6,1,0,1,0,0,0
+ev0061,capture,inclusive,6,1,1,1,0,0,0
+ev0062,capture,inclusive,6,0,0,0,0,0,0
+ev0063,capture,inclusive,6,0,0,0,0,0,0
+ev0064,capture,inclusive,6,1,1,1,0,0,0
+ev0065,capture,inclusive,6,0,0,0,0,0,0
+ev0066,capture,inclusive,6,0,0,0,0,0,0
+ev0067,capture,inclusive,6,1,0,1,0,0,0
+ev0068,capture,inclusive,6,0,0,0,0,0,0
+ev0069,capture,inclusive,6,0,0,0,0,0,0
+ev0070,capture,inclusive,6,0,0,0,0,0,0
+ev0071,capture,inclusive,6,0,0,0,0,0,0
+ev0072,capture,inclusive,6,0,0,0,0,0,0
+ev0073,capture,inclusive,6,0,0,0,0,0,0
+ev0074,capture,inclusive,6,0,0,0,0,0,0
+ev0075,capture,inclusive,6,0,1,1,0,0,0
+ev0076,capture,inclusive,6,0,0,0,0,0,0
+ev0077,capture,inclusive,6,0,0,0,0,0,0
+ev0078,capture,inclusive,6,0,0,0,0,0,0
+ev0079,capture,inclusive,6,0,0,0,0,0,0
+ev0080,capture,inclusive,6,0,0,0,0,0,0
+ev0081,capture,inclusive,6,1,0,1,0,0,0
+ev0082,capture,inclusive,6,0,0,0,0,0,0
+ev0083,capture,inclusive,6,0,1,1,0,0,0
+ev0084,capture,inclusive,6,1,0,1,0,0,0
+ev0085,capture,inclusive,6,0,0,0,0,0,0
+ev0086,capture,inclusive,6,0,0,0,0,0,0
+ev0087,capture,inclusive,6,0,0,0,0,0,0
+ev0088,capture,inclusive,6,0,0,0,0,0,0
+ev0089,capture,inclusive,6,0,0,0,0,0,0
+ev0090,capture,inclusive,6,0,0,0,1,0,1
+ev0091,capture,inclusive,6,0,0,0,0,0,0
+ev0092,capture,inclusive,6,0,1,1,0,0,0
+ev0093,capture,inclusive,6,0,0,0,0,0,0
+ev0094,capture,inclusive,6,0,0,0,0,0,0
+ev0095,capture,inclusive,6,0,0,0,0,0,0
+ev0096,capture,inclusive,6,0,0,0,0,0,0
+ev0097,capture,inclusive,6,0,0,0,0,0,0
+ev0098,capture,inclusive,6,0,0,0,0,0,0
+ev0099,capture,inclusive,6,1,0,1,0,0,0
+ev0000,capture,inclusive,12,0,0,0,0,0,0
+ev0001,capture,inclusive,12,1,1,1,0,0,0
+ev0002,capture,inclusive,12,0,1,1,0,0,0
+ev0003,capture,inclusive,12,0,0,0,1,0,1
+ev0004,capture,inclusive,12,0,0,0,0,0,0
+ev0005,capture,inclusive,12,0,0,0,0,0,0
+ev0006,capture,inclusive,12,1,1,1,0,0,0
+ev0007,capture,inclusive,12,1,0,1,0,0,0
+ev0008,capture,inclusive,12,1,0,1,0,0,0
+ev0009,capture,inclusive,12,0,0,0,0,0,0
+ev0010,capture,inclusive,12,0,1,1,0,0,0
+ev0011,capture,inclusive,12,1,1,1,0,0,0
+ev0012,capture,inclusive,12,0,0,0,0,0,0
+ev0013,capture,inclusive,12,0,1,1,0,0,0
+ev0014,capture,inclusive,12,0,0,0,0,0,0
+ev0015,capture,inclusive,12,0,0,0,0,0,0
+ev0016,capture,inclusive,12,0,1,1,0,0,0
+ev0017,capture,inclusive,12,0,1,1,1,0,1
+ev0018,capture,inclusive,12,1,1,1,0,0,0
+ev0019,capture,inclusive,12,0,1,1,0,0,0
+ev0020,capture,inclusive,12,0,1,1,0,0,0
+ev0021,capture,inclusive,12,1,0,1,1,0,1
+ev0022,capture,inclusive,12,0,0,0,0,0,0
+ev0023,capture,inclusive,12,0,0,0,0,0,0
+ev0024,capture,inclusive,12,0,0,0,0,0,0
+ev0025,capture,inclusive,12,1,0,1,1,0,1
+ev0026,capture,inclusive,12,0,0,0,0,0,0
+ev0027,capture,inclusive,12,1,0,1,1,0,1
+ev0028,capture,inclusive,12,0,1,1,0,0,0
+ev0029,capture,inclusive,12,0,0,0,0,0,0
+ev0030,capture,inclusive,12,0,0,1,0,0,0
+ev0031,capture,inclusive,12,0,0,0,0,0,0
+ev0032,capture,inclusive,12,1,0,1,0,0,0
+ev0033,capture,inclusive,12,0,1,1,0,0,0
+ev0034,capture,inclusive,12,1,1,1,0,0,0
+ev0035,capture,inclusive,12,1,0,1,1,0,1
+ev0036,capture,inclusive,12,1,1,1,1,0,1
+ev0037,capture,inclusive,12,0,0,0,0,0,0
+ev0038,capture,inclusive,12,1,0,1,1,0,1
+ev0039,capture,inclusive,12,1,0,1,0,0,0
+ev0040,capture,inclusive,12,1,1,1,0,0,0
+ev0041,capture,inclusive,12,1,1,1,0,0,0
+ev0042,capture,inclusive,12,1,0,1,0,0,0
+ev0043,capture,inclusive,12,1,1,1,0,0,0
+ev0044,capture,inclusive,12,1,1,1,0,0,0
+ev0045,capture,inclusive,12,1,1,1,0,0,0
+ev0046,capture,inclusive,12,1,1,1,0,0,0
+ev0047,capture,inclusive,12,0,0,0,0,0,0
+ev0048,capture,inclusive,12,1,1,1,0,0,0
+ev0049,capture,inclusive,12,0,0,0,1,0,1
+ev0050,capture,inclusive,12,1,1,1,0,0,0
+ev0051,capture,inclusive,12,1,1,1,1,0,1
+ev0052,capture,inclusive,12,0,0,0,0,0,0
+ev0053,capture,inclusive,12,0,0,0,0,0,0
+ev0054,capture,inclusive,12,0,1,1,0,0,0
+ev0055,capture,inclusive,12,1,1,1,0,0,0
+ev0056,capture,inclusive,12,1,1,1,1,0,1
+ev0057,capture,inclusive,12,1,0,1,0,0,0
+ev0058,capture,inclusive,12,1,1,1,0,0,0
+ev0059,capture,inclusive,12,0,0,0,0,0,0
+ev0060,capture,inclusive,12,1,1,1,0,0,0
+ev0061,capture,inclusive,12,1,1,1,0,0,0
+ev0062,capture,inclusive,12,1,0,1,0,0,0
+ev0063,capture,inclusive,12,0,0,0,0,0,0
+ev0064,capture,inclusive,12,1,1,1,0,0,0
+ev0065,capture,inclusive,12,0,0,0,0,0,0
+ev0066,capture,inclusive,12,0,0,0,0,0,0
+ev0067,capture,inclusive,12,1,0,1,0,0,0
+ev0068,capture,inclusive,12,0,1,1,0,0,0
+ev0069,capture,inclusive,12,0,0,0,0,0,0
+ev0070,capture,inclusive,12,0,0,0,0,0,0
+ev0071,capture,inclusive,12,0,1,1,0,0,0
+ev0072,capture,inclusive,12,0,0,0,0,0,0
+ev0073,capture,inclusive,12,0,1,1,0,0,0
+ev0074,capture,inclusive,12,0,0,0,0,0,0
+ev0075,capture,inclusive,12,0,1,1,0,0,0
+ev0076,capture,inclusive,12,0,0,0,0,0,0
+ev0077,capture,inclusive,12,0,0,0,0,0,0
+ev0078,capture,inclusive,12,0,0,0,0,0,0
+ev0079,capture,inclusive,12,0,0,1,0,0,0
+ev0080,capture,inclusive,12,1,1,1,0,0,0
+ev0081,capture,inclusive,12,1,0,1,0,0,0
+ev0082,capture,inclusive,12,0,1,1,0,0,0
+ev0083,capture,inclusive,12,0,1,1,1,0,1
+ev0084,capture,inclusive,12,1,1,1,1,0,1
+ev0085,capture,inclusive,12,1,0,1,1,0,1
+ev0086,capture,inclusive,12,0,0,0,0,0,0
+ev0087,capture,inclusive,12,0,1,1,0,0,0
+ev0088,capture,inclusive,12,0,1,1,0,0,0
+ev0089,capture,inclusive,12,0,0,0,0,0,0
+ev0090,capture,inclusive,12,0,0,0,1,0,1
+ev0091,capture,inclusive,12,0,0,0,0,0,0
+ev0092,capture,inclusive,12,0,1,1,0,0,0
+ev0093,capture,inclusive,12,0,1,1,0,0,0
+ev0094,capture,inclusive,12,1,0,1,0,0,0
+ev0095,capture,inclusive,12,0,1,1,0,0,0
+ev0096,capture,inclusive,12,0,0,0,0,0,0
+ev0097,capture,inclusive,12,0,0,0,0,0,0
+ev0098,capture,inclusive,12,0,0,1,1,0,1
+ev0099,capture,inclusive,12,1,1,1,0,0,0

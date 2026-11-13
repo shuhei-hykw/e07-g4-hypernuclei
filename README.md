@@ -884,7 +884,11 @@ judge.
 First arm (`output/arms/armcompare_alen.txt`): method-A minimum length
 29 px passes the rule on the dev set, union capture 12 um 71 -> 77 %,
 +6 % [+0, +13], all from A, with 8 % more A candidates per view (833
-against 773), and no gain at 6 um.
+against 773), and no gain at 6 um. The B' detector z scale fixed to 3.8 / 0.507
+(zfix) is rejected: union capture 12 um 71 -> 64 %, -7 % [-16, +2],
+B' alone -9 %, rescues 31 -> 24, LL event -13 % [-23, -3]; zfix B'
+with alen A (both) is rejected too (+3 % [-6, +13], LL event -11 %).
+alen alone is the only arm adopted (`output/arms/armcompare_all.txt`).
 The production union over all 2,025 full-scan views was audited
 read-only (`output/fullscan_union_audit.md`): neighbouring views overlap
 by 52 % per axis at a fixed step of 987.5 px (0.5 mm of encoder travel), method A candidates
