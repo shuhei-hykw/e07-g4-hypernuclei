@@ -819,8 +819,15 @@ events, but the split changes: A alone 40 % (real views 16 %; the 12 um
 tolerance is now 24 px instead of 42, so the chance level halves) and
 the darkness top 770 alone 54 % (v20: 26 %), the compact signal being
 darker per pixel; G = +31 % [+23, +41], 31 A misses rescued, none lost;
-LL event 59 % against 9 %, G = +50 % [+40, +59]. evalU (v25) is not
-scored yet.
+LL event 59 % against 9 %, G = +50 % [+40, +59]. The frozen gate
+(rule and threshold unchanged) evaluated once on `v25_embed_evalU_dz4`
+(same events and views as the v20 evalU, real-view candidates of the
+v20 evalU run, `output/unionstudy_evalU_v25_dz4.txt`) passes: capture
+within 12 um inclusive 69 % for the union against 38 % for A (real
+views 11 % / 11 %), B' alone 45 %, G = +31 % [+22, +40], 31 A misses
+rescued and none lost; LL event 50 % against 6 %, G = +44 % [+34, +54].
+The v19 / v20 evalU numbers above are superseded (signal 1.75 times too
+large in xy).
 The production union over all 2,025 full-scan views was audited
 read-only (`output/fullscan_union_audit.md`): neighbouring views overlap
 by 52 % per axis at a fixed step of 987.5 px (0.5 mm of encoder travel), method A candidates
