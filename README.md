@@ -889,6 +889,10 @@ against 773), and no gain at 6 um. The B' detector z scale fixed to 3.8 / 0.507
 B' alone -9 %, rescues 31 -> 24, LL event -13 % [-23, -3]; zfix B'
 with alen A (both) is rejected too (+3 % [-6, +13], LL event -11 %).
 alen alone is the only arm adopted (`output/arms/armcompare_all.txt`).
+zfix does not just prune B': 18 % fewer points, only 46 % of them
+have a production point within 2 px, and matched pairs differ in z by
+-32 to +42 um (5-95 %), i.e. the polylines are re-shaped (e07-fullscan
+check).
 The production union over all 2,025 full-scan views was audited
 read-only (`output/fullscan_union_audit.md`): neighbouring views overlap
 by 52 % per axis at a fixed step of 987.5 px (0.5 mm of encoder travel), method A candidates
