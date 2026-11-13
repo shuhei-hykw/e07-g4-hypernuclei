@@ -888,7 +888,14 @@ against 773), and no gain at 6 um. The B' detector z scale fixed to 3.8 / 0.507
 (zfix) is rejected: union capture 12 um 71 -> 64 %, -7 % [-16, +2],
 B' alone -9 %, rescues 31 -> 24, LL event -13 % [-23, -3]; zfix B'
 with alen A (both) is rejected too (+3 % [-6, +13], LL event -11 %).
-alen alone is the only arm adopted (`output/arms/armcompare_all.txt`).
+alen passed that rule only on the embedded views: on the real views
+alen A also finds more chance matches (capture 12 um 16 -> 21 %, real
+alen views `v25_embed_nagara_dz4_real_alen_*`), so the rule got a
+chance-subtracted criterion (per event (embedded - real) union, arm
+minus base, >= 0 with a lower bound > -5 %), added on the dev set before
+evalV was opened. With it alen is rejected as well (+1 % [-8, +11];
+`output/arms/armcompare_alen_realalen.txt`); no arm is adopted, the
+production candidates stay, and evalV stays unopened.
 zfix does not just prune B': 18 % fewer points, only 46 % of them
 have a production point within 2 px, and matched pairs differ in z by
 -32 to +42 um (5-95 %), i.e. the polylines are re-shaped (e07-fullscan

@@ -1,0 +1,56 @@
+## v25_nagara_alen_realalen.csv - v25_nagara_base.csv
+cell: union base -> arm, paired difference [95 %]; A and B' alone differences; B'-only rescues base -> arm (embedded)
+LL decay edge 12            56% ->  55% -1% [-4%, +2%]  A -2%  B' +0%  rescues 49 -> 50
+                           chance-subtracted -2% [-8%, +3%]
+LL decay edge 6             26% ->  24% -1% [-3%, +0%]  A -1%  B' +0%  rescues 23 -> 23
+                           chance-subtracted -1% [-3%, +0%]
+LL decay inclusive 12       77% ->  76% -1% [-8%, +7%]  A -1%  B' +0%  rescues 38 -> 38
+                           chance-subtracted +6% [-4%, +16%]
+LL decay inclusive 6        42% ->  40% -2% [-11%, +6%]  A +1%  B' +0%  rescues 20 -> 17
+                           chance-subtracted -2% [-11%, +7%]
+LL event edge 12            36% ->  36% +0% [-3%, +3%]  A +1%  B' +0%  rescues 35 -> 34
+                           chance-subtracted -1% [-5%, +2%]
+LL event edge 6              4% ->   4% +0% [+0%, +0%]  A +0%  B' +0%  rescues 4 -> 4
+                           chance-subtracted +0% [+0%, +0%]
+LL event inclusive 12       59% ->  59% +0% [-8%, +8%]  A +2%  B' +0%  rescues 49 -> 47
+                           chance-subtracted -1% [-9%, +7%]
+LL event inclusive 6        13% ->  12% -1% [-9%, +6%]  A +2%  B' +0%  rescues 13 -> 10
+                           chance-subtracted -1% [-8%, +6%]
+capture edge 12             57% ->  59% +2% [-1%, +6%]  A +2%  B' +0%  rescues 52 -> 52
+                           chance-subtracted +2% [-3%, +7%]
+capture edge 6              23% ->  22% -1% [-4%, +2%]  A -1%  B' +0%  rescues 21 -> 21
+                           chance-subtracted -2% [-6%, +2%]
+capture inclusive 12        71% ->  77% +6% [-1%, +13%]  A +6%  B' +0%  rescues 31 -> 31
+                           chance-subtracted +1% [-8%, +11%]
+capture inclusive 6         42% ->  41% -1% [-10%, +8%]  A -1%  B' +0%  rescues 19 -> 19
+                           chance-subtracted -6% [-18%, +5%]
+decision: reject (capture 12 um +6%, lower -1%; chance-subtracted +1%, lower -8%; rescues 31 -> 31; LL event +0%)
+
+## v25_nagara_zfix.csv - v25_nagara_base.csv
+cell: union base -> arm, paired difference [95 %]; A and B' alone differences; B'-only rescues base -> arm (embedded)
+LL decay edge 12            56% ->  41% -15% [-24%, -5%]  A +0%  B' -15%  rescues 49 -> 34
+                           chance-subtracted -15% [-26%, -5%]
+LL decay edge 6             26% ->  15% -10% [-19%, -1%]  A +0%  B' -10%  rescues 23 -> 13
+                           chance-subtracted -10% [-19%, -2%]
+LL decay inclusive 12       77% ->  68% -8% [-16%, +0%]  A +0%  B' -15%  rescues 38 -> 30
+                           chance-subtracted -8% [-16%, +0%]
+LL decay inclusive 6        42% ->  34% -8% [-16%, +1%]  A +0%  B' -10%  rescues 20 -> 12
+                           chance-subtracted -8% [-17%, +0%]
+LL event edge 12            36% ->  19% -16% [-27%, -6%]  A +0%  B' -17%  rescues 35 -> 19
+                           chance-subtracted -16% [-27%, -7%]
+LL event edge 6              4% ->   2% -2% [-7%, +3%]  A +0%  B' -2%  rescues 4 -> 2
+                           chance-subtracted -2% [-7%, +3%]
+LL event inclusive 12       59% ->  46% -13% [-23%, -3%]  A +0%  B' -17%  rescues 49 -> 36
+                           chance-subtracted -13% [-23%, -3%]
+LL event inclusive 6        13% ->   7% -6% [-12%, +0%]  A +0%  B' -2%  rescues 13 -> 7
+                           chance-subtracted -6% [-12%, -1%]
+capture edge 12             57% ->  47% -10% [-22%, +1%]  A +0%  B' -9%  rescues 52 -> 42
+                           chance-subtracted -10% [-21%, +1%]
+capture edge 6              23% ->  19% -4% [-12%, +4%]  A +0%  B' -4%  rescues 21 -> 17
+                           chance-subtracted -4% [-11%, +4%]
+capture inclusive 12        71% ->  64% -7% [-17%, +2%]  A +0%  B' -9%  rescues 31 -> 24
+                           chance-subtracted -7% [-17%, +2%]
+capture inclusive 6         42% ->  37% -5% [-12%, +3%]  A +0%  B' -4%  rescues 19 -> 14
+                           chance-subtracted -5% [-13%, +3%]
+decision: reject (capture 12 um -7%, lower -17%; chance-subtracted -7%, lower -17%; rescues 31 -> 24; LL event -13%)
+
