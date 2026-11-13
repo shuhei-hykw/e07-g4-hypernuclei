@@ -25,6 +25,8 @@ Commands:
   armcompare   paired comparison of candidate variants (unionstudy)
   candrank     ranking of A + B' candidates per view for review
   candleak     leak check of the ranking features (embedded vs real)
+  candchance   chance-subtracted ranking (learned vs darkness)
+  candscore    frozen logistic ranker: fit and apply
   specialsrank darkness ranking of B' points on real special events
   specialsveto veto check of candidate arms on the specials at 0.507
   mipdensity   in-plane MIP grain density from flat tracks
@@ -71,6 +73,8 @@ COMMANDS: dict[str, str] = {
   "armcompare":  "module.armcompare",
   "candrank":    "module.candrank",
   "candleak":    "module.candleak",
+  "candchance":  "module.candchance",
+  "candscore":   "module.candscore",
   "mipdensity":  "module.mipdensity",
   "singletrack": "module.singletrack",
   "layerdepth":  "module.layerdepth",

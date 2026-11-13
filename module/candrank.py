@@ -106,6 +106,14 @@ def pool(events, a, b, feats):
   return df
 
 
+def drop_features(spec):
+  """Remove the comma-separated features from the learned rankers."""
+  drop = set(filter(None, spec.split(",")))
+  for group in (COMMON, A_FEATURES, B_FEATURES):
+    group[:] = [c for c in group if c not in drop]
+  return drop
+
+
 def design(df):
   """Feature matrix of the learned rankers."""
   x = pd.DataFrame({"is_a": (df["source"] == "A").astype(float)})
