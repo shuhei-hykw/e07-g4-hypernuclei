@@ -850,16 +850,26 @@ Rankers: random, darkness, A by n_tracks_max, A and B' interleaved, and
 learned (logistic regression, gradient-boosted trees) on the fullscan
 feature table (`<dataset>_features.parquet`, key event / source /
 cand_id), out of fold with folds grouped by background view; edge_px
-(synthetic capture points stay 100 px from the edge) and the slice are
+(synthetic capture points stay 100 px from the edge), the slice and
+dark_rank_view (with darkness it encodes the number of B' points of the
+view, which differs between two runs of the same pixels) are
 excluded. On `v25_embed_nagara_dz4` (`output/candrank_v25_nagara.md`;
 27 of 100 events have no candidate within 6 um at all) capture within
 6 um at K = 1 / 2 / 4 / 8: darkness 0 / 1 / 2 / 3 %, logistic 5 / 6 /
 10 / 13 % (paired against darkness +8 % [+3, +14] at K = 4), boosted
 trees no better than darkness; at K = 1540 interleaved 57 % against
 logistic 52 %. With a budget of a few per view only about a tenth of
-the captures would be reviewed. Not yet checked: whether the learned
-features separate embedded from real views (needs the feature table of
-the real views), and real stars in the real views count as negatives.
+the captures would be reviewed. Leak check (`./run.py candleak`,
+`output/candleak_v25_nagara.md`): an adversarial classifier on embedded
+against real candidates of the same views (not near a truth vertex)
+reaches AUC 0.516 beyond 200 um from the capture point, where the
+pixels are identical (0.638 with dark_rank_view), and 0.630 within
+6-50 um, where the rendered tracks change the image (A mean_intens
+0.71 alone). Real stars in the real views still count as negatives.
+First arm (`output/arms/armcompare_alen.txt`): method-A minimum length
+29 px passes the rule on the dev set, union capture 12 um 71 -> 77 %,
++6 % [+0, +13], all from A, with 8 % more A candidates per view (833
+against 773), and no gain at 6 um.
 The production union over all 2,025 full-scan views was audited
 read-only (`output/fullscan_union_audit.md`): neighbouring views overlap
 by 52 % per axis at a fixed step of 987.5 px (0.5 mm of encoder travel), method A candidates

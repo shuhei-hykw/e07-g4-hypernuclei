@@ -20,8 +20,10 @@ of module/efficiency.py). Rankers:
 Features come from the fullscan table (key event, source, cand_id = row
 index within the event of the candidate file). Excluded from the
 learned rankers: edge_px (synthetic capture points are placed at least
-VERTEX_MARGIN_PX from the edge, a leak) and slice (absolute depth in the
-stack). The training label is the capture vertex within LABEL_UM.
+VERTEX_MARGIN_PX from the edge, a leak), slice (absolute depth in the
+stack) and dark_rank_view (with darkness it encodes the number of B'
+points of the view, which differs between runs of the same view;
+./run.py candleak). The training label is the capture vertex within LABEL_UM.
 Efficiencies have a 95 % interval from a bootstrap over events; the
 learned rankers are compared with darkness paired per event.
 """
@@ -54,8 +56,8 @@ PAIRED_BUDGETS = (1, 2, 4, 8)
 A_FEATURES = ["n_tracks_max", "n_slices", "mean_intens",
               "angle_spread_best", "angle_spread_max", "z_span_um"]
 B_FEATURES = ["mult", "n_bp_20px"]
-COMMON = ["darkness", "dark_rank_view", "dist_other_um"]
-LOG_FEATURES = ["n_tracks_max", "dark_rank_view", "n_bp_20px", "mult"]
+COMMON = ["darkness", "dist_other_um"]
+LOG_FEATURES = ["n_tracks_max", "n_bp_20px", "mult"]
 
 
 def ll_decays(verts):
