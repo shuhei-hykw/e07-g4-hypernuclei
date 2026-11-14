@@ -918,7 +918,12 @@ the full scan (`./run.py candscore fit / apply`, JSON with columns,
 transforms, standardisation, coefficients):
 `output/models/review_logistic_v25.json` and
 `output/models/review_logistic_v25_no_mean_intens.json` (nagara +
-tune).
+tune). Darkness at the true vertex
+(`output/vertex_darkness_0507.md`): embedded captures median 18.6 gray
+levels (98.8th percentile of the B' points of the view) against 13.2
+(94.6th) at the clicked vertices of the specials, consistent with
+rendered vertices ~1.4 times too dark but not conclusive (click offset
+of 30-60 px, another scanner).
 The production union over all 2,025 full-scan views was audited
 read-only (`output/fullscan_union_audit.md`): neighbouring views overlap
 by 52 % per axis at a fixed step of 987.5 px (0.5 mm of encoder travel), method A candidates
