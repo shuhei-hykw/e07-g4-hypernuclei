@@ -935,6 +935,15 @@ signal track grains; on nagara events 0-29 (paired with v25,
 0.507 keeps the track darkness per pixel of length of the 0.289
 calibration (at 0.507 a track has 1.75 times more grains per pixel) and
 matches the real vertices; the v26 sets (`data/run_v26.sh`) use it.
+Real-data recall (e07-fullscan `scripts/star_recall.py`,
+`results/fullscan_union/star_recall.txt`): the 70 eye-good stars found
+again in 166 overlapping neighbour views; at 12 um A 0.75, B' 0.61,
+union 0.88 (40 um shifted control 0.12 / 0.07 / 0.18), at 6 um 0.38 /
+0.39 / 0.61 (0.04 / 0.01 / 0.05), so B' adds recall on real stars too.
+Best rank of a match within the top 16 of the neighbour view at 12 um:
+logistic 0.28, logistic without mean_intens 0.21, darkness 0.06. The
+stars were selected by v6 method A (angle_spread x n_slices), which
+favours A and the A features of both models; correlated trials.
 The production union over all 2,025 full-scan views was audited
 read-only (`output/fullscan_union_audit.md`): neighbouring views overlap
 by 52 % per axis at a fixed step of 987.5 px (0.5 mm of encoder travel), method A candidates
