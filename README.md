@@ -935,6 +935,19 @@ signal track grains; on nagara events 0-29 (paired with v25,
 0.507 keeps the track darkness per pixel of length of the 0.289
 calibration (at 0.507 a track has 1.75 times more grains per pixel) and
 matches the real vertices; the v26 sets (`data/run_v26.sh`) use it.
+v26 dev results (`data/score_v26_nagara.sh`, fixed beforehand): the
+realism gate passes (`output/candleak_v26_nagara.md`, adversary AUC
+near 0.550 against 0.630 on v25, mean_intens alone 0.559 against
+0.71). Union capture within 12 um 47 % (real views 16 %) against 71 %
+on v25; G of the union over A +17 % [+10, +24] at 12 um and +8 %
+[+3, +14] at 6 um (`output/unionstudy_v26_dz4.txt`), so B' still adds.
+Ranking (`output/candrank_v26_nagara.md`, `output/candchance_v26_*`):
+at the realistic darkness the capture point sits near the 96th
+percentile of the view, so every ranker finds 0-4 % within the top 16
+of a view; darkness 14 % and A tracks 31 % at K = 256, union 47 % at
+K = 1540. The v25 gain of logistic over darkness is gone (K = 16: -3 %
+[-7, +0], with or without mean_intens), i.e. it came from the too-dark
+rendering. Real crop labels (round 2) remain the arbiter of precision.
 Real-data recall (e07-fullscan `scripts/star_recall.py`,
 `results/fullscan_union/star_recall.txt`): the 70 eye-good stars found
 again in 166 overlapping neighbour views; at 12 um A 0.75, B' 0.61,
