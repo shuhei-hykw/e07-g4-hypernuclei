@@ -64,3 +64,20 @@ when grade >= 2; free comment optional. "good" = grade >= 2; Xi-like
 - Decision: logistic replaces darkness if L-only good > D-only good
   with p < 0.05; mean_intens is kept only if M-only good > N-only good
   with p < 0.05, otherwise the no-mean_intens model is the default.
+
+## Implementation (agreed with e07-fullscan before any crop)
+
+- Scores: candscore apply on results/fullscan_union/features.parquet;
+  darkness from features.parquet (union.parquet has NaN for A rows).
+- Sites per ranker: greedy merge in plate xy within 25 um (z ignored,
+  the crop shows the full stack), best score kept; global rank = order
+  of the merged sites; "in X's top 5000" = within 25 um of one of X's
+  top 5000 sites. Groups skip sites within 25 um of a drawn site;
+  random is uniform over pool candidates.
+- Display view: the overlapping view (own or neighbour) placing the
+  site farthest from the edge; the key keeps both views.
+- Crop 99 x 99 px, every slice, 5x upscaled, grey stretch 1-99 % per
+  site. Repeats: 30 random picks of the 270 under new ids.
+- Context: a 150 um minimum projection with the 50 um box drawn. The
+  grade refers to a vertex inside the box; the context only helps to
+  read the topology (a track ending in the box, a nearby second vertex).
