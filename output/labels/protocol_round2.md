@@ -81,3 +81,15 @@ when grade >= 2; free comment optional. "good" = grade >= 2; Xi-like
 - Context: a 150 um minimum projection with the 50 um box drawn. The
   grade refers to a vertex inside the box; the context only helps to
   read the topology (a track ending in the box, a nearby second vertex).
+
+## Deviation at drawing (before any label)
+
+Short bins pass their remainder to the later bins of the same group:
+L-only 20/20/20, D-only 0/30/30 (every darkness top-100 site is in
+the logistic top 5000), N-only 1/18/16, M-only 12/12/11; both 40,
+random 40, repeats 30 (minimum gap 106). The group comparisons are
+therefore also reported over bins 100-5000 only, where both groups
+are populated. Three D-only B' sites lie 0-4 px from the edge of
+every usable view (border pile-up); D-only precision is shown with
+and without them. Key: e07-fullscan results/label_round2/key.csv,
+code scripts/label_round2.py, seed 20261114.
