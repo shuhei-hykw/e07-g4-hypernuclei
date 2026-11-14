@@ -434,7 +434,7 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
     weights[-len(fog):] *= emulsion.fog_weight
   # Track grains (not junk, not fog) are fainter by the density scale
   track = np.r_[classes != render.LABEL_JUNK, np.zeros(len(fog), bool)]
-  weights[track] /= emulsion.track_grain_scale
+  weights[track] *= emulsion.track_weight / emulsion.track_grain_scale
   if not args.no_labels:
     np.savez_compressed(out_dir / "grains.npz", **grain_table(
       all_grains, weights, classes, instances, len(fog), optics))
@@ -485,6 +485,7 @@ def render_event(ev, layers, args, optics, emulsion, background, out_dir):
       grain_sigma_um=optics.grain_sigma_um,
       defocus_slope=optics.defocus_slope,
       track_grain_scale=emulsion.track_grain_scale,
+      track_weight=emulsion.track_weight,
       physical_dz_um=optics.dz_um, shrink=optics.shrink,
       background_view=str(bg_json),
       background_transform=bg_transform,
@@ -530,6 +531,8 @@ def main():
   parser.add_argument("--track-grain-scale", type=float,
                       help="more, fainter grains along tracks (model "
                       "default)")
+  parser.add_argument("--track-weight", type=float,
+                      help="darkness factor of the track grains")
   parser.add_argument("--fog", type=float,
                       default=render.Emulsion.fog_per_um3,
                       help="fog grains per developed um3")
@@ -597,6 +600,8 @@ def main():
           f"{optics.defocus_slope:.4f}", file=sys.stderr)
   if args.track_grain_scale:
     emulsion = replace(emulsion, track_grain_scale=args.track_grain_scale)
+  if args.track_weight is not None:
+    emulsion = replace(emulsion, track_weight=args.track_weight)
   for field, value in (("beam_per_mm2", args.beam_density),
                        ("random_per_mm2", args.random_density),
                        ("blobs_per_mm2", args.blob_density)):

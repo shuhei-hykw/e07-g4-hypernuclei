@@ -1,0 +1,2 @@
+real: n=70 darkness [25 50 75 %] 18.1 22.1 26.5; percentile 75.4 94.2 99.5; >= 99th pct 36%
+embedded: n=100 darkness [25 50 75 %] 22.5 27.7 33.4; percentile 97 99.5 100; >= 99th pct 63%

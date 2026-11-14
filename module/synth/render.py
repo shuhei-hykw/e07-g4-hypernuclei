@@ -77,6 +77,9 @@ class Emulsion:
   # Track grains: density along tracks x scale, darkness / scale (more,
   # fainter grains: same mean darkness, smoother lines)
   track_grain_scale: float = 1.
+  # Darkness of the signal track grains relative to the calibrated grain
+  # (--track-weight; < 1 for the full-scan pixel, see README)
+  track_weight: float = 1.
   grain_jitter_um: float = 0.1
   grain_spread: float = 0.4         # lognormal sigma of grain darkness
 
