@@ -923,7 +923,18 @@ tune). Darkness at the true vertex
 levels (98.8th percentile of the B' points of the view) against 13.2
 (94.6th) at the clicked vertices of the specials, consistent with
 rendered vertices ~1.4 times too dark but not conclusive (click offset
-of 30-60 px, another scanner).
+of 30-60 px, another scanner). Against 70 real full-scan vertices judged
+by eye (v6 crops, `data/union_audit/vtxdark_real.py`, darkness maximised
+within 20 px and +-3 slices, percentile against 200 random positions of
+the view; `output/vertex_darkness_real_v6.txt`): real median 22.1 (94th
+percentile), embedded v25 27.7 (99.5th), although the real ones are
+A-selected nuclear stars. `--track-weight` scales the darkness of the
+signal track grains; on nagara events 0-29 (paired with v25,
+`output/vertex_darkness_scan_v26w.txt`) weight 1 / 0.75 / 0.57 gives
+28.5 / 23.0 / 20.7 (99.8 / 98.2 / 95.8th percentile). 0.57 = 0.289 /
+0.507 keeps the track darkness per pixel of length of the 0.289
+calibration (at 0.507 a track has 1.75 times more grains per pixel) and
+matches the real vertices; the v26 sets (`data/run_v26.sh`) use it.
 The production union over all 2,025 full-scan views was audited
 read-only (`output/fullscan_union_audit.md`): neighbouring views overlap
 by 52 % per axis at a fixed step of 987.5 px (0.5 mm of encoder travel), method A candidates
