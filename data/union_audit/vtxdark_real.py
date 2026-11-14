@@ -2,7 +2,8 @@
 embedded v25 captures, same statistic: local darkness (B' darkness of
 module/rankstudy.py) maximised within RADIUS_PX in XY and over
 +-Z_SLACK slices around the vertex slice; percentile against the same
-statistic at N_CTRL random positions of the view (same slices)."""
+statistic at N_CTRL random positions of the view (same slices).
+With dataset arguments: only those embedded sets, first MAX_EVENTS."""
 import csv
 import json
 import sys
@@ -24,6 +25,7 @@ Z_SLACK = 3
 N_CTRL = 200
 EDGE_PX = 100
 SEED = 1
+MAX_EVENTS = 30
 
 
 def stat(json_path, x, y, k, rng):
@@ -42,9 +44,31 @@ def stat(json_path, x, y, k, rng):
   return best, (best_c < best).mean()
 
 
+def embedded(rows, dataset, n, rng):
+  for p in sorted(Path(dataset).glob("ev*/truth.json"))[:n]:
+    t = json.loads(p.read_text())
+    v = [x for x in t["vertices"] if x["type"] == "capture"][0]
+    rows.append((Path(dataset).name,) + stat(
+      p.parent / "image.json", v["col"], v["row"], int(round(v["slice"])),
+      rng))
+
+
+def summary(rows, kind):
+  d = np.array([r[1] for r in rows if r[0] == kind])
+  p = np.array([r[2] for r in rows if r[0] == kind])
+  q = lambda a: " ".join(f"{v:.3g}" for v in np.percentile(a, [25, 50, 75]))
+  print(f"{kind}: n={len(d)} darkness [25 50 75 %] {q(d)}; percentile "
+        f"{q(100 * p)}; >= 99th pct {np.mean(p >= .99):.0%}")
+
+
 def main():
   rng = np.random.default_rng(SEED)
   rows = []
+  if len(sys.argv) > 1:
+    for ds in sys.argv[1:]:
+      embedded(rows, ds, MAX_EVENTS, np.random.default_rng(SEED))
+      summary(rows, Path(ds).name)
+    return
   with open(REAL, newline="") as f:
     for r in csv.DictReader(f):
       if r["view"].startswith(CNN_VIEWS):
@@ -54,17 +78,9 @@ def main():
       k = int(np.argmin(np.abs(z - float(r["z_best_mm"]))))
       rows.append(("real",) + stat(path, float(r["x_px"]),
                                    float(r["y_px"]), k, rng))
-  for p in sorted(EMBED.glob("ev*/truth.json")):
-    t = json.loads(p.read_text())
-    v = [x for x in t["vertices"] if x["type"] == "capture"][0]
-    rows.append(("embedded",) + stat(p.parent / "image.json", v["col"],
-                                     v["row"], int(round(v["slice"])), rng))
-  for kind in ("real", "embedded"):
-    d = np.array([r[1] for r in rows if r[0] == kind])
-    p = np.array([r[2] for r in rows if r[0] == kind])
-    q = lambda a: " ".join(f"{v:.3g}" for v in np.percentile(a, [25, 50, 75]))
-    print(f"{kind}: n={len(d)} darkness [25 50 75 %] {q(d)}; percentile "
-          f"{q(100 * p)}; >= 99th pct {np.mean(p >= .99):.0%}")
+  embedded(rows, EMBED, None, rng)
+  summary(rows, "real")
+  summary(rows, EMBED.name)
 
 
 if __name__ == "__main__":
