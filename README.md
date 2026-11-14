@@ -944,6 +944,14 @@ Best rank of a match within the top 16 of the neighbour view at 12 um:
 logistic 0.28, logistic without mean_intens 0.21, darkness 0.06. The
 stars were selected by v6 method A (angle_spread x n_slices), which
 favours A and the A features of both models; correlated trials.
+Ranker precision on real sites comes from a blind crop labelling
+(`output/labels/protocol_round2.md`, fixed before the crops exist):
+300 crops of 50 um with their z stack drawn from the discordant top
+5000 sites of darkness, logistic and logistic without mean_intens, a
+random floor and 30 repeats, graded 0-3 (3 = Xi-like), compared by the
+McNemar test on the discordant sites. Views used as an embedding
+background in any set and the CNN views are excluded
+(`output/labels/excluded_background_views.txt`).
 The production union over all 2,025 full-scan views was audited
 read-only (`output/fullscan_union_audit.md`): neighbouring views overlap
 by 52 % per axis at a fixed step of 987.5 px (0.5 mm of encoder travel), method A candidates
